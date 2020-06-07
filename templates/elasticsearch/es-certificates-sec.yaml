@@ -1,0 +1,15 @@
+{{- if .Values.elasticsearch.in_cluster }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-certificates
+  labels:
+{{- include "logging.labels" . | indent 2}}
+type: Opaque
+data:
+{{ (.Files.Glob "certificates/transport/*").AsSecrets | indent 2 }}
+{{ (.Files.Glob "certificates/ca/*").AsSecrets | indent 2 }}
+{{ (.Files.Glob "certificates/ca/root-ca/*").AsSecrets | indent 2 }}
+{{ (.Files.Glob "certificates/admin/*").AsSecrets | indent 2 }}
+{{ (.Files.Glob "certificates/elk-rest/*").AsSecrets | indent 2 }}
+{{- end }}

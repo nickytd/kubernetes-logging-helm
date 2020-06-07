@@ -1,0 +1,20 @@
+{{- if .Values.elasticsearch.in_cluster }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-master
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+{{- include "logging.metadata.labels" . | indent 2}}
+    node: es
+    type: master
+  ports:
+  - name: transport
+    port: 9300
+    targetPort: transport
+    protocol: TCP
+{{- end }}

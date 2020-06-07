@@ -1,0 +1,39 @@
+{{- if .Values.kafka.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 2888
+    name: peer
+  - port: 3888
+    name: leader
+  - port: 9191
+    name: exporter
+  clusterIP: None
+  selector:
+{{- include "logging.metadata.labels" . | indent 2}}
+    type: zk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk-svc
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 9191
+    name: exporter
+  selector:
+{{- include "logging.metadata.labels" . | indent 2}}
+    type: zk
+{{- end }}    

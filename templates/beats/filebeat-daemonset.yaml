@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-filebeat
+  labels:
+{{- include "logging.labels" . | indent 2}}
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+{{- include "logging.metadata.labels" . | indent 4}}
+      k8s-app: filebeat  
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "logging.metadata.labels" . | indent 6}}
+        k8s-app: filebeat
+    spec:
+      securityContext:
+        runAsUser: 0
+      {{ with .Values.filebeat.affinity }}     
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{ with .Values.filebeat.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{ end }}
+      serviceAccountName: {{ .Release.Name }}-priv
+      terminationGracePeriodSeconds: 30
+      priorityClassName: logging-critical
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        {{- if .Values.kafka.enabled }}
+        command: ["sh","-c",'/init.sh {{ include "esurl" . }} 9200 && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
+        {{ else }}
+        command: ["sh","-c",'/init.sh {{ include "esurl" . }} 9200 && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
+        {{- end }}
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init       
+      containers:
+      - name: filebeat
+        image: {{ .Values.repository }}/beats/filebeat:{{ .Values.app_version }}
+        args: [
+          "-c", "/usr/share/filebeat/filebeat.yml",
+          "-e",
+        ]
+        resources:
+          limits:
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/filebeat/filebeat.yml
+          readOnly: true
+          subPath: filebeat.yml
+        - name: data
+          mountPath: /usr/share/filebeat/data
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+      volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755  
+      - name: config
+        configMap:
+          name: {{ .Release.Name}}-filebeat-config
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+          type: Directory
+      - name: data
+        emptyDir: {}

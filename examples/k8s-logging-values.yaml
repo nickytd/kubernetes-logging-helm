@@ -1,0 +1,93 @@
+cluster_name: logging
+
+init_container_image:
+  registry: ""
+  repository: nickytd/utils
+  tag: latest
+  imagePullPolicy: IfNotPresent
+
+es_curator_image:
+  registry: 
+  repository: nickytd/es-curator
+  tag: 5.8  
+
+opendistro:
+  saml:
+    enabled: false
+
+elasticsearch:
+  in_cluster: true
+  url:
+  user: esadmin
+  password: esadmin
+  snapshot:
+    enabled: false
+  index_shards: 1
+  index_replicas: 0
+  index:
+    - containers
+    - journals
+  additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+
+master:
+  minimum_nodes: 1
+  replicas: 1
+  storage: "1Gi"
+  heap_size: "512m"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+  
+client:
+  replicas: 1
+  heap_size: "512m"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "512Mi"
+  
+data:
+  replicas: 1
+  heap_size: "1g"
+  storage: "1Gi"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "1Gi"
+  
+kibana:
+  in_cluster: true
+  url:
+  user: kibana
+  password: kibana
+  index: containers,journals
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "1Gi"
+  replicas: 1
+  ingress:
+    enabled: false
+  
+logstash_indexer:
+  replicas: 1
+  heap_size: "512m"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "512Mi"
+
+journalbeat:
+  enabled: true
+  path: /var/run/log/journal
+
+kafka:
+  enabled: false
+  replicas: 1
+  heap_size: "512m"
+  storage: "1Gi"
+
+zookeeper:
+  replicas: 1
+

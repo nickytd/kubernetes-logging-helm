@@ -1,0 +1,17 @@
+{{- if .Values.kibana.in_cluster }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-kibana
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  ports:
+  - name: ui
+    port: 5601
+    targetPort: ui
+  selector:
+{{- include "logging.metadata.labels" . | indent 2}}
+    type: kibana
+  type: {{ .Values.kibana.service_type | default "ClusterIP" }}
+{{- end }}

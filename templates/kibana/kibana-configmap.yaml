@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-kibana
+  labels:
+{{- include "logging.labels" . | indent 2}}
+data:
+  kibana.yml: |-
+    server.name: kibana
+    server.host: "0"
+
+    logging.quiet: true
+    logging.verbose: false
+    logging.json: false
+
+    elasticsearch.logQueries: false
+    elasticsearch.hosts: {{ include "esurl" . }}
+    elasticsearch.ssl.verificationMode: none
+    elasticsearch.username: {{ .Values.kibana.user }}
+    elasticsearch.password: {{ .Values.kibana.password }}
+    elasticsearch.requestHeadersWhitelist: ["securitytenant","Authorization"]
+
+    # Optional settings that provide the paths to the PEM-format SSL certificate and key files.
+    # These files are used to verify the identity of Kibana to Elasticsearch and are required when
+    # xpack.security.http.ssl.client_authentication in Elasticsearch is set to required.
+    #elasticsearch.ssl.certificate: /opt/kibana/config/admin.pem
+    #elasticsearch.ssl.key: /opt/kibana/config/admin-key.pem
+
+    # Optional setting that enables you to specify a path to the PEM file for the certificate
+    # authority for your Elasticsearch instance.
+    elasticsearch.ssl.certificateAuthorities:
+    - /opt/kibana/config/root-ca.pem
+
+    newsfeed.enabled: false
+    telemetry.optIn: false
+    telemetry.enabled: false
+
+    opendistro_security.readonly_mode.roles: ["kibana_read_only"]
+
+{{ if .Values.opendistro.saml.enabled }}    
+    server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
+    opendistro_security.auth.type: "saml"
+{{ end }}    
+
+    opendistro_security.multitenancy.enabled: true
+    opendistro_security.multitenancy.tenants.enable_private: false
+    #opendistro_security.multitenancy.tenants.preferred: ["x4tenant","Global"]
+    opendistro_security.cookie.secure: false
+
+  create_index_pattern.sh: |-
+    #!/bin/bash
+     
+    set -x 
+    kibana_host=$1
+    IFS=',' read -r -a index_list <<< "$2"
+    kibana_auth=""
+
+    if [ -n "$3" ]; then
+      kibana_auth="--user $3:$4"
+    fi
+
+    echo $kibana_auth
+
+    for i in ${index_list[@]}; do
+    if [ `curl -sS -X GET ${kibana_auth} ${kibana_host}/api/saved_objects/index-pattern/${i} | grep '"statusCode":404' |wc -l` -gt 0 ]; then
+      echo "creating index pattern: ${i}"
+      curl -sS -X POST ${kibana_auth} "${kibana_host}/api/saved_objects/index-pattern/${i}" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d "{\"attributes\": {\"title\": \"${i}-*\",\"timeFieldName\": \"@timestamp\"}}"
+        echo ""
+    else
+      echo "creating index pattern: ${i} already exist"
+    fi
+    done
+
+    kibana_version=$(kibana --version)
+
+    if [ `curl -sS -X GET ${kibana_auth} "${kibana_host}/api/saved_objects/config/${kibana_version}" | grep defaultIndex |wc -l` -lt 1 ]; then
+        echo "Setting default index to ${index_list[0]}"
+        curl -sS -X PUT ${kibana_auth} "${kibana_host}/api/saved_objects/config/${kibana_version}" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d "{\"attributes\": {\"defaultIndex\": \"${index_list[0]}\"}}"
+    fi
+
+    if [ `curl -sS -X GET ${kibana_auth} "${kibana_host}/api/saved_objects/config/${kibana_version}" | grep '"defaultIndex":null' |wc -l` -gt 0 ]; then
+        echo "Setting default index to ${index_list[0]}"
+        curl -sS -X PUT ${kibana_auth} "${kibana_host}/api/saved_objects/config/${kibana_version}" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d "{\"attributes\": {\"defaultIndex\": \"${index_list[0]}\"}}"
+    fi
+
+    echo "Import saved objects"
+    for f in /tmp/saved_objects/*
+    do
+      echo "Processing $f file..."
+      # take action on each file. $f store current file name
+      curl -sS -X POST -k ${kibana_auth} "${kibana_host}/api/saved_objects/_import?overwrite=true" -H "kbn-xsrf: true" --form file=@$f
+      echo "done"
+    done

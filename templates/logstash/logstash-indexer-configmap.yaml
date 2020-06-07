@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-logstash-indexer
+  labels:
+{{- include "logging.labels" . | indent 2}}
+data:
+  pipelines.yml: |-
+{{- range $path, $bytes := .Files.Glob "logstash-indexer-pipelines/*-pipeline.conf" }}
+    - pipeline.id: {{ printf "%s" (base $path) }}
+      pipeline.workers: 8
+      path.config: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
+{{- end }}
+  log4j2.properties: |-
+    status = error
+    name = LogstashPropertiesConfig
+
+    appender.console.type = Console
+    appender.console.name = plain_console
+    appender.console.layout.type = PatternLayout
+    appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c] %m%n
+
+    appender.json_console.type = Console
+    appender.json_console.name = json_console
+    appender.json_console.layout.type = JSONLayout
+    appender.json_console.layout.compact = true
+    appender.json_console.layout.eventEol = true
+
+    rootLogger.level = ${sys:ls.log.level}
+
+    rootLogger.appenderRef.console.ref = ${sys:ls.log.format}_console
+
+    logger.elasticsearchoutput.name = logstash.outputs.elasticsearch
+    logger.elasticsearchoutput.level = info
+    
+    logger.inputs_kafka.name=logstash.inputs.kafka
+    logger.inputs_kafka.level=warn
+
+    logger.filters_json.name=logstash.filters.json
+    logger.filters_json.level=error
+    
+    #logger.inputs.name=logstash.inputs.file
+    #logger.inputs.level=warn
+    #logger.outputs.name=logstash.outputs.kafka
+    #logger.outputs.level=debug
+    #logger.pipeline.name=logstash.pipeline
+    #logger.pipeline.level=debug
+    #logger.grok.name=logstash.filters.grok
+    #logger.grok.level=debug
+    #logger.mutate.name=logstash.filters.mutate
+    #logger.mutate.level=debug
+    #logger.kafka_consumer.name=org.apache.kafka.clients.consumer.KafkaConsumer
+    #logger.kafka_consumer.level=debug
+
+  logstash.yml: |-
+    http.host: "0.0.0.0"
+    #path.config: /usr/share/logstash/pipeline/*-pipeline.conf
+    path.settings: /usr/share/logstash/config
+    queue.type: persisted
+    pipeline.batch.size: 125
+ 

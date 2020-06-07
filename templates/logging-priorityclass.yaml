@@ -1,0 +1,6 @@
+apiVersion: scheduling.k8s.io/v1beta1
+description: Used for addons critical pods that must not be moved from their current node. Example pods from daemonsets collection logs from the minions
+kind: PriorityClass
+metadata:
+  name: logging-critical
+value: 500

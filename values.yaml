@@ -1,0 +1,178 @@
+# Default values for kubernetes-logging.
+# Global values
+cluster_name: logging
+imagePullSecrets: []
+storage_class:
+
+#Version of ELK stack (logstash, filebeat, journalbeat ...)
+app_version: 7.7.0
+repository: docker.elastic.co
+
+#Opendistro configuration 
+opendistro:
+  image: amazon/opendistro-for-elasticsearch
+  imageTag: 1.7.0
+  saml:
+    enabled: true
+#    idp:
+#      metadata_url:
+#      entity_id:
+#    sp:
+#      entity_id:
+#    exchange_key:
+#    admin_role:
+#    viewer_role:  
+#    tenant_role:  
+
+#ES Curator job configuration
+es_curator_image:
+  image: nickytd/es-curator
+  imageTag: 5.8
+
+#Init container configuration. Used for multiple application startup checks
+init_container_image:
+  image: nickytd/init-container
+  imageTag: latest
+  imagePullPolicy: IfNotPresent
+
+#ES configuration
+#A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
+#with the concrete configurations of the nodes that follow.
+#In case "in_cluster" is set to false, the logstash-indexer uses it as an output destination. The coordination, master and data nodes
+#are skiped.
+elasticsearch:
+  in_cluster: true
+  snapshot:
+    enabled: false
+    storage_class:
+    size: 5Gi
+  index_shards: 3
+  index_replicas: 1
+  additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+  url:
+  user: esadmin
+  password:
+
+#Configuration of ES master node if "in_cluster" is true
+master:
+  minimum_nodes: 2
+  replicas: 2
+  storage: "5Gi"
+  heap_size: "2g"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "2Gi"
+  tolerations: []
+  affinity: {}    
+
+#Configuration of ES coordination node if "in_cluster" is true
+client:
+  replicas: 2
+  heap_size: "4g"
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "4Gi"
+  host: null
+  ingress:
+    path: /
+    secret_name: null
+    enabled: false
+    annotations: {}
+  tolerations: []
+  affinity: {}
+
+#Configuration of ES data node if "in_cluster" is true
+data:
+  replicas: 3
+  heap_size: "16g"
+  storage: "150Gi"
+  storage_class:
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "16Gi"
+  tolerations: []
+  affinity: {} 
+
+#when in_cluster is set to false it determines an external kibana instance. 
+#In this case only jobs creating index templates and kibana objects are executed.
+kibana:
+  in_cluster: true
+  url:
+  user: kibana
+  password:
+  replicas: 1
+  service_type: "ClusterIP"
+  ingress:
+    path: /
+    enabled: false
+    annotations: {}
+  index: containers,journals
+  resources:
+    requests:
+      cpu: "200m"
+      memory: "8Gi"
+  tolerations: []
+  affinity: {}    
+
+#Logstash indexer is a target of various logging streams and can perform document routing decisions
+#based on the documents content. Example the logs from journals stream are directed to "journal-<date>" indices.
+#The logs from containers stdout and stderr are routed to "container-<date>" indices in ES.
+#
+#Json formated log messages are additionaly parsed when "json_messages" is set to true. In this case if an container
+#output is json formatted it will be parsed. There could be a problem if two different containers logs use the same key
+#wherer values are mapped to different ES field types.
+logstash_indexer:
+  json_messages: true
+  replicas: 3
+  heap_size: "2g"
+  ca_cert: root-ca.pem
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+  tolerations: []
+  affinity: {}       
+
+#ES filebeats are used to collect containers stdout and stderror. 
+#The workload is running as a deamon set on each node with the appropriate tollerations definitions
+filebeat:
+  tolerations: []
+  affinity: {}
+
+#ES journalbeats are used to collect system logs from OS journalctl
+#It depends on the concrete minion OS
+#Those logs help to catch states related to OS services such as container runtimes and kubelet services
+journalbeat:
+  enabled: true
+  path: /var/log/journal
+  tolerations: []
+  affinity: {}  
+
+#In scaled out setup kafka queues are used as ingestion points to accomodate spiked in the logging stream volumes
+kafka:
+  enabled: true
+  replicas: 3
+  tag: "2.12-2.4.0"
+  heap_size: "2g"
+  storage: "10Gi"
+  topics:
+    config: "retention.bytes=536870912,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,segment.bytes=104857600,max.message.bytes=15728640,message.timestamp.type=LogAppendTime"
+    name: ["containers","journals"]
+    replication_factor: 2
+    partitions: 10
+  tolerations: []
+  affinity: {}   
+
+#Zookeeper is a dependecy of kafka
+zookeeper:
+  replicas: 3
+  tag: "3.4.14"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "1Gi"
+  tolerations: []
+  affinity: {}      

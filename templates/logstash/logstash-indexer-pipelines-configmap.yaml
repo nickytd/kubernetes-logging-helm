@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-logstash-indexer-pipelines
+data:
+{{- range $path, $bytes := .Files.Glob "logstash-indexer-pipelines/*.conf" }}
+{{- $name := base (dir $path) }}  
+{{ base $path | indent 2}}: |-
+{{ (tpl ($.Files.Get $path) $)| indent 4 }}
+{{ end }}  

@@ -1,0 +1,44 @@
+{{- if .Values.kafka.enabled }}
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: {{ .Release.Name }}-topics-config
+  labels:
+{{- include "logging.labels" . | indent 2}}
+  annotations:
+    "helm.sh/hook": "post-install, post-upgrade"
+    "helm.sh/hook-weight": "-9"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: kafka-topic-config
+        image: wurstmeister/kafka:{{ .Values.kafka.tag }}
+        command: ["/bin/sh","-c","{{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic {{ . }} --partitions {{ $.Values.kafka.topics.partitions }} --replication-factor {{ $.Values.kafka.topics.replication_factor }} --if-not-exists && {{ end -}}
+{{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic {{ . }} --partitions {{ $.Values.kafka.topics.partitions }} --if-exists || true && {{ end -}}
+{{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name {{ . }} --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]
+        env:                          
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zk-svc.{{ .Release.Namespace}}.svc.cluster.local:2181/kafka/logging                          
+      restartPolicy: Never 
+      volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755  
+{{- end }}           

@@ -1,0 +1,153 @@
+{{- if .Values.elasticsearch.in_cluster }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-client
+  labels:
+{{- include "logging.labels" . | indent 2}}
+    node: es
+spec:
+  selector:
+    matchLabels:
+{{- include "logging.metadata.labels" . | indent 4 }}
+      type: client
+      node: es        
+  replicas: {{ .Values.client.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
+      labels:
+{{ include "logging.metadata.labels" . | indent 6 }}
+        type: client
+        node: es
+    spec:
+      {{ with .Values.client.affinity -}}     
+      affinity:
+        {{ toYaml . }}
+      {{- end }}
+      {{ with .Values.client.tolerations }}
+      tolerations:
+        {{ toYaml . }}
+      {{ end }}
+      serviceAccountName: {{ .Release.Name }}-priv
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: main
+        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}        
+        resources:
+          # need more cpu upon initialization, therefore burstable class
+{{ toYaml .Values.client.resources | indent 10 }}
+        readinessProbe:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: transport
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        ports:
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
+        - containerPort: 9200
+          name: http
+          protocol: TCP
+        volumeMounts:
+        - name: elasticsearch
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+        - name: elasticsearch
+          mountPath: /usr/share/elasticsearch/config/log4j2.properties
+          subPath: log4j2.properties
+        - name: es-data
+          mountPath: /data
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/node.pem
+          subPath: node.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/node-key.pem
+          subPath: node-key.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/root-ca.pem
+          subPath: root-ca.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/elk-rest.pem
+          subPath: elk-rest.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/elk-rest-key.pem
+          subPath: elk-rest-key.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.truststore
+          subPath: elasticsearch.truststore
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/http.truststore
+          subPath: http.truststore         
+        {{- if .Values.elasticsearch.snapshot.enabled }}
+        - name: es-snapshot
+          mountPath: /snapshot
+        {{- end }}          
+        env:
+        - name: ES_JAVA_OPTS
+          value: "-Xms{{ .Values.client.heap_size }} -Xmx{{ .Values.client.heap_size }} \
+                  {{ .Values.elasticsearch.additional_jvm_params }} \
+                  -Djava.util.logging.config.file=/usr/share/elasticsearch/config/logging.properties"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_MASTER
+          value: "false"
+        - name: NODE_DATA
+          value: "false"
+        - name: NODE_INGEST
+          value: "false"
+        - name: discovery.seed_hosts
+          value: {{ .Release.Name }}-master
+      # Elasticsearch requires vm.max_map_count to be at least 262144.
+      # If your OS already sets up this number to a higher value, feel free
+      # to remove this init container.
+      initContainers:
+      - image: {{ include "init_container.image" . }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-master 9300 && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
+        name: init
+        volumeMounts:
+        - name: es-data
+          mountPath: /data
+        {{- if .Values.elasticsearch.snapshot.enabled }}
+        - name: es-snapshot
+          mountPath: /snapshot
+        {{- end }} 
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init          
+        securityContext:
+          runAsUser: 0
+          privileged: true  
+      volumes:
+      - name: elasticsearch
+        configMap:
+          name: {{ .Release.Name }}
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755    
+      {{- if .Values.elasticsearch.snapshot.enabled }}
+      - name: es-snapshot
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-snapshot-pvc
+      {{- end }}          
+      - name: es-data
+        emptyDir: {}
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates
+      - name: securityconfig
+        secret:
+          secretName: {{ .Release.Name }}-securityconfig    
+{{- end }}

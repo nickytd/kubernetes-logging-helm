@@ -1,0 +1,85 @@
+{{- if .Values.kafka.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  metadata:
+  name: {{ .Release.Name }}-zk
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  selector:
+    matchLabels:
+      type: zk
+{{- include "logging.metadata.labels" . | indent 4 }}
+  serviceName: zk
+  replicas: {{ .Values.zookeeper.replicas }}
+  template:
+    metadata:
+      labels:
+        type: zk
+{{- include "logging.metadata.labels" . | indent 6 }}
+    spec:
+      priorityClassName: logging-critical
+      {{ with .Values.zookeeper.affinity -}}     
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{ with .Values.zookeeper.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{ end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid ; do  echo \"retry create data and logs folders\" && sleep 2 ; done"]
+        name: init
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+      containers:
+      - name: zk
+        image: zookeeper:{{ .Values.zookeeper.tag }}
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: peer
+        - containerPort: 3888
+          name: leader
+        env:
+        - name: ZOO_SERVERS
+          value: {{ include "zookeeper_servers" .| quote }}
+        - name: ZOO_DATA_DIR
+          value: /volumes/data
+        - name: ZOO_DATA_LOG_DIR
+          value: /volumes/logs
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources:
+{{ toYaml .Values.zookeeper.resources | indent 10 }}        
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+  volumeClaimTemplates:
+  - metadata:
+      name: zk-data
+    spec:
+      {{- with .Values.storage_class }}
+      storageClassName: {{ . | quote }}
+      {{- end }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+{{- end }}          

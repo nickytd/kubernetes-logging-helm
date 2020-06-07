@@ -1,0 +1,4 @@
+Name: {{ template "logging.name" . }}
+Fullname: {{ template "logging.fullname" . }}
+Namespace: {{ .Release.Namespace }}
+

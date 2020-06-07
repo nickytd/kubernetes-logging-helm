@@ -1,0 +1,98 @@
+_meta:
+  type: "roles"
+  config_version: 2
+
+# Restrict users so they can only view visualization and dashboard on kibana
+kibana_read_only:
+  reserved: true
+
+admin:
+  reserved: true
+  cluster_permissions:
+  - "unlimited"
+  index_permissions:
+  - index_patterns:
+    - "*"
+    allowed_actions:
+      - unlimited
+
+kibana_viewer:
+  reserved: true
+  cluster_permissions:
+  - "cluster_composite_ops_ro"
+  index_permissions:
+  - index_patterns:  
+    - "containers*"
+    - "journals*"
+    - "x4*"
+    - ".kibana*"
+    allowed_actions:
+    - "read"
+    - "search"
+  tenant_permissions:
+  - tenant_patterns:
+    - "global*"
+    allowed_actions:
+    - "kibana_all_read"  
+  
+
+kibana_admin:
+  reserved: true
+  cluster_permissions:
+  - "unlimited"
+  index_permissions:
+  - index_patterns:
+    - "*"
+    allowed_actions:
+      - unlimited
+  
+
+# The security REST API access role is used to assign specific users access to change the security settings through the REST API.
+security_rest_api_access:
+  reserved: true
+ 
+# Allows users to view alerts
+alerting_view_alerts:
+  reserved: true
+  index_permissions:
+    - index_patterns:
+      - ".opendistro-alerting-alert*"
+      allowed_actions:
+        - read 
+
+# Allows users to view and acknowledge alerts
+alerting_crud_alerts:
+  reserved: true
+  index_permissions:
+    - index_patterns:
+      - ".opendistro-alerting-alert*"
+      allowed_actions:
+       - crud 
+
+# Allows users to use all alerting functionality
+alerting_full_access:
+  reserved: true
+  index_permissions:
+    - index_patterns:
+      - ".opendistro-alerting-config"
+      - ".opendistro-alerting-alert*"
+      allowed_actions:
+        - crud 
+
+kibana_logging_tenant:
+  reserved: false
+  hidden: false
+  cluster_permissions:
+  - "indices:data/read/mget*"
+  index_permissions:
+  - index_patterns:
+    - "logging"
+    allowed_actions:
+    - "indices:data/read/search"
+    - "indices:data/read/mget*"
+  tenant_permissions:
+  - tenant_patterns:
+    - "logging_tenant"
+    allowed_actions:
+    - "kibana_all_read"
+  static: false     

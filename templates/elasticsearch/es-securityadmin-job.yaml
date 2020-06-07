@@ -1,0 +1,85 @@
+{{- if .Values.elasticsearch.in_cluster }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-securityadmin
+  labels:
+{{- include "logging.labels" . | indent 2}}
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure 
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master 9300"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: main
+        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
+        command: ["/setup.sh"]
+        env:
+          - name: es_node
+            value: {{ .Release.Name }}-master
+          - name: es_user
+            value: {{ .Values.elasticsearch.user }}
+          - name: es_pass
+            value: {{ .Values.elasticsearch.password }}
+          - name: ki_user
+            value: {{ .Values.kibana.user }}
+          - name: ki_pass
+            value: {{ .Values.kibana.password }}      
+        volumeMounts:
+        - name: setup
+          mountPath: /setup.sh
+          subPath: setup.sh
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/node.pem
+          subPath: node.pem  
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/node-key.pem
+          subPath: node-key.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/root-ca.pem
+          subPath: root-ca.pem
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/admin.pem
+          subPath: admin.pem  
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/admin-key.pem
+          subPath: admin-key.pem
+        - name: securityconfig
+          mountPath: /usr/share/elasticsearch/plugins/opendistro_security/securityconfig  
+        - name: certificates
+          mountPath: /usr/share/elasticsearch/config/http.truststore
+          subPath: http.truststore  
+      volumes:
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates
+      - name: securityconfig
+        secret:
+          secretName: {{ .Release.Name }}-securityconfig
+          defaultMode: 0755
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: setup
+        configMap:
+          name: {{ .Release.Name}}-securityadmin
+          defaultMode: 0755        
+{{- end }}          

@@ -1,0 +1,25 @@
+{
+  "settings": {
+    "index" : {
+    	"number_of_shards" : "{{ .Values.elasticsearch.index_shards }}",
+      "number_of_replicas" : "{{ .Values.elasticsearch.index_replicas }}"
+    }
+  },
+  "mappings" : {
+    "_source" : {
+      "enabled" : true
+    },
+    "properties" : {
+      "@timestamp" : {
+          "type" : "date"
+      },
+      "id" : {
+          "type" : "keyword"
+      },
+      "fingerprint" : {
+          "type" : "keyword"
+      }
+    }        
+  },  
+  "index_patterns":["containers-*"]
+}

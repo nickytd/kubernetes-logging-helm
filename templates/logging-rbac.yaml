@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-priv
+  labels:
+{{- include "logging.labels" . | indent 2}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{- include "logging.labels" . | indent 2}}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{- include "logging.labels" . | indent 2}}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - namespaces
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{- include "logging.labels" . | indent 2}}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-priv
+  namespace: {{ .Release.Namespace }}  
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  readOnlyRootFilesystem: false
+  volumes:
+  - "*"
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  fsGroup:
+    rule: RunAsAny
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-psp
+  labels:
+{{- include "logging.labels" . | indent 2}}
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - {{ .Release.Name }}  
+  verbs:
+  - use
+---      
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name }}-psp
+  labels:
+{{- include "logging.labels" . | indent 2}}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-priv
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-psp
+  apiGroup: rbac.authorization.k8s.io

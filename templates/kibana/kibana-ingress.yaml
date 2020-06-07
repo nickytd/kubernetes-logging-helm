@@ -1,0 +1,25 @@
+{{- if and .Values.kibana.ingress.enabled .Values.kibana.in_cluster }}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-kibana
+  labels:
+{{- include "logging.labels" . | indent 2}}
+    {{- with .Values.kibana.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+    {{- end }}
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.kibana.host }}
+    secretName: {{ .Values.kibana.ingress.secret_name }}
+  rules:
+  - host: {{ .Values.kibana.host }}
+    http:
+      paths:
+      - path: {{ .Values.kibana.ingress.path }}
+        backend:
+          serviceName: {{ .Release.Name }}-kibana
+          servicePort: 5601
+{{- end }}

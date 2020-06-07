@@ -1,0 +1,8 @@
+_meta:
+  type: "nodesdn"
+  config_version: 2
+
+# Define nodesdn mapping name and corresponding values
+logging:
+  nodes_dn:
+    - CN=*.logging.svc.cluster.local,OU=logging,O=K8S,C=DE

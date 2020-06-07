@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-filebeat-config
+  labels:
+{{- include "logging.labels" . | indent 2}}
+    kubernetes.io/cluster-service: "true"
+data:
+  filebeat.yml: |-
+    logging.level: warning
+
+    filebeat.inputs:
+    - type: container
+      paths:
+        - '/var/lib/docker/containers/*/*-json.log'
+      multiline.pattern: '^[[:space:]]'
+      multiline.negate: false
+      multiline.match: after
+      multiline.max_lines: 10000
+
+    tags: ["filebeat"]  
+      
+    processors:
+      - add_id: ~
+      - add_kubernetes_metadata:
+          in_cluster: true  
+    
+    filebeat.autodiscover:
+      providers:
+      - type: kubernetes
+        templates:
+        - config:
+            - type: container
+              paths:
+                - /var/log/containers/*-${data.kubernetes.container.id}-json.log
+
+    output.kafka:
+      enabled: {{ .Values.kafka.enabled }}
+      hosts: ["kafka-svc.{{ .Release.Namespace }}:9092"]
+      topic: 'containers'
+      partition.hash:
+        reachable_only: true
+      required_acks: 1
+      max_message_bytes: 15728640
+      client_id: "${HOSTNAME}"
+
+    output.console:
+      enabled: false
+      pretty: true
+
+    output.logstash:
+      enabled: {{ printf "%t" (not .Values.kafka.enabled) }}
+      hosts: ["{{ .Release.Name}}-logstash-indexer:5044"]  

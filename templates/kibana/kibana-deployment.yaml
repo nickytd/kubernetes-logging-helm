@@ -1,0 +1,82 @@
+{{- if .Values.kibana.in_cluster }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-kibana
+  labels:
+{{- include "logging.labels" . | indent 2}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{- include "logging.metadata.labels" . | indent 4}}
+      type: kibana
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/kibana/kibana-configmap.yaml") . | sha256sum }}
+      labels:
+{{- include "logging.metadata.labels" . | indent 6}}
+        type: kibana
+    spec:
+      {{ with .Values.kibana.affinity -}}     
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{ with .Values.kibana.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{ end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        command: ["sh", "-c", '/init.sh {{ include "esurl" . }} 9200']
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers: 
+      - name: main
+        image: {{ .Values.opendistro.image }}-kibana:{{ .Values.opendistro.imageTag }}
+        resources:
+          # need more cpu upon initialization, therefore burstable class
+{{ toYaml .Values.kibana.resources | indent 10 }}
+        env:
+{{ if .Values.kibana.server_base_path }}            
+          - name: SERVER_BASEPATH
+            value: {{ .Values.kibana.server_base_path }}  
+{{ end }}              
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/opt/kibana/config/kibana.yml"
+          subPath: kibana.yml
+          name: config
+        - name: certificates
+          mountPath: /opt/kibana/config/root-ca.pem
+          subPath: root-ca.pem  
+        - name: certificates
+          mountPath: /opt/kibana/config/admin.pem
+          subPath: admin.pem  
+        - name: certificates
+          mountPath: /opt/kibana/config/admin-key.pem
+          subPath: admin-key.pem         
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Release.Name }}-kibana
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates        
+{{- end }}

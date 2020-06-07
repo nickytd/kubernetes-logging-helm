@@ -1,0 +1,74 @@
+---
+# In this file users, backendroles and hosts can be mapped to Open Distro Security roles.
+# Permissions for Opendistro roles are configured in roles.yml
+
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Define your roles mapping here
+
+## Demo roles mapping
+
+all_access:
+  reserved: false
+  backend_roles:
+  - {{ .Values.opendistro.saml.admin_role }}
+  description: "Maps admin to all_access"
+
+admin:
+  reserved: false
+  users:
+  - {{ .Values.elasticsearch.user }}
+  and_backend_roles:
+  - admin
+  description: "Maps external es user to admin role"
+
+#own_index:
+#  reserved: false
+#  users:
+#  - "*"
+#  and_backend_roles:
+#  - {{ .Values.opendistro.saml.tenant_role }}  
+#  description: "Allow full access to an index named like the username"
+  
+
+logstash:
+  reserved: false
+  backend_roles:
+  - "logstash"
+
+readall:
+  reserved: false
+  backend_roles:
+  - "readall"
+
+manage_snapshots:
+  reserved: false
+  backend_roles:
+  - "snapshotrestore"
+
+kibana_server:
+  reserved: true
+  users:
+  - "{{ .Values.kibana.user }}"
+
+kibana_viewer:
+  reserved: false
+  backend_roles:
+  - {{ .Values.opendistro.saml.viewer_role }}
+
+kibana_user:
+  reserved: false
+
+kibana_admin:
+  reserved: false
+  backend_roles:
+  - {{ .Values.opendistro.saml.admin_role }}
+  - "kibana_admin"
+
+kibana_logging_tenant:
+  reserved: false
+  description: "logging tenant"
+  backend_roles:
+  - {{ .Values.opendistro.saml.tenant_role }}
