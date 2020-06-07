@@ -1,16 +1,5 @@
 cluster_name: logging
 
-init_container_image:
-  registry: ""
-  repository: nickytd/utils
-  tag: latest
-  imagePullPolicy: IfNotPresent
-
-es_curator_image:
-  registry: 
-  repository: nickytd/es-curator
-  tag: 5.8  
-
 opendistro:
   saml:
     enabled: false
