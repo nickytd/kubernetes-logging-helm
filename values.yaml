@@ -13,7 +13,7 @@ opendistro:
   image: amazon/opendistro-for-elasticsearch
   imageTag: 1.7.0
   saml:
-    enabled: true
+    enabled: false
 #    idp:
 #      metadata_url:
 #      entity_id:
