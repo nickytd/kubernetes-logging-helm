@@ -31,5 +31,7 @@ The chart also supports extrnal(outside the cluster) elasticsearch instance in w
 
 Kibana by default comes with 2 predefined dashboards and set of searches
 1. Containers logs dashboard, grouping container logs per namespace and pod
+![Containers Logs](https://github.com/nickytd/k8s-logging-helm/blob/master/images/ContainerLogsDashboard.png)
 2. Journals logs dashboard, grouping systemlogs per system unit and node
+![Journals Logs](https://github.com/nickytd/k8s-logging-helm/blob/master/images/JournalsLogsDashboard.png)
 
