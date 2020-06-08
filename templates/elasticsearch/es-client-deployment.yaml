@@ -3,13 +3,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-client
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
     node: es
 spec:
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4 }}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: client
       node: es        
   replicas: {{ .Values.client.replicas }}
@@ -18,30 +16,24 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
-      labels:
-{{ include "logging.metadata.labels" . | indent 6 }}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         type: client
         node: es
     spec:
-      {{ with .Values.client.affinity -}}     
-      affinity:
-        {{ toYaml . }}
+      {{- with .Values.client.affinity -}}     
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{ with .Values.client.tolerations }}
-      tolerations:
-        {{ toYaml . }}
-      {{ end }}
+      {{- with .Values.client.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}        
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-{{ toYaml .Values.client.resources | indent 10 }}
+        resources: {{ toYaml .Values.client.resources | nindent 10 }}
         readinessProbe:
           tcpSocket:
             port: http

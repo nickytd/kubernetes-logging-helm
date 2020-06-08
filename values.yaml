@@ -46,35 +46,35 @@ elasticsearch:
     enabled: false
     storage_class:
     size: 5Gi
-  index_shards: 3
-  index_replicas: 1
+  index_shards: 1
+  index_replicas: 0
   additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
   url:
   user: esadmin
-  password:
+  password: esadmin
 
 #Configuration of ES master node if "in_cluster" is true
 master:
-  minimum_nodes: 2
-  replicas: 2
-  storage: "5Gi"
-  heap_size: "2g"
+  minimum_nodes: 1
+  replicas: 1
+  storage: "1Gi"
+  heap_size: "512m"
   resources:
     requests:
       cpu: "200m"
-      memory: "2Gi"
+      memory: "512Mi"
   tolerations: []
   affinity: {}    
 
 #Configuration of ES coordination node if "in_cluster" is true
 client:
-  replicas: 2
-  heap_size: "4g"
+  replicas: 1
+  heap_size: "512m"
   resources:
     requests:
       cpu: "200m"
-      memory: "4Gi"
-  host: null
+      memory: "512Mi"
+  host:
   ingress:
     path: /
     secret_name: null
@@ -85,14 +85,13 @@ client:
 
 #Configuration of ES data node if "in_cluster" is true
 data:
-  replicas: 3
-  heap_size: "16g"
-  storage: "150Gi"
-  storage_class:
+  replicas: 1
+  heap_size: "1g"
+  storage: "1Gi"
   resources:
     requests:
       cpu: "1000m"
-      memory: "16Gi"
+      memory: "1Gi"
   tolerations: []
   affinity: {} 
 
@@ -102,7 +101,7 @@ kibana:
   in_cluster: true
   url:
   user: kibana
-  password:
+  password: kibana
   replicas: 1
   service_type: "ClusterIP"
   ingress:
@@ -113,7 +112,7 @@ kibana:
   resources:
     requests:
       cpu: "200m"
-      memory: "8Gi"
+      memory: "1Gi"
   tolerations: []
   affinity: {}    
 
@@ -126,13 +125,13 @@ kibana:
 #wherer values are mapped to different ES field types.
 logstash_indexer:
   json_messages: true
-  replicas: 3
-  heap_size: "2g"
   ca_cert: root-ca.pem
+  replicas: 1
+  heap_size: "512m"
   resources:
     requests:
       cpu: "1000m"
-      memory: "2Gi"
+      memory: "512Mi"
   tolerations: []
   affinity: {}       
 
@@ -154,25 +153,25 @@ journalbeat:
 #In scaled out setup kafka queues are used as ingestion points to accomodate spiked in the logging stream volumes
 kafka:
   enabled: true
-  replicas: 3
+  replicas: 1
   tag: "2.12-2.4.0"
-  heap_size: "2g"
-  storage: "10Gi"
+  heap_size: "512m"
+  storage: "1Gi"
   topics:
-    config: "retention.bytes=536870912,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,segment.bytes=104857600,max.message.bytes=15728640,message.timestamp.type=LogAppendTime"
+    config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
     name: ["containers","journals"]
-    replication_factor: 2
-    partitions: 10
+    replication_factor: 0
+    partitions: 1
   tolerations: []
   affinity: {}   
 
 #Zookeeper is a dependecy of kafka
 zookeeper:
-  replicas: 3
+  replicas: 1
   tag: "3.4.14"
   resources:
     requests:
       cpu: "100m"
       memory: "1Gi"
   tolerations: []
-  affinity: {}      
+  affinity: {}

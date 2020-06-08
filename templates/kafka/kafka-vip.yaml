@@ -4,8 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   ports:
   - port: 9092
@@ -15,22 +14,19 @@ spec:
   - port: 12345
     name: jmx
   clusterIP: None
-  selector:
-{{- include "logging.metadata.labels" . | indent 2}}
+  selector: {{ include "logging.metadata.labels" . | indent 4 }}
     type: kafka
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: kafka-svc
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   ports:
   - port: 9092
     name: kafka
-  selector:
-{{- include "logging.metadata.labels" . | indent 2}}
+  selector: {{ include "logging.metadata.labels" . | indent 4 }}
     type: kafka
 {{ range $kafkaId := until (.Values.kafka.replicas | int) }}
 ---
@@ -38,8 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ $.Release.Name }}-kafka-{{ $kafkaId }}
-  labels:
-  {{- include "logging.labels" $ | indent 2}}
+  labels: {{ include "logging.labels" $ | indent 4 }}
 spec:
   ports:
     - port: 9092
@@ -48,8 +43,7 @@ spec:
       name: broker
     - port: 12345
       name: jmx
-  selector:
-  {{- include "logging.metadata.labels" $ | indent 2}}
+  selector: {{ include "logging.metadata.labels" $ | indent 4 }}
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-kafka-{{ $kafkaId }}
     type: kafka
 {{ end }}

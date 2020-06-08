@@ -3,8 +3,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-certificates
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 type: Opaque
 data:
 {{ (.Files.Glob "certificates/transport/*").AsSecrets | indent 2 }}

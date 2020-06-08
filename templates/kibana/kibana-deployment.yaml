@@ -3,33 +3,27 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-kibana
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   replicas: 1
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4}}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: kibana
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/kibana/kibana-configmap.yaml") . | sha256sum }}
-      labels:
-{{- include "logging.metadata.labels" . | indent 6}}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         type: kibana
     spec:
-      {{ with .Values.kibana.affinity -}}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.kibana.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{ with .Values.kibana.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.kibana.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
       {{ end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: init
@@ -43,14 +37,12 @@ spec:
       containers: 
       - name: main
         image: {{ .Values.opendistro.image }}-kibana:{{ .Values.opendistro.imageTag }}
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-{{ toYaml .Values.kibana.resources | indent 10 }}
+        resources: {{ toYaml .Values.kibana.resources | nindent 12 }}
         env:
-{{ if .Values.kibana.server_base_path }}            
+      {{- if .Values.kibana.server_base_path }}            
           - name: SERVER_BASEPATH
             value: {{ .Values.kibana.server_base_path }}  
-{{ end }}              
+      {{- end }}              
         ports:
         - containerPort: 5601
           name: ui

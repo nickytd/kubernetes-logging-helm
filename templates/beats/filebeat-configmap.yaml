@@ -3,9 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name}}-filebeat-config
-  labels:
-{{- include "logging.labels" . | indent 2}}
-    kubernetes.io/cluster-service: "true"
+  labels: {{ include "logging.labels" . | indent 4 }}
 data:
   filebeat.yml: |-
     logging.level: warning

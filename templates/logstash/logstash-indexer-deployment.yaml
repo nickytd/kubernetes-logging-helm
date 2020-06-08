@@ -2,13 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name}}-logstash-indexer
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.logstash_indexer.replicas}}
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4}}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: logstash-indexer
   strategy:
     type: Recreate    
@@ -19,21 +17,17 @@ spec:
         {{- range $path, $_ :=  $.Files.Glob  "logstash-indexer-pipelines/*-pipeline.conf" }}
         {{ $path | printf "checksum-%s"}}: {{ $.Files.Get $path | sha256sum }}
         {{- end }}
-      labels:
-{{- include "logging.metadata.labels" . | indent 6}}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         type: logstash-indexer
     spec:
-      {{ with .Values.logstash_indexer.affinity -}}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.logstash_indexer.affinity }}     
+      affinity: {{ toYaml . | indent 8 }}
       {{- end }}
-      {{ with .Values.logstash_indexer.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.logstash_indexer.tolerations }}
+      tolerations: {{ toYaml . | indent 8 }}
       {{ end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: init
@@ -72,30 +66,29 @@ spec:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
               key: host            
-{{ if .Values.elasticsearch.user }}
+        {{- if .Values.elasticsearch.user }}
         - name: ELASTICSEARCH_USER
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
               key: user 
-{{ end }}
-{{ if .Values.elasticsearch.password }}
+        {{- end }}
+        {{- if .Values.elasticsearch.password }}
         - name: ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
               key: password
-{{ end }}   
-{{ if .Values.kafka.enabled }}           
+        {{- end }}   
+        {{- if .Values.kafka.enabled }}           
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: kafka-svc:9092
-{{ end }}          
+        {{- end }}          
         - name: LS_JAVA_OPTS
           value: "-Xms{{ .Values.logstash_indexer.heap_size }} -Xmx{{ .Values.logstash_indexer.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
         - name: CA_CERT
           value: "{{ .Values.logstash_indexer.ca_cert }}"
-        resources:
-{{ toYaml .Values.logstash_indexer.resources | indent 10 }}  
+        resources: {{ toYaml .Values.logstash_indexer.resources | nindent 10 }}  
         volumeMounts:
         - mountPath: "/usr/share/logstash/config/logstash.yml"
           subPath: logstash.yml

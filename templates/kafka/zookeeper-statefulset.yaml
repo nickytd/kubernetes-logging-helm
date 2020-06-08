@@ -4,33 +4,27 @@ kind: StatefulSet
 metadata:
   metadata:
   name: {{ .Release.Name }}-zk
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
-  selector:
-    matchLabels:
+  selector: 
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: zk
-{{- include "logging.metadata.labels" . | indent 4 }}
   serviceName: zk
   replicas: {{ .Values.zookeeper.replicas }}
   template:
     metadata:
-      labels:
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         type: zk
-{{- include "logging.metadata.labels" . | indent 6 }}
     spec:
       priorityClassName: logging-critical
-      {{ with .Values.zookeeper.affinity -}}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.zookeeper.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{ with .Values.zookeeper.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-      {{ end }}
+      {{- with .Values.zookeeper.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - image: {{ include "init_container.image" . }}
@@ -66,8 +60,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        resources:
-{{ toYaml .Values.zookeeper.resources | indent 10 }}        
+        resources: {{ toYaml .Values.zookeeper.resources | nindent 12 }}        
         volumeMounts:
         - mountPath: "/volumes"
           name: zk-data

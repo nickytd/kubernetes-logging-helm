@@ -29,16 +29,16 @@ If release name contains chart name it will be used as a full name.
 
 {{/*Create default labels section*/}}
 {{- define "logging.labels" }}
-  app: {{ template "logging.fullname" . }}
-  chart: {{ template "logging.chart" . }}
-  release: {{ .Release.Name }}
-  heritage: {{ .Release.Service }}
+app: {{ template "logging.fullname" . }}
+chart: {{ template "logging.chart" . }}
+release: {{ .Release.Name }}
+heritage: {{ .Release.Service }}
 {{- end }}
 
 {{/*Create default labels section*/}}
 {{- define "logging.metadata.labels" }}
-  app: {{ template "logging.fullname" . }}
-  release: {{ .Release.Name }}
+app: {{ template "logging.fullname" . }}
+release: {{ .Release.Name }}
 {{- end }}
 
 {{/*Create zookeeper server str*/}}

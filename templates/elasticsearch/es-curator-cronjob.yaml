@@ -4,8 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-curator
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 data:
   actions.yml: |+
     actions:
@@ -117,21 +116,18 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-curator
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   schedule: "10 0 * * *"
   jobTemplate:
     spec:
       template:
         metadata:
-          labels:
-{{- include "logging.labels" . | indent 10}}            
+          labels: {{ include "logging.labels" . | nindent 12}}            
             type: es-curator
         spec:
           {{- with .Values.imagePullSecrets }}
-          imagePullSecrets:
-            {{- toYaml . | nindent 12 }}
+          imagePullSecrets: {{ toYaml . | nindent 12 }}
           {{- end }}
           containers:
           - name: es-curator

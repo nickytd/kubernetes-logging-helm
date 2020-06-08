@@ -3,17 +3,15 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name:  {{ .Release.Name }}-master
-  labels:
+  labels: {{ include "logging.labels" . | indent 4 }}
     node: es
-{{- include "logging.labels" . | indent 2}}
 spec:
   updateStrategy:
     type: RollingUpdate
   serviceName: {{ .Release.Name }}-master
   replicas: {{ .Values.master.replicas }}
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4}}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: master
       node: es
   template:
@@ -21,30 +19,24 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
-      labels:
-{{- include "logging.metadata.labels" . | indent 6 }}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         type: master
         node: es
     spec:
-      {{ with .Values.master.affinity -}}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.master.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{ with .Values.master.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-      {{ end }}
+      {{- with .Values.master.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-{{ toYaml .Values.master.resources | indent 10 }}
+        resources: {{ toYaml .Values.master.resources | nindent 12 }}
         ports:
         - containerPort: 9300
           name: transport
@@ -117,11 +109,11 @@ spec:
       - name: elasticsearch
         configMap:
           name: {{ .Release.Name }}
-{{- if .Values.elasticsearch.snapshot.enabled }}
+      {{- if .Values.elasticsearch.snapshot.enabled }}
       - name: es-snapshot
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-snapshot-pvc
-{{- end }}    
+      {{- end }}    
       - name: certificates
         secret:
           secretName: {{ .Release.Name }}-certificates
@@ -139,10 +131,10 @@ spec:
         volumeMounts:
         - name: es-data
           mountPath: /data
-{{- if .Values.elasticsearch.snapshot.enabled }}
+        {{- if .Values.elasticsearch.snapshot.enabled }}
         - name: es-snapshot
           mountPath: /snapshot
-{{- end }}          
+        {{- end }}          
         securityContext:
           privileged: true  
           runAsUser: 0

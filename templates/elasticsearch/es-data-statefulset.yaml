@@ -3,16 +3,14 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}-data
-  labels:
-{{- include "logging.labels" . | indent 2}}
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   updateStrategy:
     type: RollingUpdate
   serviceName: {{ .Release.Name }}-data
   replicas: {{ .Values.data.replicas }}
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4}}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       node: es
       type: data
   template:
@@ -20,33 +18,26 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
-      labels:
+      labels: {{ include "logging.metadata.labels" . | nindent 8 }}
         node: es
         type: data
-{{- include "logging.metadata.labels" . | indent 6}}
-        kubernetes.io/cluster-service: "true"
     spec:
       priorityClassName: logging-critical
-      {{ with .Values.data.affinity -}}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.data.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{ with .Values.data.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-      {{ end }}
+      {{- with .Values.data.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-{{ toYaml .Values.data.resources | indent 10 }}
+        resources: {{ toYaml .Values.data.resources | nindent 12 }}
         livenessProbe:
           tcpSocket:
             port: transport
@@ -59,10 +50,10 @@ spec:
         volumeMounts:
         - name: es-data
           mountPath: /data
-{{- if .Values.elasticsearch.snapshot.enabled }}
+        {{- if .Values.elasticsearch.snapshot.enabled }}
         - name: es-snapshot
           mountPath: /snapshot
-{{- end }}          
+        {{- end }}          
         - name: elasticsearch
           mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
           subPath: elasticsearch.yml
@@ -107,11 +98,11 @@ spec:
       - name: elasticsearch
         configMap:
           name: {{ .Release.Name }}
-{{- if .Values.elasticsearch.snapshot.enabled }}
+      {{- if .Values.elasticsearch.snapshot.enabled }}
       - name: es-snapshot
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-snapshot-pvc
-{{- end }}  
+      {{- end }}  
       - name: certificates
         secret:
           secretName: {{ .Release.Name }}-certificates

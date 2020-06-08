@@ -2,38 +2,31 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ .Release.Name }}-filebeat
-  labels:
-{{- include "logging.labels" . | indent 2}}
-    kubernetes.io/cluster-service: "true"
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   selector:
-    matchLabels:
-{{- include "logging.metadata.labels" . | indent 4}}
+    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       k8s-app: filebeat  
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
-      labels:
-{{- include "logging.metadata.labels" . | indent 6}}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         k8s-app: filebeat
     spec:
       securityContext:
         runAsUser: 0
-      {{ with .Values.filebeat.affinity }}     
-      affinity:
-{{ toYaml . | indent 8 }}
+      {{- with .Values.filebeat.affinity }}     
+      affinity: {{ toYaml . | indent 8 }}
       {{- end }}
-      {{ with .Values.filebeat.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-      {{ end }}
+      {{- with .Values.filebeat.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       terminationGracePeriodSeconds: 30
       priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
       - name: init

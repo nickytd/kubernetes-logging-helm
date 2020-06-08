@@ -4,7 +4,7 @@ apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: elk
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -29,7 +29,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: elk-priv
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -40,7 +40,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: elk
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -51,7 +51,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: elk-certificates
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -89,7 +89,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: elk-securityconfig
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -136,12 +136,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-filebeat-config
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
     heritage: Helm
-    kubernetes.io/cluster-service: "true"
 data:
   filebeat.yml: |-
     logging.level: warning
@@ -172,7 +171,7 @@ data:
                 - /var/log/containers/*-${data.kubernetes.container.id}-json.log
 
     output.kafka:
-      enabled: false
+      enabled: true
       hosts: ["kafka-svc.logging:9092"]
       topic: 'containers'
       partition.hash:
@@ -186,7 +185,7 @@ data:
       pretty: true
 
     output.logstash:
-      enabled: true
+      enabled: false
       hosts: ["elk-logstash-indexer:5044"]
 ---
 # Source: kubernetes-logging/templates/beats/journalbeat-configmap.yaml
@@ -194,7 +193,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-journalbeat-config
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -222,7 +221,7 @@ data:
     #    ignore_missing: true      
 
     output.kafka:
-      enabled: false
+      enabled: true
       hosts: ["kafka-svc.logging:9092"]
       topic: 'journals'
       partition.hash:
@@ -236,7 +235,7 @@ data:
       pretty: true
 
     output.logstash:
-      enabled: true
+      enabled: false
       hosts: ["elk-logstash-indexer:5045"]
 ---
 # Source: kubernetes-logging/templates/elasticsearch/es-configmap.yaml
@@ -244,7 +243,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -325,7 +324,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-curator
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -442,7 +441,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-securityadmin
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -493,7 +492,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-init
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -602,7 +601,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-kibana
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -697,7 +696,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-kibana-saved-objects
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -727,7 +726,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: elk-logstash-indexer
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -795,16 +794,27 @@ metadata:
   name: elk-logstash-indexer-pipelines
 data:  
   containers-pipeline.conf: |-
-    input {  
-    
-      beats {
-        port => 5044
+    input {
+      
+      kafka {
+        bootstrap_servers => ["${KAFKA_BOOTSTRAP_SERVERS}"]
+        topics => ["containers"]
+        client_id => "${HOSTNAME}-contaienrs"
+        group_id => "containers"
+        auto_offset_reset => "latest"
+        consumer_threads => 10
       }
+    
+    
     
     }
     
     filter {
       #all messages from the kafka topics are in json format
+        json {
+          skip_on_invalid_json => true
+          source => "message"
+        }
     
       #remove ANSI Color bytes
       mutate {
@@ -847,11 +857,19 @@ data:
     }
   
   journals-pipeline.conf: |-
-    input {  
+    input {
+      
+      kafka {
+        bootstrap_servers => ["${KAFKA_BOOTSTRAP_SERVERS}"]
+        topics => ["journals"]
+        client_id => "${HOSTNAME}-journals"
+        group_id => "journals"
+        auto_offset_reset => "latest"
+        consumer_threads => 10
+        max_partition_fetch_bytes => '15728640'
+      } 
     
-      beats {
-        port => 5045
-      }
+    
     
     }
     
@@ -890,7 +908,7 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: elk
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -913,7 +931,7 @@ kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: elk-psp
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -933,7 +951,7 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: elk
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -955,7 +973,7 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: elk-psp
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -974,7 +992,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elk-client
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -984,7 +1002,8 @@ spec:
   - name: http
     port: 9200
     targetPort: http
-  selector:  
+  selector: 
+    
     app: elk-kubernetes-logging
     release: elk
     type: client
@@ -995,7 +1014,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elk-data
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1005,7 +1024,7 @@ spec:
   - name: transport
     port: 9300
     targetPort: transport
-  selector:  
+  selector:     
     app: elk-kubernetes-logging
     release: elk
     node: es
@@ -1017,7 +1036,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elk-master
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1025,7 +1044,7 @@ metadata:
 spec:
   type: ClusterIP
   clusterIP: None
-  selector:  
+  selector:     
     app: elk-kubernetes-logging
     release: elk
     node: es
@@ -1036,12 +1055,126 @@ spec:
     targetPort: transport
     protocol: TCP
 ---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 9092
+    name: kafka
+  - port: 9093
+    name: broker
+  - port: 12345
+    name: jmx
+  clusterIP: None
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 9092
+    name: kafka
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: elk-kafka-0
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+    - port: 9092
+      name: kafka
+    - port: 9093
+      name: broker
+    - port: 12345
+      name: jmx
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    statefulset.kubernetes.io/pod-name: elk-kafka-0
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 2888
+    name: peer
+  - port: 3888
+    name: leader
+  - port: 9191
+    name: exporter
+  clusterIP: None
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: zk
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk-svc
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 9191
+    name: exporter
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: zk
+---
 # Source: kubernetes-logging/templates/kibana/kibana-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: elk-kibana
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1051,34 +1184,10 @@ spec:
   - name: ui
     port: 5601
     targetPort: ui
-  selector:  
+  selector:     
     app: elk-kubernetes-logging
     release: elk
     type: kibana
-  type: ClusterIP
----
-# Source: kubernetes-logging/templates/logstash/logstash-indexer-service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: elk-logstash-indexer
-  labels:  
-    app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.7.0
-    release: elk
-    heritage: Helm
-spec:
-  ports:
-  - name: containers
-    port: 5044
-    targetPort: containers
-  - name: journals
-    port: 5045
-    targetPort: journals  
-  selector:  
-    app: elk-kubernetes-logging
-    release: elk
-    type: logstash-indexer
   type: ClusterIP
 ---
 # Source: kubernetes-logging/templates/beats/filebeat-daemonset.yaml
@@ -1086,15 +1195,14 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: elk-filebeat
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
     heritage: Helm
-    kubernetes.io/cluster-service: "true"
 spec:
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       k8s-app: filebeat  
@@ -1102,15 +1210,13 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      labels:      
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         k8s-app: filebeat
     spec:
       securityContext:
         runAsUser: 0
-      
-      
       serviceAccountName: elk-priv
       terminationGracePeriodSeconds: 30
       priorityClassName: logging-critical
@@ -1118,7 +1224,8 @@ spec:
       - name: init
         imagePullPolicy: IfNotPresent
         image: nickytd/init-container:latest
-        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 9200 && /init.sh elk-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 9200 && /init.sh elk-kafka-0.kafka 9092']
+        
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
@@ -1171,16 +1278,15 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: elk-journalbeat
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
     heritage: Helm
     type: journalbeat
-    kubernetes.io/cluster-service: "true"
 spec:
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       k8s-app: journalbeat      
@@ -1188,15 +1294,13 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      labels:      
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         k8s-app: journalbeat
     spec:
       securityContext:
         runAsUser: 0
-      
-      
       serviceAccountName: elk-priv
       terminationGracePeriodSeconds: 30
       priorityClassName: logging-critical
@@ -1204,7 +1308,8 @@ spec:
       - name: init  
         imagePullPolicy: IfNotPresent
         image: nickytd/init-container:latest
-        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 9200 && /init.sh elk-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 9200 && /init.sh elk-kafka-0.kafka 9092']
+        
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
@@ -1263,7 +1368,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elk-client
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1271,7 +1376,7 @@ metadata:
     node: es
 spec:
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       type: client
@@ -1280,23 +1385,19 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 96a98e4ee19145d06752c8a988460fb21f547a2aaae256987f65e79f4e648da0
-        checksum/secret: a1be71c836a538c5ed5e8589dd957b4985871cd82f72c213c1d2b3039eb9c6f7
-      labels:
-      
+        checksum/config: fc10148eb12a78bf97052c12101a79513d9c6e68aff73b86ea7929cb51e9d487
+        checksum/secret: 9801a28c465f462e2f268a65e6da7e04d210546aee7e0539e2e01818cfc5540a
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         type: client
         node: es
     spec:
-      
-      
       serviceAccountName: elk-priv
       containers:
       - name: main
         image: amazon/opendistro-for-elasticsearch:1.7.0        
-        resources:
-          # need more cpu upon initialization, therefore burstable class
+        resources: 
           requests:
             cpu: 200m
             memory: 512Mi
@@ -1401,7 +1502,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elk-kibana
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1409,21 +1510,19 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       type: kibana
   template:
     metadata:
       annotations:
-        checksum/config: b93ac93a2cab79ca786a8914bf58aa987eda54c3eb1b1b628da62f2eaae6ffc3
-      labels:      
+        checksum/config: 6b9fe6c996c9ef0e2d00305c7a55f8fa165bd6f6dccd98dca98c4e5be8bb9603
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         type: kibana
     spec:
-      
-      
       initContainers:
       - name: init
         image: nickytd/init-container:latest
@@ -1436,13 +1535,11 @@ spec:
       containers: 
       - name: main
         image: amazon/opendistro-for-elasticsearch-kibana:1.7.0
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-          requests:
-            cpu: 200m
-            memory: 1Gi
-        env:
-              
+        resources: 
+            requests:
+              cpu: 200m
+              memory: 1Gi
+        env:              
         ports:
         - containerPort: 5601
           name: ui
@@ -1477,7 +1574,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elk-logstash-indexer
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1485,7 +1582,7 @@ metadata:
 spec:
   replicas: 1
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       type: logstash-indexer
@@ -1494,16 +1591,14 @@ spec:
   template:
     metadata:
       annotations:
-        checksum1/config: f28793ba74ad20ccaa0a855da73918b18e97f67762d5fe76c9ac9e53cd649433
+        checksum1/config: 11c6a1a3dc188d243effc51d8ce3f0d871bcd32c5385875f4e601bf004faacd2
         checksum-logstash-indexer-pipelines/containers-pipeline.conf: 6274c8c1eb80c5bbd25b72d613d2e357ecb9ed40ef0eb35139abacd617d6f974
         checksum-logstash-indexer-pipelines/journals-pipeline.conf: edf3386a57d71b2770f852cfe0ba72d8c25791536b6a1331d78fd688082984fb
-      labels:      
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         type: logstash-indexer
     spec:
-      
-      
       initContainers:
       - name: init
         image: nickytd/init-container:latest
@@ -1518,40 +1613,30 @@ spec:
           name: init     
       containers:  
       - name: logstash-indexer
-        image: docker.elastic.co/logstash/logstash-oss:7.7.0
-        ports:
-        - containerPort: 5044
-          name: containers
-          protocol: TCP
-        - containerPort: 5045
-          protocol: TCP
-          name: journals      
+        image: docker.elastic.co/logstash/logstash-oss:7.7.0      
         env:
         - name: ELASTICSEARCH_HOST
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
-              key: host            
-
+              key: host
         - name: ELASTICSEARCH_USER
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
-              key: user 
-
-
+              key: user
         - name: ELASTICSEARCH_PASSWORD
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
-              key: password
-   
-          
+              key: password           
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-svc:9092          
         - name: LS_JAVA_OPTS
           value: "-Xms512m -Xmx512m -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: CA_CERT
           value: "root-ca.pem"
-        resources:
+        resources: 
           requests:
             cpu: 1000m
             memory: 512Mi  
@@ -1605,7 +1690,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: elk-data
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1616,7 +1701,7 @@ spec:
   serviceName: elk-data
   replicas: 1
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       node: es
@@ -1624,28 +1709,25 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 96a98e4ee19145d06752c8a988460fb21f547a2aaae256987f65e79f4e648da0
-        checksum/secret: a1be71c836a538c5ed5e8589dd957b4985871cd82f72c213c1d2b3039eb9c6f7
-      labels:
-        node: es
-        type: data      
+        checksum/config: fc10148eb12a78bf97052c12101a79513d9c6e68aff73b86ea7929cb51e9d487
+        checksum/secret: 9801a28c465f462e2f268a65e6da7e04d210546aee7e0539e2e01818cfc5540a
+      labels: 
+        
         app: elk-kubernetes-logging
         release: elk
-        kubernetes.io/cluster-service: "true"
+        node: es
+        type: data
     spec:
       priorityClassName: logging-critical
-      
-      
       serviceAccountName: elk-priv
       priorityClassName: logging-critical
       containers:
       - name: main
         image: amazon/opendistro-for-elasticsearch:1.7.0
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-          requests:
-            cpu: 1000m
-            memory: 1Gi
+        resources: 
+            requests:
+              cpu: 1000m
+              memory: 1Gi
         livenessProbe:
           tcpSocket:
             port: transport
@@ -1738,19 +1820,19 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name:  elk-master
-  labels:
-    node: es  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
     heritage: Helm
+    node: es
 spec:
   updateStrategy:
     type: RollingUpdate
   serviceName: elk-master
   replicas: 1
   selector:
-    matchLabels:    
+    matchLabels:       
       app: elk-kubernetes-logging
       release: elk
       type: master
@@ -1758,25 +1840,22 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 96a98e4ee19145d06752c8a988460fb21f547a2aaae256987f65e79f4e648da0
-        checksum/secret: a1be71c836a538c5ed5e8589dd957b4985871cd82f72c213c1d2b3039eb9c6f7
-      labels:      
+        checksum/config: fc10148eb12a78bf97052c12101a79513d9c6e68aff73b86ea7929cb51e9d487
+        checksum/secret: 9801a28c465f462e2f268a65e6da7e04d210546aee7e0539e2e01818cfc5540a
+      labels:         
         app: elk-kubernetes-logging
         release: elk
         type: master
         node: es
     spec:
-      
-      
       serviceAccountName: elk-priv
       containers:
       - name: main
         image: amazon/opendistro-for-elasticsearch:1.7.0
-        resources:
-          # need more cpu upon initialization, therefore burstable class
-          requests:
-            cpu: 200m
-            memory: 512Mi
+        resources: 
+            requests:
+              cpu: 200m
+              memory: 512Mi
         ports:
         - containerPort: 9300
           name: transport
@@ -1875,12 +1954,180 @@ spec:
         requests:
           storage: 1Gi
 ---
+# Source: kubernetes-logging/templates/kafka/kafka-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  metadata:
+  name: elk-kafka
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:       
+      app: elk-kubernetes-logging
+      release: elk     
+      type: kafka
+  serviceName: kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:         
+        app: elk-kubernetes-logging
+        release: elk
+        type: kafka
+    spec:
+      priorityClassName: logging-critical
+      initContainers:
+      - name: init
+        image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "/init.sh elk-zk-0.zk 2181"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: kafka
+        image: wurstmeister/kafka:2.12-2.4.0
+        ports:
+        - containerPort: 9092
+          name: kafka
+        - containerPort: 9093
+          name: broker
+        - containerPort: 12345
+          name: jmx
+        resources: 
+            null
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zk-svc.logging.svc.cluster.local:2181/kafka/logging
+        - name: BROKER_ID_COMMAND
+          value: "hostname | awk -F'-' '{print $NF}'"
+        - name: KAFKA_LISTENERS
+          value: PLAINTEXT://:9092
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx512m -Xms512m"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/opt/kafka/bin/kafka-server-stop.sh"]
+        readinessProbe:
+          tcpSocket:
+            port: kafka
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /kafka  
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: init
+        configMap:
+          name: elk-init
+          defaultMode: 0755    
+  volumeClaimTemplates:
+  - metadata:
+      name: kafka-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  metadata:
+  name: elk-zk
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+spec:
+  selector: 
+    matchLabels:       
+      app: elk-kubernetes-logging
+      release: elk
+      type: zk
+  serviceName: zk
+  replicas: 1
+  template:
+    metadata:
+      labels:         
+        app: elk-kubernetes-logging
+        release: elk
+        type: zk
+    spec:
+      priorityClassName: logging-critical
+      initContainers:
+      - image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid ; do  echo \"retry create data and logs folders\" && sleep 2 ; done"]
+        name: init
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+      containers:
+      - name: zk
+        image: zookeeper:3.4.14
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: peer
+        - containerPort: 3888
+          name: leader
+        env:
+        - name: ZOO_SERVERS
+          value: "server.0=elk-zk-0.zk.logging.svc.cluster.local:2888:3888 "
+        - name: ZOO_DATA_DIR
+          value: /volumes/data
+        - name: ZOO_DATA_LOG_DIR
+          value: /volumes/logs
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources: 
+            requests:
+              cpu: 100m
+              memory: 1Gi        
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+  volumeClaimTemplates:
+  - metadata:
+      name: zk-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+---
 # Source: kubernetes-logging/templates/elasticsearch/es-curator-cronjob.yaml
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: elk-curator
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -1891,7 +2138,8 @@ spec:
     spec:
       template:
         metadata:
-          labels:          
+          labels: 
+            
             app: elk-kubernetes-logging
             chart: kubernetes-logging-0.7.0
             release: elk
@@ -1933,7 +2181,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: elk-securityadmin
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
@@ -2012,12 +2260,53 @@ spec:
           name: elk-securityadmin
           defaultMode: 0755
 ---
+# Source: kubernetes-logging/templates/kafka/kafka-topics-job.yaml
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: elk-topics-config
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.7.0
+    release: elk
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": "post-install, post-upgrade"
+    "helm.sh/hook-weight": "-9"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      initContainers:
+      - name: init
+        image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "/init.sh elk-kafka-0.kafka 9092"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: kafka-topic-config
+        image: wurstmeister/kafka:2.12-2.4.0
+        command: ["/bin/sh","-c","/opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic containers --partitions 1 --replication-factor 0 --if-not-exists && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic journals --partitions 1 --replication-factor 0 --if-not-exists && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic containers --partitions 1 --if-exists || true && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic journals --partitions 1 --if-exists || true && /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name containers --add-config retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime && /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name journals --add-config retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime && true"]
+        env:                          
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zk-svc.logging.svc.cluster.local:2181/kafka/logging                          
+      restartPolicy: Never 
+      volumes:
+      - name: init
+        configMap:
+          name: elk-init
+          defaultMode: 0755
+---
 # Source: kubernetes-logging/templates/kibana/kibana-job.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: elk-kibana-create-index-pattern
-  labels:  
+  labels:     
     app: elk-kubernetes-logging
     chart: kubernetes-logging-0.7.0
     release: elk
