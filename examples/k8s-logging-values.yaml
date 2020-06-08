@@ -3,5 +3,5 @@ journalbeat:
   path: /var/run/log/journal
 
 kafka:
-  enabled: true
+  enabled: false
 
