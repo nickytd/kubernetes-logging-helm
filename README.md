@@ -2,6 +2,8 @@
 
 This is a comprehensive helm chart for deploying complete K8S logging stack featuring few desings options suitable from a minikube setup up to a mighty scaled provisioning capable of processing billions of records.
 
+![Containers Logs](https://github.com/nickytd/k8s-logging-helm/blob/master/images/k8s-logging-stack.jpg)
+
 Here is a [minikube setup example](https://github.com/nickytd/k8s-logging-helm/tree/master/examples) for local development and testing
 
 Start a sample provisioning with
