@@ -37,8 +37,37 @@ data:
           kind: prefix
           value: .tasks
           exclude: True  
-        
       2:
+        action: alias
+        description: >-
+          Alias newly created indices under containers alias
+        options:
+          name: containers
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: containers-
+            exclude:
+        
+      3:
+        action: alias
+        description: >-
+          Alias newly created indices under journals alias
+        options:
+          name: journals
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: journals-
+            exclude:
+        
+      4:
         action: alias
         description: >-
           Alias newly created indices under logging alias
@@ -63,7 +92,7 @@ data:
             range_to: 0
             timestring: '%Y.%m.%d'
             unit: days
-      3:
+      5:
         action: alias
         description: >-
           Alias newly created indices under monitoring alias
