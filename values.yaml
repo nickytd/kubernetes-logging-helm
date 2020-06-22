@@ -5,13 +5,13 @@ imagePullSecrets: []
 storage_class:
 
 #Version of ELK stack (logstash, filebeat, journalbeat ...)
-app_version: 7.7.0
+app_version: 7.8.0
 repository: docker.elastic.co
 
 #Opendistro configuration 
 opendistro:
   image: amazon/opendistro-for-elasticsearch
-  imageTag: 1.7.0
+  imageTag: 1.8.0
   saml:
     enabled: false
 #    idp:
