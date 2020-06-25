@@ -21,13 +21,13 @@ spec:
         type: logstash-indexer
     spec:
       {{- with .Values.logstash_indexer.affinity }}     
-      affinity: {{ toYaml . | indent 8 }}
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.logstash_indexer.tolerations }}
-      tolerations: {{ toYaml . | indent 8 }}
-      {{ end }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - name: init
@@ -99,7 +99,7 @@ spec:
         - mountPath: "/usr/share/logstash/config/log4j2.properties"
           subPath: log4j2.properties
           name: config
-        {{ range $path, $bytes := .Files.Glob "logstash-indexer-pipelines/*-pipeline.conf" }}
+        {{- range $path, $bytes := .Files.Glob "logstash-indexer-pipelines/*-pipeline.conf" }}
         - mountPath: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
           subPath: {{ printf "%s" (base $path) }}
           name: pipelines

@@ -20,19 +20,17 @@ spec:
     spec:
       restartPolicy: Never
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - name: init
         image: {{ include "init_container.image" .}}
         imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-xc", 'while (true) do if [ $(curl -s -o /dev/null -w \"%{http_code}\" -u {{ .Values.kibana.user }}:{{ .Values.kibana.password }} {{ include "kibanaurl" .}}/status) = \"200\" ]; then echo "ready"; exit 0; fi; echo \"retry request {{ include "kibanaurl" .}}/status\"; sleep 2; done']
-        
+        command: ["sh", "-xc", 'while (true) do if [ $(curl -s -o /dev/null -w \"%{http_code}\" -u {{ .Values.kibana.user }}:{{ .Values.kibana.password }} {{ include "kibanaurl" .}}/status) = \"200\" ]; then echo "ready"; exit 0; fi; echo \"retry request {{ include "kibanaurl" .}}/status\"; sleep 2; done']        
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}-kibana:{{ .Values.opendistro.imageTag }}        
-        command: ["bash","/tmp/create_index_pattern.sh", {{ include "kibanaurl" .}}, "{{ $.Values.kibana.index }}", "{{ .Values.kibana.user }}", "{{ .Values.kibana.password }}"]
-        
+        command: ["bash","/tmp/create_index_pattern.sh", {{ include "kibanaurl" .}}, "{{ $.Values.kibana.index }}", "{{ .Values.kibana.user }}", "{{ .Values.kibana.password }}"]        
         volumeMounts:
         - mountPath: "/tmp/create_index_pattern.sh"
           subPath: create_index_pattern.sh

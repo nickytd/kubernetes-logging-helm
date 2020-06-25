@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-zk
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
-  selector: 
+  selector:
     matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: zk
   serviceName: zk
@@ -24,7 +24,7 @@ spec:
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - image: {{ include "init_container.image" . }}
@@ -60,7 +60,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        resources: {{ toYaml .Values.zookeeper.resources | nindent 12 }}        
+        resources: {{ toYaml .Values.zookeeper.resources | nindent 10 }}        
         volumeMounts:
         - mountPath: "/volumes"
           name: zk-data

@@ -3,6 +3,7 @@ kind: DaemonSet
 metadata:
   name: {{ .Release.Name }}-filebeat
   labels: {{ include "logging.labels" . | indent 4 }}
+    type: filebeat
 spec:
   selector:
     matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
@@ -17,7 +18,7 @@ spec:
       securityContext:
         runAsUser: 0
       {{- with .Values.filebeat.affinity }}     
-      affinity: {{ toYaml . | indent 8 }}
+      affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.filebeat.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
@@ -26,16 +27,16 @@ spec:
       terminationGracePeriodSeconds: 30
       priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - name: init
         imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
         image: {{ include "init_container.image" . }}
         {{- if .Values.kafka.enabled }}
-        command: ["sh","-c",'/init.sh {{ include "esurl" . }} 9200 && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
+        command: ["sh","-c",'/init.sh {{ include "esurl" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
         {{ else }}
-        command: ["sh","-c",'/init.sh {{ include "esurl" . }} 9200 && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh {{ include "esurl" . }} && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
         {{- end }}
         volumeMounts:
         - mountPath: "/init.sh"

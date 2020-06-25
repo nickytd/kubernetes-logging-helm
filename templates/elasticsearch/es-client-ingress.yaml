@@ -5,9 +5,10 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-es
   labels: {{ include "logging.labels" . | indent 4 }}
-  {{- with .Values.client.ingress.annotations }}
-  annotations: {{ toYaml . | nindent 4 }}
-  {{- end }}
+    {{- with .Values.client.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+    {{- end }}
 spec:
   tls:
   - hosts:

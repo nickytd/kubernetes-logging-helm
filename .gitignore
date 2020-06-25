@@ -1,2 +1,2 @@
 *.tgz
-examples/templates.yaml
+.DS_Store

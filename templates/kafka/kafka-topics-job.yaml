@@ -13,7 +13,7 @@ spec:
   template:
     spec:
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - name: init

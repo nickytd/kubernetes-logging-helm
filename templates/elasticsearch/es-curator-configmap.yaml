@@ -1,0 +1,160 @@
+{{ if .Values.elasticsearch.in_cluster }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-curator
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  actions.yml: |+
+    actions:
+      1:
+        action: delete_indices
+        description: >-
+          Delete indices older than 7 days (based on index creation_date).
+          Ignore the error if the filter does not result in an
+          actionable list of indices (ignore_empty_list) and exit cleanly.
+        options:
+          ignore_empty_list: True
+          timeout_override:
+          continue_if_exception: False
+          disable_action: False
+        filters:
+        - filtertype: age
+          source: creation_date
+          direction: older
+          timestring: '%Y.%m.%d'
+          unit: days
+          unit_count: 7
+          exclude:
+        - filtertype: kibana
+          exclude: True
+        - filtertype: pattern
+          kind: prefix
+          value: .opendistro
+          exclude: True
+        - filtertype: pattern
+          kind: prefix
+          value: .tasks
+          exclude: True  
+      2:
+        action: alias
+        description: >-
+          Alias newly created indices under containers alias
+        options:
+          ignore_empty_list: True
+          name: containers
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: containers-
+            exclude:
+        
+      3:
+        action: alias
+        description: >-
+          Alias newly created indices under journals alias
+        options:
+          ignore_empty_list: True
+          name: journals
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: journals-
+            exclude:
+      4:
+        action: alias
+        description: >-
+          Alias newly created indices under x4-app alias
+        options:
+          ignore_empty_list: True
+          name: x4-app
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: x4-app-
+            exclude:      
+        
+      5:
+        action: alias
+        description: >-
+          Alias newly created indices under logging alias
+        options:
+          ignore_empty_list: True
+          name: logging
+          warn_if_no_indices: False
+          disable_action: False
+          extra_settings:
+            filter:
+              term:
+                kubernetes.namespace.keyword: logging
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: containers-
+            exclude:
+          - filtertype: period
+            period_type: relative
+            source: name
+            range_from: 0
+            range_to: 0
+            timestring: '%Y.%m.%d'
+            unit: days
+      6:
+        action: alias
+        description: >-
+          Alias newly created indices under monitoring alias
+        options:
+          ignore_empty_list: True
+          name: monitoring
+          warn_if_no_indices: False
+          disable_action: False
+          extra_settings:
+            filter:
+              term:
+                kubernetes.namespace.keyword: monitoring
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: containers-
+            exclude:
+          - filtertype: period
+            period_type: relative
+            source: name
+            range_from: 0
+            range_to: 0
+            timestring: '%Y.%m.%d'
+            unit: days      
+            
+  curator.yml: |+
+    ---
+    # Remember, leave a key empty if there is no value.  None will be a string,
+    # not a Python "NoneType"
+    client:
+      hosts:
+        - ${ES_HOST}
+      url_prefix:
+      use_ssl: true
+      certificate: /etc/root-ca.pem
+      client_cert:
+      client_key:
+      ssl_no_validate: false
+      username: {{ .Values.elasticsearch.user }}
+      password: {{ .Values.elasticsearch.password }}
+      timeout: 300
+      master_only: false
+      
+    logging:
+      loglevel: INFO
+      logformat: default
+{{- end }}      

@@ -2,7 +2,6 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  metadata:
   name: {{ .Release.Name }}-kafka
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
@@ -17,14 +16,14 @@ spec:
         type: kafka
     spec:
       priorityClassName: logging-critical
-      {{- with .Values.kafka.affinity }}     
+      {{ with .Values.kafka.affinity -}}     
       affinity: {{ toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.kafka.tolerations }}
+      {{- end -}}
+      {{ with .Values.kafka.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
       - name: init
@@ -45,7 +44,8 @@ spec:
           name: broker
         - containerPort: 12345
           name: jmx
-        resources: {{ toYaml .Values.kafka.resources | nindent 12 }}
+        resources:
+        {{ toYaml .Values.kafka.resources | indent 10 }}
         env:
         - name: MY_POD_NAME
           valueFrom:

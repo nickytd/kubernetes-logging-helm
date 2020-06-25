@@ -6,11 +6,11 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
     node: es
 spec:
+  replicas: {{ .Values.client.replicas }}
   selector:
     matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
       type: client
-      node: es        
-  replicas: {{ .Values.client.replicas }}
+      node: es
   template:
     metadata:
       annotations:
@@ -20,7 +20,7 @@ spec:
         type: client
         node: es
     spec:
-      {{- with .Values.client.affinity -}}     
+      {{- with .Values.client.affinity }}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.client.tolerations }}
@@ -28,7 +28,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main

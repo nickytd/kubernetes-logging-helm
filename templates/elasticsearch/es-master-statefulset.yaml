@@ -23,7 +23,7 @@ spec:
         type: master
         node: es
     spec:
-      {{- with .Values.master.affinity }}     
+      {{- with .Values.master.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.master.tolerations }}
@@ -31,12 +31,12 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        resources: {{ toYaml .Values.master.resources | nindent 12 }}
+        resources: {{ toYaml .Values.master.resources | nindent 10 }}
         ports:
         - containerPort: 9300
           name: transport

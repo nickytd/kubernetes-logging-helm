@@ -18,7 +18,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
-      labels: {{ include "logging.metadata.labels" . | nindent 8 }}
+      labels: {{ include "logging.metadata.labels" . | indent 8 }}
         node: es
         type: data
     spec:
@@ -32,12 +32,12 @@ spec:
       serviceAccountName: {{ .Release.Name }}-priv
       priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        resources: {{ toYaml .Values.data.resources | nindent 12 }}
+        resources: {{ toYaml .Values.data.resources | nindent 10 }}
         livenessProbe:
           tcpSocket:
             port: transport
@@ -98,11 +98,11 @@ spec:
       - name: elasticsearch
         configMap:
           name: {{ .Release.Name }}
-      {{- if .Values.elasticsearch.snapshot.enabled }}
+{{- if .Values.elasticsearch.snapshot.enabled }}
       - name: es-snapshot
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-snapshot-pvc
-      {{- end }}  
+{{- end }}  
       - name: certificates
         secret:
           secretName: {{ .Release.Name }}-certificates
