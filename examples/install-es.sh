@@ -24,9 +24,11 @@ helm upgrade elk \
 
 kubectl expose svc/elk-client -n logging \
   --name es --port 9200 --target-port=9200 --type LoadBalancer \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o json | jq '.metadata.namespace="logging"' | \
+  kubectl apply -f -
 
 kubectl expose svc/elk-kibana -n logging \
   --name kibana --port 5601 --target-port=5601 --type LoadBalancer \
-  --dry-run=client -o yaml | kubectl apply -f -
+  --dry-run=client -o json | jq '.metadata.namespace="logging"' | \
+  kubectl apply -f -
 
