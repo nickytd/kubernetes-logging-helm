@@ -12,7 +12,7 @@ data:
     - type: container
       paths:
         - '/var/lib/docker/containers/*/*-json.log'
-      multiline.pattern: '^[[:space:]]'
+      multiline.pattern: '^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
       multiline.negate: false
       multiline.match: after
       multiline.max_lines: 10000
