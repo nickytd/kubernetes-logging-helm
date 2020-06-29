@@ -48,6 +48,7 @@ elasticsearch:
     size: 5Gi
   index_shards: 1
   index_replicas: 0
+  retention_days: 1
   additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
   url:
   user: esadmin
