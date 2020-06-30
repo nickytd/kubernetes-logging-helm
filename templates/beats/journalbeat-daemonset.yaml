@@ -5,6 +5,8 @@ metadata:
   name: {{ .Release.Name }}-journalbeat
   labels: {{ include "logging.labels" . | indent 4 }}
     type: journalbeat
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/beats/journalbeat-configmap.yaml") . | sha256sum }}    
 spec:
   selector:
     matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
