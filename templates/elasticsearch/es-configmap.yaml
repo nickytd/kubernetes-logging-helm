@@ -6,24 +6,24 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   log4j2.properties: |-
-    status = error
+    status = WARN
 
     appender.console.type = Console
     appender.console.name = console
     appender.console.layout.type = PatternLayout
     appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
 
-    rootLogger.level = error
+    rootLogger.level = WARN
     rootLogger.appenderRef.console.ref = console
     
     logger.opendistro_security.name = com.amazon.opendistroforelasticsearch.security
-    logger.opendistro_security.level = warning
+    logger.opendistro_security.level = INFO
 
     logger.saml.name = com.amazon.dlic.auth.http.saml.Token
-    logger.saml.level = error
+    logger.saml.level = INFO
 
     logger.opendistro_security_jwt.name = com.amazon.dlic.auth.http.jwt
-    logger.opendistro_security_jwt.level = error
+    logger.opendistro_security_jwt.level = WARN
 
   elasticsearch.yml: |-
     cluster.name: {{ .Values.cluster_name | quote }}

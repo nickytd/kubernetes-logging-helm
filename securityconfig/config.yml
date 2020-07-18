@@ -52,8 +52,6 @@
 #   ldap
 #   noop
 
-
-
 _meta:
   type: "config"
   config_version: 2
@@ -66,10 +64,8 @@ config:
     #filtered_alias_mode: warn
     #do_not_fail_on_forbidden: false
     kibana:
-    # Kibana multitenancy
       multitenancy_enabled: true
       server_username: {{ .Values.kibana.user }}
-      #server_username: admin  
     #index: '.kibana'
     http:
       anonymous_auth_enabled: false
@@ -90,7 +86,7 @@ config:
         order: 0
         http_authenticator:
           type: basic
-          challenge: false
+          challenge: true
         authentication_backend:
           type: intern
 {{- if .Values.opendistro.saml.enabled }}                  
@@ -114,72 +110,3 @@ config:
         authentication_backend:
           type: noop   
 {{- end }}
-    authz:
-      roles_from_myldap:
-        description: "Authorize via LDAP or Active Directory"
-        http_enabled: false
-        transport_enabled: false
-        authorization_backend:
-          # LDAP authorization backend (gather roles from a LDAP or Active Directory, you have to configure the above LDAP authentication backend settings too)
-          type: ldap
-          config:
-            # enable ldaps
-            enable_ssl: false
-            # enable start tls, enable_ssl should be false
-            enable_start_tls: false
-            # send client certificate
-            enable_ssl_client_auth: false
-            # verify ldap hostname
-            verify_hostnames: true
-            hosts:
-            - localhost:8389
-            bind_dn: null
-            password: null
-            rolebase: 'ou=groups,dc=example,dc=com'
-            # Filter to search for roles (currently in the whole subtree beneath rolebase)
-            # {0} is substituted with the DN of the user
-            # {1} is substituted with the username
-            # {2} is substituted with an attribute value from user's directory entry, of the authenticated user. Use userroleattribute to specify the name of the attribute
-            rolesearch: '(member={0})'
-            # Specify the name of the attribute which value should be substituted with {2} above
-            userroleattribute: null
-            # Roles as an attribute of the user entry
-            userrolename: disabled
-            #userrolename: memberOf
-            # The attribute in a role entry containing the name of that role, Default is "name".
-            # Can also be "dn" to use the full DN as rolename.
-            rolename: cn
-            # Resolve nested roles transitive (roles which are members of other roles and so on ...)
-            resolve_nested_roles: true
-            userbase: 'ou=people,dc=example,dc=com'
-            # Filter to search for users (currently in the whole subtree beneath userbase)
-            # {0} is substituted with the username
-            usersearch: '(uid={0})'
-            # Skip users matching a user name, a wildcard or a regex pattern
-            #skip_users:
-            #  - 'cn=Michael Jackson,ou*people,o=TEST'
-            #  - '/\S*/'
-      roles_from_another_ldap:
-        description: "Authorize via another Active Directory"
-        http_enabled: false
-        transport_enabled: false
-        authorization_backend:
-          type: ldap
-          #config goes here ...
-  #    auth_failure_listeners:
-  #      ip_rate_limiting:
-  #        type: ip
-  #        allowed_tries: 10
-  #        time_window_seconds: 3600
-  #        block_expiry_seconds: 600
-  #        max_blocked_clients: 100000
-  #        max_tracked_clients: 100000
-  #      internal_authentication_backend_limiting:
-  #        type: username
-  #        authentication_backend: intern
-  #        allowed_tries: 10
-  #        time_window_seconds: 3600
-  #        block_expiry_seconds: 600
-  #        max_blocked_clients: 100000
-  #        max_tracked_clients: 100000
-

@@ -8,7 +8,7 @@ data:
     server.name: kibana
     server.host: "0"
 
-    logging.quiet: true
+    logging.quiet: false
     logging.verbose: false
     logging.json: false
 
@@ -36,14 +36,13 @@ data:
 
     opendistro_security.readonly_mode.roles: ["kibana_read_only"]
 
-{{ if .Values.opendistro.saml.enabled }}    
+    {{- if .Values.opendistro.saml.enabled }}    
     server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
     opendistro_security.auth.type: "saml"
-{{ end }}    
-
+    {{- end }}    
     opendistro_security.multitenancy.enabled: true
-    opendistro_security.multitenancy.tenants.enable_private: false
-    #opendistro_security.multitenancy.tenants.preferred: ["x4tenant","Global"]
+    opendistro_security.multitenancy.tenants.enable_private: true
+    opendistro_security.multitenancy.tenants.preferred: ["Private","Global"]
     opendistro_security.cookie.secure: false
 
   create_index_pattern.sh: |-

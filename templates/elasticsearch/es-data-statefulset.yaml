@@ -47,6 +47,9 @@ spec:
         - containerPort: 9300
           name: transport
           protocol: TCP
+        - containerPort: 9600
+          name: metrics
+          protocol: TCP  
         volumeMounts:
         - name: es-data
           mountPath: /data

@@ -9,6 +9,9 @@ spec:
   - name: transport
     port: 9300
     targetPort: transport
+  - name: metrics
+    port: 9600
+    targetPort: metrics  
   selector: {{ include "logging.metadata.labels" . | indent 4 }}
     node: es
     type: data

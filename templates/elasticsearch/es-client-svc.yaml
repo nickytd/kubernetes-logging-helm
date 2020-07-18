@@ -9,6 +9,9 @@ spec:
   - name: http
     port: 9200
     targetPort: http
+  - name: metrics
+    port: 9600
+    targetPort: metrics  
   selector: {{ include "logging.metadata.labels" . | indent 4 }}
     type: client
   type: ClusterIP

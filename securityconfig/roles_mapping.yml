@@ -13,7 +13,7 @@ _meta:
 all_access:
   reserved: false
   backend_roles:
-  - {{ .Values.opendistro.saml.admin_role }}
+  - admin
   description: "Maps admin to all_access"
 
 admin:
@@ -23,15 +23,6 @@ admin:
   and_backend_roles:
   - admin
   description: "Maps external es user to admin role"
-
-#own_index:
-#  reserved: false
-#  users:
-#  - "*"
-#  and_backend_roles:
-#  - {{ .Values.opendistro.saml.tenant_role }}  
-#  description: "Allow full access to an index named like the username"
-  
 
 logstash:
   reserved: false
@@ -52,23 +43,3 @@ kibana_server:
   reserved: true
   users:
   - "{{ .Values.kibana.user }}"
-
-kibana_viewer:
-  reserved: false
-  backend_roles:
-  - {{ .Values.opendistro.saml.viewer_role }}
-
-kibana_user:
-  reserved: false
-
-kibana_admin:
-  reserved: false
-  backend_roles:
-  - {{ .Values.opendistro.saml.admin_role }}
-  - "kibana_admin"
-
-kibana_logging_tenant:
-  reserved: false
-  description: "logging tenant"
-  backend_roles:
-  - {{ .Values.opendistro.saml.tenant_role }}

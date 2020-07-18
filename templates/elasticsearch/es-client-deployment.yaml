@@ -50,6 +50,9 @@ spec:
         - containerPort: 9200
           name: http
           protocol: TCP
+        - containerPort: 9600
+          name: metrics
+          protocol: TCP  
         volumeMounts:
         - name: elasticsearch
           mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
