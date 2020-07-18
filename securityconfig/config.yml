@@ -83,35 +83,21 @@ config:
         ###### and here https://tools.ietf.org/html/rfc7239
         ###### and https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Remote_IP_Valve
     authc:
-      kerberos_auth_domain:
-        http_enabled: false
-        transport_enabled: false
-        order: 6
-        http_authenticator:
-          type: kerberos
-          challenge: true
-          config:
-            # If true a lot of kerberos/security related debugging output will be logged to standard out
-            krb_debug: false
-            # If true then the realm will be stripped from the user name
-            strip_realm_from_principal: true
-        authentication_backend:
-          type: noop
       basic_internal_auth_domain:
         description: "Authenticate via HTTP Basic against internal users database"
         http_enabled: true
         transport_enabled: true
-        order: 4
+        order: 0
         http_authenticator:
           type: basic
-          challenge: true
+          challenge: false
         authentication_backend:
           type: intern
-{{ if .Values.opendistro.saml.enabled }}                  
+{{- if .Values.opendistro.saml.enabled }}                  
       saml_auth_domain:
         http_enabled: true
         transport_enabled: false
-        order: 0
+        order: 1
         http_authenticator:
           type: saml
           challenge: true 
@@ -127,78 +113,7 @@ config:
             exchange_key: {{ .Values.opendistro.saml.exchange_key }}
         authentication_backend:
           type: noop   
-{{ end }}                           
-      proxy_auth_domain:
-        description: "Authenticate via proxy"
-        http_enabled: false
-        transport_enabled: false
-        order: 3
-        http_authenticator:
-          type: proxy
-          challenge: false
-          config:
-            user_header: "x-proxy-user"
-            roles_header: "x-proxy-roles"
-        authentication_backend:
-          type: noop
-      jwt_auth_domain:
-        description: "Authenticate via Json Web Token"
-        http_enabled: false
-        transport_enabled: false
-        order: 2
-        http_authenticator:
-          type: jwt
-          challenge: false
-          config:
-            signing_key: "base64 encoded HMAC key or public RSA/ECDSA pem key"
-            jwt_header: "Authorization"
-            jwt_url_parameter: null
-            roles_key: null
-            subject_key: null
-        authentication_backend:
-          type: noop
-      clientcert_auth_domain:
-        description: "Authenticate via SSL client certificates"
-        http_enabled: false
-        transport_enabled: false
-        order: 1
-        http_authenticator:
-          type: clientcert
-          config:
-            username_attribute: cn #optional, if omitted DN becomes username
-          challenge: false
-        authentication_backend:
-          type: noop
-      ldap:
-        description: "Authenticate via LDAP or Active Directory"
-        http_enabled: false
-        transport_enabled: false
-        order: 5
-        http_authenticator:
-          type: basic
-          challenge: false
-        authentication_backend:
-          # LDAP authentication backend (authenticate users against a LDAP or Active Directory)
-          type: ldap
-          config:
-            # enable ldaps
-            enable_ssl: false
-            # enable start tls, enable_ssl should be false
-            enable_start_tls: false
-            # send client certificate
-            enable_ssl_client_auth: false
-            # verify ldap hostname
-            verify_hostnames: true
-            hosts:
-            - localhost:8389
-            bind_dn: null
-            password: null
-            userbase: 'ou=people,dc=example,dc=com'
-            # Filter to search for users (currently in the whole subtree beneath userbase)
-            # {0} is substituted with the username
-            usersearch: '(sAMAccountName={0})'
-            # Use this attribute from the user as username (if not set then DN is used)
-            username_attribute: null
+{{- end }}
     authz:
       roles_from_myldap:
         description: "Authorize via LDAP or Active Directory"
