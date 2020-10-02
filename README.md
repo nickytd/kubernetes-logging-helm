@@ -37,3 +37,7 @@ Kibana by default comes with 2 predefined dashboards and set of searches
 2. Journals logs dashboard, grouping systemlogs per system unit and node
 ![Journals Logs](https://github.com/nickytd/k8s-logging-helm/blob/master/images/JournalsLogsDashboard.png)
 
+When docker driver is used, then following configuration can be added to local /privete/etc/hosts (on MacOS)
+```
+127.0.0.1 es.logging.svc.cluster.local es
+127.0.0.1 kibana.logging.svc.cluster.local kibana

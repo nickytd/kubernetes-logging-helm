@@ -10,6 +10,8 @@ spec:
     spec:
       template:
         metadata:
+          annotations:
+            "sidecar.istio.io/inject": "false"
           labels: {{ include "logging.labels" . | indent 12 }}            
             type: es-curator
         spec:

@@ -129,4 +129,4 @@ spec:
           name: {{ .Release.Name}}-logstash-indexer-pipelines
       - name: indices-templates
         configMap:
-          name: {{ .Release.Name}}-indices-templates
+          name: {{ .Release.Name}}-index-templates

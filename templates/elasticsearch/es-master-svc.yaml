@@ -6,7 +6,6 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   type: ClusterIP
-  clusterIP: None
   selector: {{ include "logging.metadata.labels" . | indent 4 }}
     node: es
     type: master
@@ -17,5 +16,6 @@ spec:
     protocol: TCP
   - name: metrics
     port: 9600
-    targetPort: metrics  
+    targetPort: metrics
+    protocol: TCP  
 {{- end }}

@@ -5,13 +5,13 @@ imagePullSecrets: []
 storage_class:
 
 #Version of ELK stack (logstash, filebeat, journalbeat ...)
-app_version: 7.8.0
+app_version: 7.9.1
 repository: docker.elastic.co
 
 #Opendistro configuration 
 opendistro:
   image: amazon/opendistro-for-elasticsearch
-  imageTag: 1.9.0
+  imageTag: 1.10.1
   saml:
     enabled: false
 #    idp:
@@ -59,22 +59,24 @@ master:
   minimum_nodes: 1
   replicas: 1
   storage: "1Gi"
-  heap_size: "512m"
+  heap_size: "256m"
   resources:
     requests:
-      cpu: "200m"
-      memory: "512Mi"
+      memory: "300Mi" 
+    limits:
+      memory: "300Mi"
   tolerations: []
   affinity: {}    
 
 #Configuration of ES coordination node if "in_cluster" is true
 client:
   replicas: 1
-  heap_size: "512m"
+  heap_size: "256"
   resources:
     requests:
-      cpu: "200m"
-      memory: "512Mi"
+      memory: "300Mi" 
+    limits:
+      memory: "300Mi"
   host:
   ingress:
     path: /
@@ -87,12 +89,13 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: "1g"
+  heap_size: "500M"
   storage: "1Gi"
   resources:
     requests:
-      cpu: "1000m"
-      memory: "1Gi"
+      memory: "600Mi" 
+    limits:
+      memory: "600Mi"
   tolerations: []
   affinity: {} 
 
@@ -112,8 +115,9 @@ kibana:
   index: containers,journals
   resources:
     requests:
-      cpu: "200m"
-      memory: "1Gi"
+      memory: "500Mi"
+    limits:
+      memory: "500Mi"  
   tolerations: []
   affinity: {}    
 
@@ -128,17 +132,21 @@ logstash_indexer:
   json_messages: true
   ca_cert: root-ca.pem
   replicas: 1
-  heap_size: "512m"
+  heap_size: "256m"
   resources:
     requests:
-      cpu: "1000m"
-      memory: "512Mi"
+      memory: "300Mi"
+    limits:
+      memory: "300Mi"
   tolerations: []
   affinity: {}       
 
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
+  resources:
+    limits: 
+      memory: 200Mi     
   tolerations: []
   affinity: {}
 
@@ -146,6 +154,9 @@ filebeat:
 #It depends on the concrete minion OS
 #Those logs help to catch states related to OS services such as container runtimes and kubelet services
 journalbeat:
+  resources:
+    limits: 
+      memory: 200Mi     
   enabled: true
   path: /var/log/journal
   tolerations: []
@@ -156,7 +167,7 @@ kafka:
   enabled: true
   replicas: 1
   tag: "2.12-2.4.0"
-  heap_size: "512m"
+  heap_size: "256m"
   storage: "1Gi"
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
@@ -170,9 +181,9 @@ kafka:
 zookeeper:
   replicas: 1
   tag: "3.4.14"
+  storage: "1Gi"
   resources:
     requests:
-      cpu: "100m"
       memory: "1Gi"
   tolerations: []
   affinity: {}
