@@ -62,9 +62,9 @@ master:
   heap_size: "256m"
   resources:
     requests:
-      memory: "300Mi" 
+      memory: "600Mi" 
     limits:
-      memory: "300Mi"
+      memory: "600Mi"
   tolerations: []
   affinity: {}    
 
@@ -74,9 +74,9 @@ client:
   heap_size: "256"
   resources:
     requests:
-      memory: "300Mi" 
+      memory: "600Mi" 
     limits:
-      memory: "300Mi"
+      memory: "600Mi"
   host:
   ingress:
     path: /
@@ -93,9 +93,9 @@ data:
   storage: "1Gi"
   resources:
     requests:
-      memory: "600Mi" 
+      memory: "700Mi" 
     limits:
-      memory: "600Mi"
+      memory: "700Mi"
   tolerations: []
   affinity: {} 
 
@@ -113,11 +113,12 @@ kibana:
     enabled: false
     annotations: {}
   index: containers,journals
+  oldSpaceSize: 1500
   resources:
     requests:
-      memory: "500Mi"
+      memory: "2000Mi"
     limits:
-      memory: "500Mi"  
+      memory: "2000Mi"  
   tolerations: []
   affinity: {}    
 
@@ -135,9 +136,9 @@ logstash_indexer:
   heap_size: "256m"
   resources:
     requests:
-      memory: "300Mi"
+      memory: "600Mi"
     limits:
-      memory: "300Mi"
+      memory: "600Mi"
   tolerations: []
   affinity: {}       
 
@@ -166,7 +167,7 @@ journalbeat:
 kafka:
   enabled: true
   replicas: 1
-  tag: "2.12-2.4.0"
+  tag: "2.13-2.6.0"
   heap_size: "256m"
   storage: "1Gi"
   topics:
@@ -174,16 +175,24 @@ kafka:
     name: ["containers","journals"]
     replication_factor: 0
     partitions: 1
+  resources:
+    requests:
+      memory: 600Mi
+    limits:
+      memory: 600Mi    
   tolerations: []
   affinity: {}   
 
 #Zookeeper is a dependecy of kafka
 zookeeper:
   replicas: 1
-  tag: "3.4.14"
+  tag: "3.6.2"
+  heap_size: "128m"
   storage: "1Gi"
   resources:
     requests:
-      memory: "1Gi"
+      memory: "500Mi"
+    limits:
+      memory: "500Mi"  
   tolerations: []
   affinity: {}

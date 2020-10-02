@@ -6,7 +6,7 @@ metadata:
   name: elk
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -31,7 +31,7 @@ metadata:
   name: elk-priv
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 ---
@@ -42,7 +42,7 @@ metadata:
   name: elk
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 ---
@@ -53,7 +53,7 @@ metadata:
   name: elk-certificates
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 type: Opaque
@@ -86,7 +86,7 @@ metadata:
   name: elk-securityconfig
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 type: Opaque
@@ -114,6 +114,9 @@ data:
   
   tenants.yml: |-
     LS0tCl9tZXRhOgogIHR5cGU6ICJ0ZW5hbnRzIgogIGNvbmZpZ192ZXJzaW9uOiAyCgojIERlZmluZSB5b3VyIHRlbmFudHMgaGVyZQoKIyMgRGVtbyB0ZW5hbnRzCmFkbWluX3RlbmFudDoKICByZXNlcnZlZDogZmFsc2UKICBkZXNjcmlwdGlvbjogIkRlbW8gdGVuYW50IGZvciBhZG1pbiB1c2VyIgoKCgo=
+  
+  whitelist.yml: |-
+    LS0tCl9tZXRhOgogIHR5cGU6ICJ3aGl0ZWxpc3QiCiAgY29uZmlnX3ZlcnNpb246IDIKCiMgRGVzY3JpcHRpb246CiMgZW5hYmxlZCAtIGZlYXR1cmUgZmxhZy4KIyBpZiBlbmFibGVkIGlzIGZhbHNlLCB0aGUgd2hpdGVsaXN0aW5nIGZlYXR1cmUgaXMgcmVtb3ZlZC4KIyBUaGlzIGlzIGxpa2UgcmVtb3ZpbmcgdGhlIGNoZWNrIHRoYXQgY2hlY2tzIGlmIGFuIEFQSSBpcyB3aGl0ZWxpc3RlZC4KIyBUaGlzIGlzIGVxdWl2YWxlbnQgdG8gY29udGludWluZyB3aXRoIHRoZSB1c3VhbCBhY2Nlc3MgY29udHJvbCBjaGVja3MsIGFuZCByZW1vdmluZyBhbGwgdGhlIGNvZGUgdGhhdCBpbXBsZW1lbnRzIHdoaXRlbGlzdGluZy4KIyBpZiBlbmFibGVkIGlzIHRydWUsIHRoZW4gYWxsIHVzZXJzIGV4Y2VwdCBTdXBlckFkbWluIGNhbiBhY2Nlc3Mgb25seSB0aGUgQVBJcyBpbiByZXF1ZXN0cwojIFN1cGVyQWRtaW4gY2FuIGFjY2VzcyBhbGwgQVBJcy4KIyBTdXBlckFkbWluIGlzIGRlZmluZWQgYnkgdGhlIFN1cGVyQWRtaW4gY2VydGlmaWNhdGUsIHdoaWNoIGlzIGNvbmZpZ3VyZWQgaW4gdGhlIGVsYXN0aWNzZWFyY2gueW1sIHNldHRpbmc6IG9wZW5kaXN0cm9fc2VjdXJpdHkuYXV0aGN6LmFkbWluX2RuOgojIFJlZmVyIHRvIHRoZSBleGFtcGxlIHNldHRpbmcgaW4gZWxhc3RpY3NlYXJjaC55bWwuZXhhbXBsZSwgYW5kIHRoZSBvcGVuZGlzdHJvIGRvY3VtZW50YXRpb24gdG8ga25vdyBtb3JlIGFib3V0IGNvbmZpZ3VyaW5nIFN1cGVyQWRtaW4uCiMKIyByZXF1ZXN0cyAtIG1hcCBvZiB3aGl0ZWxpc3RlZCBlbmRwb2ludHMsIGFuZCB0aGUgd2hpdGVsaXN0ZWQgSFRUUCByZXF1ZXN0cyBmb3IgdGhvc2UgZW5kcG9pbnRzCgojIEV4YW1wbGVzIHNob3dpbmcgaG93IHRvIGNvbmZpZ3VyZSB0aGlzIHltbCBmaWxlIChtYWtlIHN1cmUgdGhlIF9tZXRhIGRhdGEgZnJvbSBhYm92ZSBpcyBhbHNvIHRoZXJlKToKIyBFeGFtcGxlIDE6CiMgVG8gZW5hYmxlIHdoaXRlbGlzdGluZyBhbmQgd2hpdGVsaXN0IEdFVCAvX2NsdXN0ZXIvc2V0dGluZ3MKIwojY29uZmlnOgojICBlbmFibGVkOiB0cnVlCiMgIHJlcXVlc3RzOgojICAgIC9fY2x1c3Rlci9zZXR0aW5nczoKIyAgICAgIC0gR0VUCiMKIyBFeGFtcGxlIDI6CiMgSWYgeW91IHdhbnQgdG8gd2hpdGVsaXN0IG11bHRpcGxlIHJlcXVlc3QgbWV0aG9kcyBmb3IgL19jbHVzdGVyL3NldHRpbmdzIChHRVQsUFVUKToKIwojY29uZmlnOgojICBlbmFibGVkOiB0cnVlCiMgIHJlcXVlc3RzOgojICAgIC9fY2x1c3Rlci9zZXR0aW5nczoKIyAgICAgIC0gR0VUCiMgICAgICAtIFBVVAojCiMgRXhhbXBsZSAzOgojIElmIHlvdSB3YW50IHRvIHdoaXRlbGlzdCBvdGhlciBBUElzIGFzIHdlbGwsIGZvciBleGFtcGxlIEdFVCAvX2NhdC9ub2RlcywgYW5kIEdFVCAvX2NhdC9zaGFyZHM6CiMKI2NvbmZpZzoKIyAgZW5hYmxlZDogdHJ1ZQojICByZXF1ZXN0czoKIyAgICAvX2NsdXN0ZXIvc2V0dGluZ3M6CiMgICAgICAtIEdFVAojICAgICAgLSBQVVQKIyAgICAvX2NhdC9ub2RlczoKIyAgICAgIC0gR0VUCiMgICAgL19jYXQvc2hhcmRzOgojICAgICAgLSBHRVQKIwojIEV4YW1wbGUgNDoKIyBJZiB5b3Ugd2FudCB0byBkaXNhYmxlIHRoZSB3aGl0ZWxpc3RpbmcgZmVhdHVyZSwgc2V0IGVuYWJsZWQgdG8gZmFsc2UuCiMgIGVuYWJsZWQ6IGZhbHNlCiMgIHJlcXVlc3RzOgojICAgIC9fY2x1c3Rlci9zZXR0aW5nczoKIyAgICAgIC0gR0VUCiMKI0F0IHRoaXMgcG9pbnQsIGFsbCBBUElzIGJlY29tZSB3aGl0ZWxpc3RlZCBiZWNhdXNlIHRoZSBmZWF0dXJlIHRvIHdoaXRlbGlzdCBpcyBvZmYsIHNvIHJlcXVlc3RzIGlzIGlycmVsZXZhbnQuCgoKI3RoaXMgbmFtZSBtdXN0IGJlIGNvbmZpZwpjb25maWc6CiAgZW5hYmxlZDogZmFsc2UKICByZXF1ZXN0czoKICAgIC9fY2x1c3Rlci9zZXR0aW5nczoKICAgICAgLSBHRVQKICAgIC9fY2F0L25vZGVzOgogICAgICAtIEdFVAo=
 ---
 # Source: kubernetes-logging/templates/logstash/logstash-indexer-1elasticsearch-secret.yaml
 apiVersion: v1
@@ -133,7 +136,7 @@ metadata:
   name: elk-filebeat-config
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -166,7 +169,7 @@ data:
                 - /var/log/containers/*-${data.kubernetes.container.id}-json.log
 
     output.kafka:
-      enabled: false
+      enabled: true
       hosts: ["kafka-svc.logging:9092"]
       topic: 'containers'
       partition.hash:
@@ -180,7 +183,7 @@ data:
       pretty: true
 
     output.logstash:
-      enabled: true
+      enabled: false
       hosts: ["elk-logstash-indexer:5044"]
 ---
 # Source: kubernetes-logging/templates/beats/journalbeat-configmap.yaml
@@ -190,7 +193,7 @@ metadata:
   name: elk-journalbeat-config
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -216,7 +219,7 @@ data:
     #    ignore_missing: true      
 
     output.kafka:
-      enabled: false
+      enabled: true
       hosts: ["kafka-svc.logging:9092"]
       topic: 'journals'
       partition.hash:
@@ -230,7 +233,7 @@ data:
       pretty: true
 
     output.logstash:
-      enabled: true
+      enabled: false
       hosts: ["elk-logstash-indexer:5045"]
 ---
 # Source: kubernetes-logging/templates/elasticsearch/es-configmap.yaml
@@ -240,29 +243,29 @@ metadata:
   name: elk
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
   log4j2.properties: |-
-    status = WARN
+    status = error
 
     appender.console.type = Console
     appender.console.name = console
     appender.console.layout.type = PatternLayout
     appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
 
-    rootLogger.level = WARN
+    rootLogger.level = error
     rootLogger.appenderRef.console.ref = console
     
     logger.opendistro_security.name = com.amazon.opendistroforelasticsearch.security
-    logger.opendistro_security.level = INFO
+    logger.opendistro_security.level = warning
 
     logger.saml.name = com.amazon.dlic.auth.http.saml.Token
-    logger.saml.level = INFO
+    logger.saml.level = error
 
     logger.opendistro_security_jwt.name = com.amazon.dlic.auth.http.jwt
-    logger.opendistro_security_jwt.level = WARN
+    logger.opendistro_security_jwt.level = error
 
   elasticsearch.yml: |-
     cluster.name: "logging"
@@ -321,7 +324,7 @@ metadata:
   name: elk-curator
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -463,6 +466,65 @@ data:
       loglevel: INFO
       logformat: default
 ---
+# Source: kubernetes-logging/templates/elasticsearch/es-index-templates-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elk-index-templates
+data:  
+  containers_template.json: |-
+    {
+      "settings": {
+        "index" : {
+        	"number_of_shards" : "1",
+          "number_of_replicas" : "0"
+        }
+      },
+      "mappings" : {
+        "_source" : {
+          "enabled" : true
+        },
+        "properties" : {
+          "@timestamp" : {
+              "type" : "date"
+          },
+          "id" : {
+              "type" : "keyword"
+          },
+          "fingerprint" : {
+              "type" : "keyword"
+          }
+        }        
+      },  
+      "index_patterns":["containers-*"]
+    }  
+  journals_template.json: |-
+    {
+      "settings": {
+        "index" : {
+        	"number_of_shards" : "1",
+          "number_of_replicas" : "0"
+        }
+      },
+      "mappings" : {
+        "_source" : {
+          "enabled" : true
+        },
+        "properties" : {
+          "@timestamp" : {
+              "type" : "date"
+          },
+          "id" : {
+              "type" : "keyword"
+          },
+          "fingerprint" : {
+              "type" : "keyword"
+          }
+        }
+      },
+      "index_patterns":["journals-*"]
+    }
+---
 # Source: kubernetes-logging/templates/elasticsearch/es-securityadmin-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -470,7 +532,7 @@ metadata:
   name: elk-securityadmin
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -521,7 +583,7 @@ metadata:
   name: elk-init
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -630,7 +692,7 @@ metadata:
   name: elk-kibana
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -638,7 +700,7 @@ data:
     server.name: kibana
     server.host: "0"
 
-    logging.quiet: false
+    logging.quiet: true
     logging.verbose: false
     logging.json: false
 
@@ -664,7 +726,10 @@ data:
     telemetry.optIn: false
     telemetry.enabled: false
 
-    opendistro_security.readonly_mode.roles: ["kibana_read_only"]    
+    opendistro_security.readonly_mode.roles: ["kibana_read_only"]
+
+    
+
     opendistro_security.multitenancy.enabled: true
     opendistro_security.multitenancy.tenants.enable_private: true
     opendistro_security.multitenancy.tenants.preferred: ["Private","Global"]
@@ -722,7 +787,7 @@ metadata:
   name: elk-kibana-saved-objects
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -752,7 +817,7 @@ metadata:
   name: elk-logstash-indexer
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 data:
@@ -818,16 +883,27 @@ metadata:
   name: elk-logstash-indexer-pipelines
 data:  
   containers-pipeline.conf: |-
-    input {  
-    
-      beats {
-        port => 5044
+    input {
+      
+      kafka {
+        bootstrap_servers => ["${KAFKA_BOOTSTRAP_SERVERS}"]
+        topics => ["containers"]
+        client_id => "${HOSTNAME}-contaienrs"
+        group_id => "containers"
+        auto_offset_reset => "latest"
+        consumer_threads => 10
       }
+    
+    
     
     }
     
     filter {
       #all messages from the kafka topics are in json format
+        json {
+          skip_on_invalid_json => false
+          source => "message"
+        }
     
       #remove ANSI Color bytes
       mutate {
@@ -871,11 +947,19 @@ data:
     
   
   journals-pipeline.conf: |-
-    input {  
+    input {
+      
+      kafka {
+        bootstrap_servers => ["${KAFKA_BOOTSTRAP_SERVERS}"]
+        topics => ["journals"]
+        client_id => "${HOSTNAME}-journals"
+        group_id => "journals"
+        auto_offset_reset => "latest"
+        consumer_threads => 10
+        max_partition_fetch_bytes => '15728640'
+      } 
     
-      beats {
-        port => 5045
-      }
+    
     
     }
     
@@ -916,7 +1000,7 @@ metadata:
   name: elk
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 rules:
@@ -939,7 +1023,7 @@ metadata:
   name: elk-psp
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 rules:
@@ -959,7 +1043,7 @@ metadata:
   name: elk
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 subjects:
@@ -981,7 +1065,7 @@ metadata:
   name: elk-psp
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 subjects:
@@ -1000,7 +1084,7 @@ metadata:
   name: elk-client
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1024,7 +1108,7 @@ metadata:
   name: elk-data
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1049,12 +1133,11 @@ metadata:
   name: elk-master
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
   type: ClusterIP
-  clusterIP: None
   selector:     
     app: elk-kubernetes-logging
     release: elk
@@ -1068,6 +1151,145 @@ spec:
   - name: metrics
     port: 9600
     targetPort: metrics
+    protocol: TCP
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 9092
+    name: kafka
+  - port: 9093
+    name: broker
+  - port: 12345
+    name: jmx
+  clusterIP: None
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-svc
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 9092
+    name: kafka
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: elk-kafka-0
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+    - port: 9092
+      name: kafka
+    - port: 9093
+      name: broker
+    - port: 12345
+      name: jmx
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    statefulset.kubernetes.io/pod-name: elk-kafka-0
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: elk-kafka-1
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+    - port: 9092
+      name: kafka
+    - port: 9093
+      name: broker
+    - port: 12345
+      name: jmx
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    statefulset.kubernetes.io/pod-name: elk-kafka-1
+    type: kafka
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 2888
+    name: peer
+  - port: 3888
+    name: leader
+  - port: 9191
+    name: exporter
+  clusterIP: None
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: zk
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: zk-svc
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  ports:
+  - port: 2181
+    name: client
+  - port: 9191
+    name: exporter
+  selector:     
+    app: elk-kubernetes-logging
+    release: elk
+    type: zk
 ---
 # Source: kubernetes-logging/templates/kibana/kibana-service.yaml
 apiVersion: v1
@@ -1076,7 +1298,7 @@ metadata:
   name: elk-kibana
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1090,30 +1312,6 @@ spec:
     type: kibana
   type: ClusterIP
 ---
-# Source: kubernetes-logging/templates/logstash/logstash-indexer-service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: elk-logstash-indexer
-  labels:     
-    app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
-    release: elk
-    heritage: Helm
-spec:
-  ports:
-  - name: containers
-    port: 5044
-    targetPort: containers
-  - name: journals
-    port: 5045
-    targetPort: journals  
-  selector:     
-    app: elk-kubernetes-logging
-    release: elk
-    type: logstash-indexer
-  type: ClusterIP
----
 # Source: kubernetes-logging/templates/beats/filebeat-daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
@@ -1121,12 +1319,12 @@ metadata:
   name: elk-filebeat
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
     type: filebeat
   annotations:
-    checksum/config: 282f119a6d92476ea09a2725ec7fcf4e622b0682e312157a0577046c60cb8f0f  
+    checksum/config: 2c164912ccf862c4283d48337a8e9bd40556c7422abe727e00a3698724938c72  
 spec:
   selector:
     matchLabels:       
@@ -1151,24 +1349,24 @@ spec:
       - name: init
         imagePullPolicy: IfNotPresent
         image: nickytd/init-container:latest
-        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 && /init.sh elk-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 && /init.sh elk-kafka-1.kafka 9092']
+        
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
           name: init       
       containers:
       - name: filebeat
-        image: docker.elastic.co/beats/filebeat:7.8.0
+        image: docker.elastic.co/beats/filebeat:7.9.1
         args: [
           "-c", "/usr/share/filebeat/filebeat.yml",
           "-e",
         ]
-        resources:
+        resources: 
           limits:
-            memory: 300Mi
+            memory: 200M
           requests:
-            cpu: 100m
-            memory: 100Mi
+            memory: 200M
         env:
         - name: NODE_NAME
           valueFrom:
@@ -1206,12 +1404,12 @@ metadata:
   name: elk-journalbeat
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
     type: journalbeat
   annotations:
-    checksum/config: 2035a5a3cace523bcd67a0063476e33b058492fd4ca72de6cb362f76c917ddaf    
+    checksum/config: 7e2b0f06a71f564737fba0c4225ea5f731542cc7a0482c16634fc9be648c77c8    
 spec:
   selector:
     matchLabels:       
@@ -1236,25 +1434,24 @@ spec:
       - name: init  
         imagePullPolicy: IfNotPresent
         image: nickytd/init-container:latest
-        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 && /init.sh elk-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh https://elk-client.logging.svc.cluster.local:9200 && /init.sh elk-kafka-1.kafka 9092']
+        
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
           name: init 
       containers:
       - name: journalbeat
-        image: docker.elastic.co/beats/journalbeat:7.8.0
-        #image: mheese/journalbeat:latest
+        image: docker.elastic.co/beats/journalbeat:7.9.1
         args: [
           "-c", "/usr/share/journalbeat/journalbeat.yml",
           "-e"
         ]
-        resources:
+        resources: 
           limits:
-            memory: 200Mi
+            memory: 200M
           requests:
-            cpu: 100m
-            memory: 100Mi
+            memory: 200M          
         env:
         - name: NODE_NAME
           valueFrom:
@@ -1297,7 +1494,7 @@ metadata:
   name: elk-client
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
     node: es
@@ -1312,8 +1509,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 63bdd528c7101b94fac8bf6c630b24d5061dd6c65360c078bbee7b098e80926a
-        checksum/secret: 358718b19245acb3d52a579d0936f2b92253d97c64c23d3a987fff7bd8793d3c
+        checksum/config: dfbf3fb420edf88cc1686bf7e5914f51b297ab53f46fe6de15711d01dff75eae
+        checksum/secret: 8de4a8478f618246cc81a27c483b919896d6cea433de38a422aa18f6634a60a7
       labels:         
         app: elk-kubernetes-logging
         release: elk
@@ -1323,11 +1520,12 @@ spec:
       serviceAccountName: elk-priv
       containers:
       - name: main
-        image: amazon/opendistro-for-elasticsearch:1.9.0        
+        image: amazon/opendistro-for-elasticsearch:1.10.1        
         resources: 
+          limits:
+            memory: 500Mi
           requests:
-            cpu: 200m
-            memory: 512Mi
+            memory: 500Mi
         readinessProbe:
           tcpSocket:
             port: http
@@ -1379,7 +1577,7 @@ spec:
           subPath: http.truststore          
         env:
         - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m \
+          value: "-Xms128M -Xmx128M \
                   -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system \
                   -Djava.util.logging.config.file=/usr/share/elasticsearch/config/logging.properties"
         - name: NAMESPACE
@@ -1434,7 +1632,7 @@ metadata:
   name: elk-kibana
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1447,7 +1645,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 59f873bdf6e143bf946b969bc65f307b9c5c5bf2a0efcf0a49490c505c0410db
+        checksum/config: ae9138c88a675f86ca63d22f6651feb76ca6af0e8966435df687f71eb5db7420
       labels:         
         app: elk-kubernetes-logging
         release: elk
@@ -1464,12 +1662,15 @@ spec:
           name: init
       containers: 
       - name: main
-        image: amazon/opendistro-for-elasticsearch-kibana:1.9.0
+        image: amazon/opendistro-for-elasticsearch-kibana:1.10.1
         resources:
-          requests:
-            cpu: 200m
+          limits:
             memory: 1Gi
-        env:              
+          requests:
+            memory: 1Gi
+        env:   
+        - name: NODE_OPTIONS           
+          value: "--max-old-space-size=750"
         ports:
         - containerPort: 5601
           name: ui
@@ -1506,7 +1707,7 @@ metadata:
   name: elk-logstash-indexer
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1521,7 +1722,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum1/config: bb417c38fb6f10a75bb51368028189be959f1bea4cbda7a2296e8367fc53f4a1
+        checksum1/config: 3346590266471ad74899aba34dfab4356e2627b23f9e472e29eeb27bbe187ead
         checksum-logstash-indexer-pipelines/containers-pipeline.conf: 307c0273996f13e1f03a61d00d383c69e290c18f9166a85e44dd7a788eb13c07
         checksum-logstash-indexer-pipelines/journals-pipeline.conf: 63a3a788ee8f3653104f941990976764b27b7bd6fd3224b38663dd2dacc931fd
       labels:         
@@ -1543,14 +1744,7 @@ spec:
           name: init     
       containers:  
       - name: logstash-indexer
-        image: docker.elastic.co/logstash/logstash-oss:7.8.0
-        ports:
-        - containerPort: 5044
-          name: containers
-          protocol: TCP
-        - containerPort: 5045
-          protocol: TCP
-          name: journals      
+        image: docker.elastic.co/logstash/logstash-oss:7.9.1      
         env:
         - name: ELASTICSEARCH_HOST
           valueFrom:
@@ -1566,15 +1760,18 @@ spec:
           valueFrom:
             secretKeyRef:
               name: logstash-indexer-elasticsearch
-              key: password          
+              key: password           
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: kafka-svc:9092          
         - name: LS_JAVA_OPTS
-          value: "-Xms512m -Xmx512m -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+          value: "-Xms300M -Xmx300M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: CA_CERT
           value: "root-ca.pem"
         resources: 
+          limits:
+            memory: 600Mi
           requests:
-            cpu: 1000m
-            memory: 512Mi  
+            memory: 600Mi  
         volumeMounts:
         - mountPath: "/usr/share/logstash/config/logstash.yml"
           subPath: logstash.yml
@@ -1617,7 +1814,7 @@ spec:
           name: elk-logstash-indexer-pipelines
       - name: indices-templates
         configMap:
-          name: elk-indices-templates
+          name: elk-index-templates
 ---
 # Source: kubernetes-logging/templates/elasticsearch/es-data-statefulset.yaml
 apiVersion: apps/v1
@@ -1626,7 +1823,7 @@ metadata:
   name: elk-data
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1643,8 +1840,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 63bdd528c7101b94fac8bf6c630b24d5061dd6c65360c078bbee7b098e80926a
-        checksum/secret: 358718b19245acb3d52a579d0936f2b92253d97c64c23d3a987fff7bd8793d3c
+        checksum/config: dfbf3fb420edf88cc1686bf7e5914f51b297ab53f46fe6de15711d01dff75eae
+        checksum/secret: 8de4a8478f618246cc81a27c483b919896d6cea433de38a422aa18f6634a60a7
       labels:         
         app: elk-kubernetes-logging
         release: elk
@@ -1656,11 +1853,12 @@ spec:
       priorityClassName: logging-critical
       containers:
       - name: main
-        image: amazon/opendistro-for-elasticsearch:1.9.0
+        image: amazon/opendistro-for-elasticsearch:1.10.1
         resources: 
+          limits:
+            memory: 600Mi
           requests:
-            cpu: 1000m
-            memory: 1Gi
+            memory: 600Mi
         livenessProbe:
           tcpSocket:
             port: transport
@@ -1711,7 +1909,7 @@ spec:
         - name: "MINIMUM_MASTER_NODES"
           value: "1"
         - name: ES_JAVA_OPTS
-          value: "-Xms1g -Xmx1g -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+          value: "-Xms256M -Xmx256M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: NODE_MASTER
           value: "false"  
         - name: discovery.seed_hosts
@@ -1758,7 +1956,7 @@ metadata:
   name:  elk-master
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
     node: es
@@ -1776,8 +1974,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 63bdd528c7101b94fac8bf6c630b24d5061dd6c65360c078bbee7b098e80926a
-        checksum/secret: 358718b19245acb3d52a579d0936f2b92253d97c64c23d3a987fff7bd8793d3c
+        checksum/config: dfbf3fb420edf88cc1686bf7e5914f51b297ab53f46fe6de15711d01dff75eae
+        checksum/secret: 8de4a8478f618246cc81a27c483b919896d6cea433de38a422aa18f6634a60a7
       labels:         
         app: elk-kubernetes-logging
         release: elk
@@ -1787,11 +1985,12 @@ spec:
       serviceAccountName: elk-priv
       containers:
       - name: main
-        image: amazon/opendistro-for-elasticsearch:1.9.0
+        image: amazon/opendistro-for-elasticsearch:1.10.1
         resources: 
+          limits:
+            memory: 500Mi
           requests:
-            cpu: 200m
-            memory: 512Mi
+            memory: 500Mi
         ports:
         - containerPort: 9300
           name: transport
@@ -1840,7 +2039,7 @@ spec:
         - name: "MINIMUM_MASTER_NODES"
           value: "1"
         - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+          value: "-Xms128M -Xmx128M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: NODE_DATA
           value: "false"
         - name: NODE_INGEST
@@ -1890,6 +2089,184 @@ spec:
         requests:
           storage: 1Gi
 ---
+# Source: kubernetes-logging/templates/kafka/kafka-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elk-kafka
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:       
+      app: elk-kubernetes-logging
+      release: elk     
+      type: kafka
+  serviceName: kafka
+  replicas: 2
+  template:
+    metadata:
+      labels:         
+        app: elk-kubernetes-logging
+        release: elk
+        type: kafka
+    spec:
+      priorityClassName: logging-critical
+      
+      initContainers:
+      - name: init
+        image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "/init.sh elk-zk-2.zk 2181"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: kafka
+        image: wurstmeister/kafka:2.13-2.6.0
+        ports:
+        - containerPort: 9092
+          name: kafka
+        - containerPort: 9093
+          name: broker
+        - containerPort: 12345
+          name: jmx
+        resources: 
+          limits:
+            memory: 600Mi
+          requests:
+            memory: 600Mi
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zk-svc.logging.svc.cluster.local:2181/kafka/logging
+        - name: BROKER_ID_COMMAND
+          value: "hostname | awk -F'-' '{print $NF}'"
+        - name: KAFKA_LISTENERS
+          value: PLAINTEXT://:9092
+        - name: KAFKA_HEAP_OPTS
+          value: "-Xmx256m -Xms256m"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/opt/kafka/bin/kafka-server-stop.sh"]
+        readinessProbe:
+          tcpSocket:
+            port: kafka
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: kafka-data
+          mountPath: /kafka  
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: init
+        configMap:
+          name: elk-init
+          defaultMode: 0755    
+  volumeClaimTemplates:
+  - metadata:
+      name: kafka-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+# Source: kubernetes-logging/templates/kafka/zookeeper-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  metadata:
+  name: elk-zk
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+spec:
+  selector:
+    matchLabels:       
+      app: elk-kubernetes-logging
+      release: elk
+      type: zk
+  serviceName: zk
+  replicas: 3
+  template:
+    metadata:
+      labels:         
+        app: elk-kubernetes-logging
+        release: elk
+        type: zk
+    spec:
+      priorityClassName: logging-critical
+      initContainers:
+      - image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid ; do  echo \"retry create data and logs folders\" && sleep 2 ; done"]
+        name: init
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+      containers:
+      - name: zk
+        image: zookeeper:3.6.2
+        ports:
+        - containerPort: 2181
+          name: client
+        - containerPort: 2888
+          name: peer
+        - containerPort: 3888
+          name: leader
+        - containerPort: 8080
+          name: admin  
+        env:
+        - name: JVMFLAGS
+          value: -Xmx128m  
+        - name: ZOO_CFG_EXTRA
+          value: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7070"    
+        - name: ZOO_SERVERS
+          value: "server.0=elk-zk-0.zk.logging.svc.cluster.local:2888:3888;2181 server.1=elk-zk-1.zk.logging.svc.cluster.local:2888:3888;2181 server.2=elk-zk-2.zk.logging.svc.cluster.local:2888:3888;2181 "
+        - name: ZOO_DATA_DIR
+          value: /volumes/data
+        - name: ZOO_DATA_LOG_DIR
+          value: /volumes/logs
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        resources: 
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 500Mi        
+        volumeMounts:
+        - mountPath: "/volumes"
+          name: zk-data
+  volumeClaimTemplates:
+  - metadata:
+      name: zk-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
 # Source: kubernetes-logging/templates/elasticsearch/es-curator-cronjob.yaml
 apiVersion: batch/v1beta1
 kind: CronJob
@@ -1897,7 +2274,7 @@ metadata:
   name: elk-curator
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
 spec:
@@ -1906,9 +2283,11 @@ spec:
     spec:
       template:
         metadata:
+          annotations:
+            "sidecar.istio.io/inject": "false"
           labels:             
             app: elk-kubernetes-logging
-            chart: kubernetes-logging-0.9.0
+            chart: kubernetes-logging-0.10.0
             release: elk
             heritage: Helm            
             type: es-curator
@@ -1963,7 +2342,7 @@ metadata:
   name: elk-aliases
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
   annotations:
@@ -1974,9 +2353,11 @@ spec:
   backoffLimit: 10
   template:
     metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
       labels:         
         app: elk-kubernetes-logging
-        chart: kubernetes-logging-0.9.0
+        chart: kubernetes-logging-0.10.0
         release: elk
         heritage: Helm            
         type: es-aliases
@@ -2023,7 +2404,7 @@ metadata:
   name: elk-securityadmin
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
   annotations:
@@ -2033,6 +2414,9 @@ metadata:
 spec:
   backoffLimit: 10
   template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
     spec:
       restartPolicy: OnFailure
       initContainers:
@@ -2046,7 +2430,7 @@ spec:
           name: init
       containers:
       - name: main
-        image: amazon/opendistro-for-elasticsearch:1.9.0
+        image: amazon/opendistro-for-elasticsearch:1.10.1
         command: ["/setup.sh"]
         env:
           - name: es_node
@@ -2100,6 +2484,50 @@ spec:
           name: elk-securityadmin
           defaultMode: 0755
 ---
+# Source: kubernetes-logging/templates/kafka/kafka-topics-job.yaml
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: elk-topics-config
+  labels:     
+    app: elk-kubernetes-logging
+    chart: kubernetes-logging-0.10.0
+    release: elk
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": "post-install, post-upgrade"
+    "helm.sh/hook-weight": "-9"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      initContainers:
+      - name: init
+        image: nickytd/init-container:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "/init.sh elk-kafka-1.kafka 9092"]
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init
+      containers:
+      - name: kafka-topic-config
+        image: wurstmeister/kafka:2.13-2.6.0
+        command: ["/bin/sh","-c","/opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic containers --partitions 1 --replication-factor 0 --if-not-exists && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic journals --partitions 1 --replication-factor 0 --if-not-exists && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic containers --partitions 1 --if-exists || true && /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic journals --partitions 1 --if-exists || true && /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name containers --add-config retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime && /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name journals --add-config retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime && true"]
+        env:                          
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zk-svc.logging.svc.cluster.local:2181/kafka/logging                          
+      restartPolicy: Never 
+      volumes:
+      - name: init
+        configMap:
+          name: elk-init
+          defaultMode: 0755
+---
 # Source: kubernetes-logging/templates/kibana/kibana-job.yaml
 apiVersion: batch/v1
 kind: Job
@@ -2107,7 +2535,7 @@ metadata:
   name: elk-kibana-create-index-pattern
   labels:     
     app: elk-kubernetes-logging
-    chart: kubernetes-logging-0.9.0
+    chart: kubernetes-logging-0.10.0
     release: elk
     heritage: Helm
   annotations:
@@ -2117,6 +2545,9 @@ metadata:
 spec:
   backoffLimit: 0
   template:
+    metadata:
+      annotations:
+        "sidecar.istio.io/inject": "false"
     spec:
       restartPolicy: Never
       initContainers:
@@ -2126,7 +2557,7 @@ spec:
         command: ["sh", "-xc", 'while (true) do if [ $(curl -s -o /dev/null -w \"%{http_code}\" -u kibana:kibana http://elk-kibana.logging.svc.cluster.local:5601/status) = \"200\" ]; then echo "ready"; exit 0; fi; echo \"retry request http://elk-kibana.logging.svc.cluster.local:5601/status\"; sleep 2; done']        
       containers:
       - name: main
-        image: amazon/opendistro-for-elasticsearch-kibana:1.9.0        
+        image: amazon/opendistro-for-elasticsearch-kibana:1.10.1        
         command: ["bash","/tmp/create_index_pattern.sh", http://elk-kibana.logging.svc.cluster.local:5601, "containers,journals", "kibana", "kibana"]        
         volumeMounts:
         - mountPath: "/tmp/create_index_pattern.sh"

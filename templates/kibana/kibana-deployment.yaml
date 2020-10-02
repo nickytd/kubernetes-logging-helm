@@ -42,7 +42,9 @@ spec:
         {{- if .Values.kibana.server_base_path }}
         - name: SERVER_BASEPATH
           value: {{ .Values.kibana.server_base_path }}  
-        {{- end }}              
+        {{- end }}   
+        - name: NODE_OPTIONS           
+          value: "--max-old-space-size={{ .Values.kibana.oldSpaceSize }}"
         ports:
         - containerPort: 5601
           name: ui

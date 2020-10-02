@@ -1,7 +1,65 @@
+#Configuration of ES master node if "in_cluster" is true
+master:
+  storage: 1Gi
+  heap_size: 128M
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+#Configuration of ES coordination node if "in_cluster" is true
+client:
+  heap_size: 128M
+  resources:
+    requests:
+      memory: 500Mi
+    limits:  
+      memory: 500Mi
+#Configuration of ES data node if "in_cluster" is true
+data:
+  replicas: 1
+  heap_size: 256M
+  storage: 1Gi
+  resources:
+    requests:
+      memory: 600Mi
+    limits:
+      memory: 600Mi  
+
+#when in_cluster is set to false it determines an external kibana instance. 
+#In this case only jobs creating index templates and kibana objects are executed.
+kibana:
+  oldSpaceSize: 750
+  resources:
+    requests:
+      memory: 1Gi
+    limits:
+      memory: 1Gi
+      
+logstash_indexer:
+  replicas: 1
+  heap_size: 300M
+  resources:
+    requests:
+      memory: 600Mi
+    limits:
+      memory: 600Mi
+  
+filebeat:
+  resources:
+    requests:
+      memory: 200M
+    limits:
+      memory: 200M
+
 journalbeat:
+  resources:
+    requests:
+      memory: 200M
+    limits:
+      memory: 200M
   enabled: true
-  path: /var/run/log/journal
+  path: /var/run/log/journal  
 
 kafka:
   enabled: false
-

@@ -48,7 +48,7 @@ release: {{ .Release.Name }}
 {{- $str := "" -}}
 
 {{- range $i, $e := until $zk_size -}}
-{{- $str := (printf "server.%d=%s-zk-%d.zk.%s.svc.cluster.local:2888:3888 " $i $global.Release.Name $i $global.Release.Namespace) -}}
+{{- $str := (printf "server.%d=%s-zk-%d.zk.%s.svc.cluster.local:2888:3888;2181 " $i $global.Release.Name $i $global.Release.Namespace) -}}
 {{- $str -}}
 {{- end -}}
 {{- end -}}

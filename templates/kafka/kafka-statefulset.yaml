@@ -44,8 +44,7 @@ spec:
           name: broker
         - containerPort: 12345
           name: jmx
-        resources:
-        {{ toYaml .Values.kafka.resources | indent 10 }}
+        resources: {{ toYaml .Values.kafka.resources | nindent 10 }}
         env:
         - name: MY_POD_NAME
           valueFrom:
