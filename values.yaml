@@ -71,7 +71,7 @@ master:
 #Configuration of ES coordination node if "in_cluster" is true
 client:
   replicas: 1
-  heap_size: "256"
+  heap_size: "256m"
   resources:
     requests:
       memory: "600Mi" 
@@ -93,9 +93,9 @@ data:
   storage: "1Gi"
   resources:
     requests:
-      memory: "700Mi" 
+      memory: "800Mi" 
     limits:
-      memory: "700Mi"
+      memory: "800Mi"
   tolerations: []
   affinity: {} 
 

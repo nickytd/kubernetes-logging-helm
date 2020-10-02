@@ -109,6 +109,7 @@ spec:
       # to remove this init container.
       initContainers:
       - image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
         command: ["sh", "-c", "/init.sh {{ .Release.Name }}-master 9300 && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
         name: init
         volumeMounts:
