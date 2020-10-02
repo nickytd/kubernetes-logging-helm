@@ -28,6 +28,10 @@ spec:
   ports:
   - port: 2181
     name: client
+  - port: 7070
+    name: metrics  
+  - port: 8080
+    name: admin  
   - port: 9191
     name: exporter
   selector: {{ include "logging.metadata.labels" . | indent 4 }}

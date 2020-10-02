@@ -1153,7 +1153,7 @@ spec:
     targetPort: metrics
     protocol: TCP
 ---
-# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+# Source: kubernetes-logging/templates/kafka/kafka-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1177,7 +1177,7 @@ spec:
     release: elk
     type: kafka
 ---
-# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+# Source: kubernetes-logging/templates/kafka/kafka-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1196,7 +1196,7 @@ spec:
     release: elk
     type: kafka
 ---
-# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+# Source: kubernetes-logging/templates/kafka/kafka-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1220,7 +1220,7 @@ spec:
     statefulset.kubernetes.io/pod-name: elk-kafka-0
     type: kafka
 ---
-# Source: kubernetes-logging/templates/kafka/kafka-vip.yaml
+# Source: kubernetes-logging/templates/kafka/kafka-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1244,7 +1244,7 @@ spec:
     statefulset.kubernetes.io/pod-name: elk-kafka-1
     type: kafka
 ---
-# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+# Source: kubernetes-logging/templates/kafka/zookeeper-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1270,7 +1270,7 @@ spec:
     release: elk
     type: zk
 ---
-# Source: kubernetes-logging/templates/kafka/zookeeper-vip.yaml
+# Source: kubernetes-logging/templates/kafka/zookeeper-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1284,6 +1284,10 @@ spec:
   ports:
   - port: 2181
     name: client
+  - port: 7070
+    name: metrics  
+  - port: 8080
+    name: admin  
   - port: 9191
     name: exporter
   selector:     
