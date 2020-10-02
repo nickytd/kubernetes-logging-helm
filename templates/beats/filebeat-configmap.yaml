@@ -8,6 +8,7 @@ data:
   filebeat.yml: |-
     logging.level: warning
 
+
     filebeat.inputs:
     - type: container
       paths:
@@ -28,10 +29,13 @@ data:
       providers:
       - type: kubernetes
         templates:
-        - config:
+        - condition:
+            has_fields: ['data.kubernetes.container.id']
+          config:
             - type: container
               paths:
-                - /var/log/containers/*-${data.kubernetes.container.id}-json.log
+                - /var/log/containers/${data.kubernetes.container.id}/*.log
+             
 
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}
