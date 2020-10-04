@@ -24,8 +24,10 @@ In this option setup, the beats directly talk to the logstash instance.
  
 There are two options to scale the setup:
 * For medium logging streams volumes the chart can be horizontaly scaled by increasing the replicas of the Elastic nodes and Logstash deployment.
+M size example for indexing less than 1 000 000 docs per min (M-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/M-size-k8s-logging-values.yaml]
 
 * For high logging stream volume a kafka broker can be enabled in the chart so the beats( or application pods sidecars) can push logs to the kafka topics. Then the Logstash input is the kafka queues and the output is the dedicated elasticsearch instance. 
+L size example for indexing more than 1 000 000 docs per min (L-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/L-size-k8s-logging-values.yaml]
 
 The logging stream has dedicated elasticsearch indices. The stdout and stderr from containers are pushed to "containers-<date>" indices. The systemlog of the OS if journabeat is enabled is pushed to "journals-<date>".
 
@@ -42,7 +44,3 @@ When docker driver is used, then following configuration can be added to local /
 127.0.0.1 es.logging.svc.cluster.local es
 127.0.0.1 kibana.logging.svc.cluster.local kibana
 ```
-
-Examples now contains scaled out configurations:
- *. M size for indexing less than 1 000 000 docs per min (M-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/M-size-k8s-logging-values.yaml]
- *. L size for indexing more than 1 000 000 docs per min (L-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/L-size-k8s-logging-values.yaml]
