@@ -24,42 +24,11 @@ data:
     requests:
       memory: 600Mi
     limits:
-      memory: 600Mi  
-
-#when in_cluster is set to false it determines an external kibana instance. 
-#In this case only jobs creating index templates and kibana objects are executed.
-kibana:
-  oldSpaceSize: 750
-  resources:
-    requests:
-      memory: 1Gi
-    limits:
-      memory: 1Gi
-      
-logstash_indexer:
-  replicas: 1
-  heap_size: 300M
-  resources:
-    requests:
       memory: 600Mi
-    limits:
-      memory: 600Mi
-  
-filebeat:
-  resources:
-    requests:
-      memory: 200M
-    limits:
-      memory: 200M
-
+#Configuration of journal path for minikube
 journalbeat:
-  resources:
-    requests:
-      memory: 200M
-    limits:
-      memory: 200M
   enabled: true
   path: /var/run/log/journal  
-
+#kafka buffering should be enabled in scaled out configuration
 kafka:
   enabled: false

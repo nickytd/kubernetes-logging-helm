@@ -58,25 +58,25 @@ elasticsearch:
 master:
   minimum_nodes: 1
   replicas: 1
-  storage: "1Gi"
-  heap_size: "256m"
+  storage: 1Gi
+  heap_size: 256m
   resources:
     requests:
-      memory: "600Mi" 
+      memory: 600Mi
     limits:
-      memory: "600Mi"
+      memory: 600Mi
   tolerations: []
   affinity: {}    
 
 #Configuration of ES coordination node if "in_cluster" is true
 client:
   replicas: 1
-  heap_size: "256m"
+  heap_size: 256m
   resources:
     requests:
-      memory: "600Mi" 
+      memory: 600Mi
     limits:
-      memory: "600Mi"
+      memory: 600Mi
   host:
   ingress:
     path: /
@@ -89,13 +89,13 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: "500M"
-  storage: "1Gi"
+  heap_size: 512M
+  storage: 1Gi
   resources:
     requests:
-      memory: "800Mi" 
+      memory: 1Gi
     limits:
-      memory: "800Mi"
+      memory: 1Gi
   tolerations: []
   affinity: {} 
 
@@ -107,18 +107,18 @@ kibana:
   user: kibana
   password: kibana
   replicas: 1
-  service_type: "ClusterIP"
+  service_type: ClusterIP
   ingress:
     path: /
     enabled: false
     annotations: {}
   index: containers,journals
-  oldSpaceSize: 1500
+  oldSpaceSize: 750
   resources:
     requests:
-      memory: "2000Mi"
+      memory: 1Gi
     limits:
-      memory: "2000Mi"  
+      memory: 1Gi
   tolerations: []
   affinity: {}    
 
@@ -133,12 +133,12 @@ logstash_indexer:
   json_messages: true
   ca_cert: root-ca.pem
   replicas: 1
-  heap_size: "256m"
+  heap_size: 256m
   resources:
     requests:
-      memory: "600Mi"
+      memory: 600Mi
     limits:
-      memory: "600Mi"
+      memory: 600Mi
   tolerations: []
   affinity: {}       
 
@@ -167,9 +167,9 @@ journalbeat:
 kafka:
   enabled: true
   replicas: 1
-  tag: "2.13-2.6.0"
-  heap_size: "256m"
-  storage: "1Gi"
+  tag: 2.13-2.6.0
+  heap_size: 256m
+  storage: 1Gi
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
     name: ["containers","journals"]
@@ -186,13 +186,13 @@ kafka:
 #Zookeeper is a dependecy of kafka
 zookeeper:
   replicas: 1
-  tag: "3.6.2"
-  heap_size: "128m"
-  storage: "1Gi"
+  tag: 3.6.2
+  heap_size: 128m
+  storage: 1Gi
   resources:
     requests:
-      memory: "500Mi"
+      memory: 300Mi
     limits:
-      memory: "500Mi"  
+      memory: 300Mi
   tolerations: []
   affinity: {}

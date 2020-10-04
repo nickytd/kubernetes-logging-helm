@@ -14,12 +14,12 @@ rm -f $sourcedir/templates.yaml
 #generated templates
 helm template elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-values.yaml $sourcedir/.. \
+   -f $sourcedir/k8s-logging-minikube-values.yaml $sourcedir/.. \
     --wait --timeout 15m --debug > $sourcedir/templates.yaml
 
 helm upgrade elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-values.yaml $sourcedir/.. \
+   -f $sourcedir/k8s-logging-minikube-values.yaml $sourcedir/.. \
    --install --wait --timeout 15m --debug
 
 kubectl expose svc/elk-client -n logging \
