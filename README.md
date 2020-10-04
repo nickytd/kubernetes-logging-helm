@@ -41,3 +41,8 @@ When docker driver is used, then following configuration can be added to local /
 ```
 127.0.0.1 es.logging.svc.cluster.local es
 127.0.0.1 kibana.logging.svc.cluster.local kibana
+
+
+Examples now contains scaled out configurations:
+ *. M size for indexing less than 1 000 000 docs per min (M-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/M-size-k8s-logging-values.yaml]
+ *. L size for indexing more than 1 000 000 docs per min (L-size-k8s-logging-values.yaml)[https://github.com/nickytd/k8s-logging-helm/blob/master/examples/L-size-k8s-logging-values.yaml]
