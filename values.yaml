@@ -159,6 +159,7 @@ journalbeat:
     limits: 
       memory: 200Mi     
   enabled: true
+#needs adaptation for minikube case
   path: /var/log/journal
   tolerations: []
   affinity: {}  

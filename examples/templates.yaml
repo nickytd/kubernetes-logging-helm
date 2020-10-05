@@ -1442,7 +1442,7 @@ spec:
           subPath: http.truststore          
         env:
         - name: ES_JAVA_OPTS
-          value: "-Xms128M -Xmx128M \
+          value: "-Xms256M -Xmx256M \
                   -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system \
                   -Djava.util.logging.config.file=/usr/share/elasticsearch/config/logging.properties"
         - name: NAMESPACE
@@ -1727,9 +1727,9 @@ spec:
         image: amazon/opendistro-for-elasticsearch:1.10.1
         resources: 
           limits:
-            memory: 600Mi
+            memory: 1Gi
           requests:
-            memory: 600Mi
+            memory: 1Gi
         livenessProbe:
           tcpSocket:
             port: transport
@@ -1780,7 +1780,7 @@ spec:
         - name: "MINIMUM_MASTER_NODES"
           value: "1"
         - name: ES_JAVA_OPTS
-          value: "-Xms256M -Xmx256M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+          value: "-Xms500M -Xmx500M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: NODE_MASTER
           value: "false"  
         - name: discovery.seed_hosts
@@ -1910,7 +1910,7 @@ spec:
         - name: "MINIMUM_MASTER_NODES"
           value: "1"
         - name: ES_JAVA_OPTS
-          value: "-Xms128M -Xmx128M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+          value: "-Xms256M -Xmx256M -Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
         - name: NODE_DATA
           value: "false"
         - name: NODE_INGEST
