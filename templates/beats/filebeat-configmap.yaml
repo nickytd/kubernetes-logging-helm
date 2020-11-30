@@ -24,6 +24,11 @@ data:
       - add_id: ~
       - add_kubernetes_metadata:
           in_cluster: true  
+      - drop_fields:
+        when:
+          has_fields: ["metadata.managedFields"]
+        fields: ["metadata.managedFields"]
+        ignore_missing: false    
     
     filebeat.autodiscover:
       providers:
