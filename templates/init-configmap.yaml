@@ -37,7 +37,7 @@ data:
      
      echo "check for host: $host at port: $port"
      
-     unti $(nc -z -w 5 $host $port); do 
+     until $(nc -z -w 5 $host $port); do 
        echo "retrying $host:$port"
        sleep 5
      done  
