@@ -37,7 +37,9 @@ data:
      
      echo "check for host: $host at port: $port"
      
-     while ! nc -z -w 2 $host $port; do 
-       echo "connecting $host:$port"
-       sleep 2
+     unti $(nc -z -w 5 $host $port); do 
+       echo "retrying $host:$port"
+       sleep 5
      done  
+
+     echo "initialized"
