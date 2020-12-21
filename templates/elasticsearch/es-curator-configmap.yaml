@@ -119,7 +119,25 @@ data:
             range_from: 0
             range_to: 0
             timestring: '%Y.%m.%d'
-            unit: days      
+            unit: days  
+      6:
+        action: alias
+        description: >-
+          Alias for all indices
+        options:
+          ignore_empty_list: True
+          name: all
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: timestring
+            value: '%Y.%m.%d'      
+          - filtertype: pattern
+            kind: prefix
+            value: journals-
+            exclude: True          
             
   curator.yml: |+
     ---

@@ -49,7 +49,7 @@ data:
   create_index_pattern.sh: |-
     #!/bin/bash
      
-    set -x 
+    set +x 
     kibana_host=$1
     IFS=',' read -r -a index_list <<< "$2"
     kibana_auth=""
@@ -58,16 +58,24 @@ data:
       kibana_auth="--user $3:$4"
     fi
 
-    echo $kibana_auth
+    echo "kibana auth: $kibana_auth"
+
+    echo "index list: ${index_list}"
 
     for i in ${index_list[@]}; do
-    if [ `curl -sS -X GET ${kibana_auth} ${kibana_host}/api/saved_objects/index-pattern/${i} | grep '"statusCode":404' |wc -l` -gt 0 ]; then
-      echo "creating index pattern: ${i}"
-      curl -sS -X POST ${kibana_auth} "${kibana_host}/api/saved_objects/index-pattern/${i}" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d "{\"attributes\": {\"title\": \"${i}-*\",\"timeFieldName\": \"@timestamp\"}}"
+      if [ "${i}" = "all" ]; then 
+        pattern="${i}"
+      else
+        pattern="${i}-*"  
+      fi
+
+      if [ `curl -sS -X GET ${kibana_auth} ${kibana_host}/api/saved_objects/index-pattern/${i} | grep '"statusCode":404' |wc -l` -gt 0 ]; then
+        echo "creating index pattern: ${i}"
+        curl -sS -X POST ${kibana_auth} "${kibana_host}/api/saved_objects/index-pattern/${i}" -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d "{\"attributes\": {\"title\": \"${pattern}\",\"timeFieldName\": \"@timestamp\"}}"
         echo ""
-    else
-      echo "creating index pattern: ${i} already exist"
-    fi
+      else
+        echo "index pattern: ${i} already exist"
+      fi
     done
 
     kibana_version=$(kibana --version)
