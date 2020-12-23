@@ -133,11 +133,7 @@ data:
           filters:
           - filtertype: pattern
             kind: timestring
-            value: '%Y.%m.%d'      
-          - filtertype: pattern
-            kind: prefix
-            value: journals-
-            exclude: True          
+            value: '%Y.%m.%d'
             
   curator.yml: |+
     ---

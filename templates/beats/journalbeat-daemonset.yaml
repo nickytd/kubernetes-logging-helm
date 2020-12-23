@@ -63,8 +63,8 @@ spec:
           mountPath: /usr/share/journalbeat/journalbeat.yml
           readOnly: true
           subPath: journalbeat.yml
-        - name: journallog
-          mountPath: {{ .Values.journalbeat.path}}
+        - name: journal-log
+          mountPath: /var/log/journal
         - name: systemd
           mountPath: /run/systemd
           readOnly: true
@@ -78,9 +78,9 @@ spec:
       - name: config
         configMap:
           name: {{ .Release.Name}}-journalbeat-config
-      - name: journallog
+      - name: journal-log
         hostPath:
-          path: {{ .Values.journalbeat.path}}
+          path: {{ .Values.journalbeat.host_path }}
           type: Directory
       - name: systemd
         hostPath:

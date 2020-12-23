@@ -6,41 +6,38 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   filebeat.yml: |-
-    logging.level: warning
-
-
-    filebeat.inputs:
-    - type: container
-      paths:
-        - '/var/lib/docker/containers/*/*-json.log'
-      multiline.pattern: '^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
-      multiline.negate: false
-      multiline.match: after
-      multiline.max_lines: 10000
+    logging.level: info
 
     tags: ["filebeat"]  
       
     processors:
       - add_id: ~
       - add_kubernetes_metadata:
-          in_cluster: true  
-      - drop_fields:
-          when:
-            has_fields: ["metadata.managedFields"]
-          fields: ["metadata.managedFields"]
-          ignore_missing: false    
-    
+          in_cluster: true
+          default_indexers.enabled: false
+          default_matchers.enabled: false
+          indexers:
+            - pod_name:
+          matchers:
+            - logs_path:
+                logs_path: '/var/lib/containers/'
+                resource_type: 'pod'    
+            
     filebeat.autodiscover:
       providers:
       - type: kubernetes
         templates:
         - condition:
-            has_fields: ['data.kubernetes.container.id']
+            has_fields: ['kubernetes.pod.uid']
           config:
             - type: container
               paths:
-                - /var/log/containers/${data.kubernetes.container.id}/*.log
-             
+                - /var/lib/containers/**/*.log      
+              multiline.pattern: '^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
+              multiline.negate: false
+              multiline.match: after
+              multiline.max_lines: 10000          
+         
 
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}

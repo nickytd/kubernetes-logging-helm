@@ -24,6 +24,7 @@ kibana_viewer:
   - index_patterns:  
     - "containers*"
     - "journals*"
+    - "all"
     - ".kibana*"
     allowed_actions:
     - "read"

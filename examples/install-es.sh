@@ -14,21 +14,11 @@ rm -f $sourcedir/templates.yaml
 #generated templates
 helm template elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-minikube-values.yaml $sourcedir/.. \
-    --wait --timeout 15m --debug > $sourcedir/templates.yaml
+   -f $sourcedir/k8s-logging-values.yaml $sourcedir/.. \
+   --debug > $sourcedir/templates.yaml
 
 helm upgrade elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-minikube-values.yaml $sourcedir/.. \
-   --install --wait --timeout 15m --debug
-
-kubectl expose svc/elk-client -n logging \
-  --name es --port 9200 --target-port=9200 --type LoadBalancer \
-  --dry-run=client -o json | jq '.metadata.namespace="logging"' | \
-  kubectl apply -f -
-
-kubectl expose svc/elk-kibana -n logging \
-  --name kibana --port 5601 --target-port=5601 --type LoadBalancer \
-  --dry-run=client -o json | jq '.metadata.namespace="logging"' | \
-  kubectl apply -f -
+   -f $sourcedir/k8s-logging-values.yaml $sourcedir/.. \
+   --install
 

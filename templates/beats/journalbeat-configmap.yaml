@@ -13,7 +13,7 @@ data:
     # When setting a directory, all journals under it are merged.
     # When empty starts to read from local journal.
     # Position to start reading from journal. Valid values: head, tail, cursor
-    - paths: ["{{ .Values.journalbeat.path }}"]
+    - paths: ["/var/log/journal"]
       seek: cursor
 
     tags: ["journalbeat"]

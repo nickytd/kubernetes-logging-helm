@@ -150,6 +150,7 @@ logstash_indexer:
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
+  host_path: /var/lib/docker/containers
   resources:
     limits: 
       memory: 200Mi     
@@ -165,7 +166,7 @@ journalbeat:
       memory: 200Mi     
   enabled: true
 #needs adaptation for minikube case
-  path: /var/log/journal
+  host_path: /var/log/journal
   tolerations: []
   affinity: {}  
 
