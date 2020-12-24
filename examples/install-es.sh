@@ -26,3 +26,7 @@ helm upgrade elk \
    -f $sourcedir/k8s-logging-values.yaml $sourcedir/.. \
    --install
 
+
+kubectl apply -f elk-ingresses.yaml \
+  --dry-run=client -o yaml | kubectl apply -f -
+

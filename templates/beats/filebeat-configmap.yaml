@@ -6,7 +6,7 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   filebeat.yml: |-
-    logging.level: info
+    logging.level: error
 
     tags: ["filebeat"]  
       
