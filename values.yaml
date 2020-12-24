@@ -150,6 +150,8 @@ logstash_indexer:
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
+  #resource type used by filebeat kubernetes provider. It can be pod or container 
+  resource_type: container
   host_path: /var/lib/docker/containers
   resources:
     limits: 

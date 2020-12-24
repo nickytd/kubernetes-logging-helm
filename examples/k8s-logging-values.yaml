@@ -1,0 +1,39 @@
+#Configuration of ES master node if "in_cluster" is true
+master:
+  storage: 1Gi
+  heap_size: 256M
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+#Configuration of ES coordination node if "in_cluster" is true
+client:
+  heap_size: 256M
+  resources:
+    requests:
+      memory: 500Mi
+    limits:  
+      memory: 500Mi
+#Configuration of ES data node if "in_cluster" is true
+data:
+  replicas: 1
+  heap_size: 500M
+  storage: 1Gi
+  resources:
+    requests:
+      memory: 1Gi
+    limits:
+      memory: 1Gi
+
+filebeat:
+  resource_type: pod
+  host_path: /var/log/pods      
+#Configuration of journal path
+#needs to be adjusted corresponding to the host
+journalbeat:
+  enabled: true
+  host_path: /run/log/journal
+#kafka buffering should be enabled in scaled out configuration
+kafka:
+  enabled: false

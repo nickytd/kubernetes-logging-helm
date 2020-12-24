@@ -17,11 +17,11 @@ data:
           default_indexers.enabled: false
           default_matchers.enabled: false
           indexers:
-            - pod_name:
+            - pod_uid:
           matchers:
             - logs_path:
-                logs_path: '/var/lib/containers/'
-                resource_type: 'pod'    
+                logs_path: '/logs'
+                resource_type: {{ .Values.filebeat.resource_type }}    
             
     filebeat.autodiscover:
       providers:
@@ -32,7 +32,7 @@ data:
           config:
             - type: container
               paths:
-                - /var/lib/containers/**/*.log      
+                - /logs/**/*.log      
               multiline.pattern: '^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
               multiline.negate: false
               multiline.match: after

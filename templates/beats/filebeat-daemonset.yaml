@@ -65,7 +65,7 @@ spec:
         - name: data
           mountPath: /usr/share/filebeat/data
         - name: var-lib-docker-containers
-          mountPath: /var/lib/containers
+          mountPath: /logs
           readOnly: true
       volumes:
       - name: init
