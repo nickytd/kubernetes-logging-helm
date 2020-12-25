@@ -29,11 +29,17 @@ data:
 filebeat:
   resource_type: pod
   host_path: /var/log/pods      
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
 #Configuration of journal path
 #needs to be adjusted corresponding to the host
 journalbeat:
   enabled: true
   host_path: /run/log/journal
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
 #kafka buffering should be enabled in scaled out configuration
 kafka:
   enabled: false
