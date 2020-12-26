@@ -1,11 +1,11 @@
-#Example
+# Example
 Here is a sample setup of the kubernetes logging stack with a scaled down configuration for [kind](https://kind.sigs.k8s.io).
 It can be used for experimenting and development purposes. 
 
 Default username and passwords are defined in the chart [configuration file](https://github.com/nickytd/k8s-logging-helm/blob/master/values.yaml)
 
 The default chart configuration supports minikube based clusters.
-In other cases the filebeats and journal beats configurations have to be adjusted in accordance to the concrete node types forming the cluster.
+In other case,s the filebeats and journalbeats configurations have to be adjusted in accordance to the concrete node types forming the cluster.
 The locations of journal logs or container logs may differ from one platform to anoter.
 
 
@@ -18,7 +18,7 @@ Ubuntu | Kind | Minikube
 In addition the file path format of the container logs differs as well.
 Filebeat [kubernetes metadata](https://www.elastic.co/guide/en/beats/filebeat/current/add-kubernetes-metadata.html) processor distingueshed between ```container```and ```pod```resource types.
 
-For example in Ubuntu based nodes we can have filebeat configuration supporting kubernetes metadata:
+For example, in Ubuntu based nodes we can have filebeat configuration supporting kubernetes metadata:
 ```
    processors:
       - add_id: ~
@@ -52,7 +52,7 @@ For example in Ubuntu based nodes we can have filebeat configuration supporting 
                   multiline.max_lines: 200
 ```
 
-And in the case of Kind provisioned cluster the same goal can be achieved with
+And in the case of Kind provisioned cluster the same goal can be achieved with:
 ```
 processors:
       - add_id: ~
