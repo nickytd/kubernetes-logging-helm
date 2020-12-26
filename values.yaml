@@ -154,7 +154,7 @@ filebeat:
   resource_type: container
   host_path: /var/lib/docker/containers
   paths: 
-    - /var/log/containers/${data.kubernetes.container.id}/*.log
+    - /logs/${data.kubernetes.container.id}/*.log
   resources:
     limits: 
       memory: 200Mi     
@@ -170,7 +170,8 @@ journalbeat:
       memory: 200Mi     
   enabled: true
 #needs adaptation for minikube case
-  host_path: /var/log/journal
+# host_path: /var/log/journal 
+  host_path: /var/run/log/journal
   tolerations: []
   affinity: {}  
 
