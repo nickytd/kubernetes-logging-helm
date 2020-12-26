@@ -15,7 +15,7 @@ Ubuntu | Kind | Minikube
 /var/log/containers | /var/log/pods | /var/lib/docker/containers
 
 
-In addition the file path format of the container logs differs as well.
+In addition the file path format of the container logs differ as well.
 Filebeat [kubernetes metadata](https://www.elastic.co/guide/en/beats/filebeat/current/add-kubernetes-metadata.html) processor distingueshed between ```container```and ```pod```resource types.
 
 For example, in Ubuntu based nodes we can have filebeat configuration supporting kubernetes metadata:
