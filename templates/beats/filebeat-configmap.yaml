@@ -34,8 +34,7 @@ data:
                 has_fields: ['kubernetes.pod.uid']
               config:
                 - type: container 
-                  paths:
-                    - /logs/${data.kubernetes.namespace}_${data.kubernetes.pod.name}_${data.kubernetes.pod.uid}/${data.kubernetes.container.name}/*.log
+                  paths: {{ toYaml .Values.filebeat.paths | nindent 18 }}                    
                   multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
                   multiline.negate: false
                   multiline.match: after

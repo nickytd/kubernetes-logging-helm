@@ -28,10 +28,12 @@ data:
 
 filebeat:
   resource_type: pod
-  host_path: /var/log/pods      
+  host_path: /var/log/pods
+  paths: 
+    - /logs/${data.kubernetes.namespace}_${data.kubernetes.pod.name}_${data.kubernetes.pod.uid}/${data.kubernetes.container.name}/*.log      
   tolerations:
     - operator: "Exists"
-      effect: "NoSchedule"
+      effect: "NoSchedule"    
 #Configuration of journal path
 #needs to be adjusted corresponding to the host
 journalbeat:

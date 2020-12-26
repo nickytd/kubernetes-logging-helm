@@ -153,6 +153,8 @@ filebeat:
   #resource type used by filebeat kubernetes provider. It can be pod or container 
   resource_type: container
   host_path: /var/lib/docker/containers
+  paths: 
+    - /var/log/containers/${data.kubernetes.container.id}/*.log
   resources:
     limits: 
       memory: 200Mi     
