@@ -17,28 +17,30 @@ data:
           default_indexers.enabled: false
           default_matchers.enabled: false
           indexers:
-            - pod_uid:
+            - container:
           matchers:
             - logs_path:
                 logs_path: '/logs'
-                resource_type: {{ .Values.filebeat.resource_type }}    
+                resource_type: {{ .Values.filebeat.resource_type }}
+      - drop_fields:
+          fields: ["kubernetes.metadata.managedFields","container"]
+          ignore_missing: false              
             
     filebeat.autodiscover:
       providers:
-      - type: kubernetes
-        templates:
-        - condition:
-            has_fields: ['kubernetes.pod.uid']
-          config:
-            - type: container
-              paths:
-                - /logs/**/*.log      
-              multiline.pattern: '^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
-              multiline.negate: false
-              multiline.match: after
-              multiline.max_lines: 10000          
-         
-
+        - type: kubernetes
+          templates:
+            - condition:
+                has_fields: ['kubernetes.pod.uid']
+              config:
+                - type: container 
+                  paths:
+                    - /logs/${data.kubernetes.namespace}_${data.kubernetes.pod.name}_${data.kubernetes.pod.uid}/${data.kubernetes.container.name}/*.log
+                  multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
+                  multiline.negate: false
+                  multiline.match: after
+                  multiline.max_lines: 200
+                         
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}
       hosts: ["kafka-svc.{{ .Release.Namespace }}:9092"]
