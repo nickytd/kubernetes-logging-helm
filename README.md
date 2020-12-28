@@ -4,10 +4,11 @@ This is a comprehensive helm chart for deploying complete K8S logging stack feat
 
 ![Containers Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/k8s-logging-stack.jpg)
 
-Here is a [minikube setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing
+Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing based on [kind](https://kind.sigs.k8s.io)
 
-Start a sample provisioning with
-[examples/install-es.sh](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/install-es.sh)
+Start a sample provisioning with seting up a local cluster, followed by seting up the elk stack.
+[examples/setup-cluster.sh](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/setup-cluster.sh)
+[examples/install-elk.sh](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/install-elk.sh)
 
 
 Provisioning options:
