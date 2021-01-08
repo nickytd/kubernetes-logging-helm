@@ -27,6 +27,6 @@ helm upgrade elk \
    --install
 
 
-kubectl apply -f elk-ingresses.yaml \
+kubectl apply -f $sourcedir/elk-ingresses.yaml \
   --dry-run=client -o yaml | kubectl apply -f -
 
