@@ -20,3 +20,5 @@ kubectl cluster-info --context kind-kind
 
 echo "deploy nginx-ingress controler"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
+
+kubectl wait --for=condition=ready pod -l app.kubernetes.io/component=controller -n ingress-nginx --timeout=15m
