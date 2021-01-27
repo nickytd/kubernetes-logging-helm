@@ -6,9 +6,24 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   filebeat.yml: |-
-    logging.level: error
+    logging.level: info
+
+    queue.mem:
+      events: 4096
+      flush.min_events: 1024
+      flush.timeout: 5s
 
     tags: ["filebeat"]  
+
+
+    filebeat.inputs:
+    - type: container
+      paths:
+        - '/logs/*/*.log'
+      multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
+      multiline.negate: false
+      multiline.match: after
+      multiline.max_lines: 200
       
     processors:
       - add_id: ~
@@ -22,23 +37,15 @@ data:
             - logs_path:
                 logs_path: '/logs'
                 resource_type: {{ .Values.filebeat.resource_type }}
-      - drop_fields:
-          fields: ["kubernetes.metadata.managedFields","container"]
-          ignore_missing: false              
             
     filebeat.autodiscover:
       providers:
         - type: kubernetes
           templates:
-            - condition:
-                has_fields: ['kubernetes.pod.uid']
-              config:
-                - type: container 
-                  paths: {{ toYaml .Values.filebeat.paths | nindent 18 }}                    
-                  multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
-                  multiline.negate: false
-                  multiline.match: after
-                  multiline.max_lines: 200
+          - config:
+              - type: container 
+                paths:
+                  - '/logs/*/*.log'
                          
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}
