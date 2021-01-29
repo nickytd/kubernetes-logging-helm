@@ -27,10 +27,7 @@ data:
       memory: 1Gi
 
 filebeat:
-  resource_type: pod
   host_path: /var/log/pods
-  paths: 
-    - /logs/${data.kubernetes.namespace}_${data.kubernetes.pod.name}_${data.kubernetes.pod.uid}/${data.kubernetes.container.name}/*.log      
   tolerations:
     - operator: "Exists"
       effect: "NoSchedule"    

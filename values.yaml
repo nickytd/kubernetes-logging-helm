@@ -150,14 +150,11 @@ logstash_indexer:
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
-  #resource type used by filebeat kubernetes provider. It can be pod or container 
-  resource_type: container
-  host_path: /var/lib/docker/containers
-  paths: 
-    - /logs/${data.kubernetes.container.id}/*.log
+  queue_size: 1024
+  containers_host_path: /var/lib/docker/containers
   resources:
     limits: 
-      memory: 200Mi     
+      memory: 100Mi     
   tolerations: []
   affinity: {}
 
@@ -167,11 +164,11 @@ filebeat:
 journalbeat:
   resources:
     limits: 
-      memory: 200Mi     
+      memory: 100Mi     
   enabled: true
 #needs adaptation for minikube case
 # host_path: /var/log/journal 
-  host_path: /var/run/log/journal
+  journals_host_path: /var/run/log/journal
   tolerations: []
   affinity: {}  
 

@@ -7,25 +7,21 @@ metadata:
 data:
   journalbeat.yml: |-
     logging.level: warning
+    tags: ["journalbeat"]
 
     journalbeat.inputs:
     # Paths that should be crawled and fetched. Possible values files and directories.
     # When setting a directory, all journals under it are merged.
     # When empty starts to read from local journal.
     # Position to start reading from journal. Valid values: head, tail, cursor
-    - paths: ["/var/log/journal"]
+    - paths: ["/logs"]
       seek: cursor
-
-    tags: ["journalbeat"]
     
     processors:
     - add_id: ~
     - add_kubernetes_metadata:
         in_cluster: true
-    #- fingerprint:
-    #    fields: ["@timestamp", "@metadata._id"]
-    #    ignore_missing: true      
-
+    
     output.kafka:
       enabled: {{ printf "%t" .Values.kafka.enabled }}
       hosts: ["kafka-svc.{{ .Release.Namespace }}:9092"]

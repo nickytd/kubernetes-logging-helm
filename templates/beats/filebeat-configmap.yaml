@@ -7,14 +7,12 @@ metadata:
 data:
   filebeat.yml: |-
     logging.level: info
+    tags: ["filebeat"]
 
     queue.mem:
-      events: 4096
-      flush.min_events: 1024
+      events: {{ .Values.filebeat.queue_size | default 4096 }}
+      flush.min_events: 256
       flush.timeout: 5s
-
-    tags: ["filebeat"]  
-
 
     filebeat.inputs:
     - type: container
@@ -36,7 +34,7 @@ data:
           matchers:
             - logs_path:
                 logs_path: '/logs'
-                resource_type: {{ .Values.filebeat.resource_type }}
+                resource_type: containers
             
     filebeat.autodiscover:
       providers:
