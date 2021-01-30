@@ -85,7 +85,7 @@ spec:
           value: kafka-svc:9092
         {{- end }}          
         - name: LS_JAVA_OPTS
-          value: "-Xms{{ .Values.logstash_indexer.heap_size }} -Xmx{{ .Values.logstash_indexer.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
+          value: "{{ .Values.elasticsearch.additional_jvm_params }}"
         - name: CA_CERT
           value: "{{ .Values.logstash_indexer.ca_cert }}"
         resources: {{ toYaml .Values.logstash_indexer.resources | nindent 10 }}  
@@ -93,6 +93,9 @@ spec:
         - mountPath: "/usr/share/logstash/config/logstash.yml"
           subPath: logstash.yml
           name: config
+        - mountPath: "/usr/share/logstash/config/jvm.options"
+          subPath: jvm.options
+          name: config  
         - mountPath: "/usr/share/logstash/config/pipelines.yml"
           subPath: pipelines.yml
           name: config
