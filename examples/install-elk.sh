@@ -44,4 +44,6 @@ do
         -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/.. \
         > $sourcedir/templates.yaml
     fi
+
+
 done      

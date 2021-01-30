@@ -1,7 +1,9 @@
+elasticsearch:
+  additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
 #Configuration of ES master node if "in_cluster" is true
 master:
   storage: 1Gi
-  heap_size: 256M
+  heap_size: 128m
   resources:
     requests:
       memory: 500Mi
@@ -9,7 +11,7 @@ master:
       memory: 500Mi
 #Configuration of ES coordination node if "in_cluster" is true
 client:
-  heap_size: 256M
+  heap_size: 128m
   resources:
     requests:
       memory: 500Mi
@@ -18,15 +20,32 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: 500M
+  heap_size: 500m
   storage: 1Gi
   resources:
     requests:
-      memory: 1Gi
+      memory: 800Mi
     limits:
-      memory: 1Gi
+      memory: 800Mi
+
+logstash_indexer:
+  heap_size: 1g
+  resources:
+    requests:
+      memory: 1500Mi
+    limits:
+      memory: 1500Mi   
+
+kibana:
+  oldSpaceSize: 350
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 500Mi      
 
 filebeat:
+  mem_queue: 1024
   host_path: /var/log/pods
   tolerations:
     - operator: "Exists"
