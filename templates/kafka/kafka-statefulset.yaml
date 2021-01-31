@@ -6,13 +6,13 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   selector:
-    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}     
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}     
       type: kafka
   serviceName: kafka
   replicas: {{ .Values.kafka.replicas }}
   template:
     metadata:
-      labels: {{ include "logging.metadata.labels" . | indent 8 }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: kafka
     spec:
       priorityClassName: logging-critical

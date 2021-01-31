@@ -2,11 +2,7 @@
 # Global values
 cluster_name: logging
 imagePullSecrets: []
-storage_class:
-
-#Version of ELK stack (logstash, filebeat, journalbeat ...)
-app_version: 7.10.0
-repository: docker.elastic.co
+storage_class: ""
 
 #Opendistro configuration 
 opendistro:
@@ -41,7 +37,10 @@ init_container_image:
 #In case "in_cluster" is set to false, the logstash-indexer uses it as an output destination. The coordination, master and data nodes
 #are skiped.
 elasticsearch:
+  image: docker.elastic.co
+  imageTag: 7.10.0
   in_cluster: true
+  with_node_roles: true
   snapshot:
     enabled: false
     storage_class:

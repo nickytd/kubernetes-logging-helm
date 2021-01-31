@@ -29,16 +29,19 @@ If release name contains chart name it will be used as a full name.
 
 {{/*Create default labels section*/}}
 {{- define "logging.labels" }}
-app: {{ template "logging.fullname" . }}
-chart: {{ template "logging.chart" . }}
-release: {{ .Release.Name }}
-heritage: {{ .Release.Service }}
+{{ include "logging.selectorLabels" . }}
+{{- if .Chart.Version }}
+app.kubernetes.io/version: {{ .Chart.Version | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/elastic: {{ .Values.elasticsearch.imageTag  }}
+app.kubernetes.io/openDistro: {{ .Values.opendistro.imageTag }}
 {{- end }}
 
 {{/*Create default labels section*/}}
-{{- define "logging.metadata.labels" }}
-app: {{ template "logging.fullname" . }}
-release: {{ .Release.Name }}
+{{- define "logging.selectorLabels" }}
+app.kubernetes.io/name: {{ include "logging.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*Create zookeeper server str*/}}

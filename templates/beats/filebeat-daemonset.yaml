@@ -6,7 +6,7 @@ metadata:
     type: filebeat
 spec:
   selector:
-    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       k8s-app: filebeat  
   updateStrategy:
     type: RollingUpdate
@@ -14,7 +14,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/beats/filebeat-configmap.yaml") . | sha256sum }}  
-      labels: {{ include "logging.metadata.labels" . | indent 8 }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: filebeat
     spec:
       securityContext:
@@ -46,7 +46,7 @@ spec:
           name: init       
       containers:
       - name: filebeat
-        image: {{ .Values.repository }}/beats/filebeat:{{ .Values.app_version }}
+        image: {{ .Values.elasticsearch.image }}/beats/filebeat:{{ .Values.elasticsearch.imageTag }}
         args: [
           "-c", "/usr/share/filebeat/filebeat.yml",
           "-e",

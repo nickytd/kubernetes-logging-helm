@@ -14,7 +14,7 @@ spec:
     metadata:
       annotations:
         "sidecar.istio.io/inject": "false"
-      labels: {{ include "logging.labels" . | indent 8 }}            
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}            
         type: es-aliases
     spec:
       restartPolicy: OnFailure

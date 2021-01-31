@@ -12,7 +12,7 @@ spec:
   - name: journals
     port: 5045
     targetPort: journals  
-  selector: {{ include "logging.metadata.labels" . | indent 4 }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: logstash-indexer
   type: ClusterIP
 {{- end }}  

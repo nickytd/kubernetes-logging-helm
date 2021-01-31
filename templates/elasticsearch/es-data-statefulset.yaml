@@ -10,7 +10,7 @@ spec:
   serviceName: {{ .Release.Name }}-data
   replicas: {{ .Values.data.replicas }}
   selector:
-    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       node: es
       type: data
   template:
@@ -18,7 +18,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/elasticsearch/es-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
-      labels: {{ include "logging.metadata.labels" . | indent 8 }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
         node: es
         type: data
     spec:

@@ -7,13 +7,13 @@ metadata:
     type: journalbeat
 spec:
   selector:
-    matchLabels: {{ include "logging.metadata.labels" . | indent 6 }}
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       k8s-app: journalbeat      
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
-      labels: {{ include "logging.metadata.labels" . | indent 8 }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: journalbeat
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/beats/journalbeat-configmap.yaml") . | sha256sum }}      
@@ -47,7 +47,7 @@ spec:
           name: init 
       containers:
       - name: journalbeat
-        image: {{ .Values.repository }}/beats/journalbeat:{{ .Values.app_version }}
+        image: {{ .Values.elasticsearch.image }}/beats/journalbeat:{{ .Values.elasticsearch.imageTag }}
         args: [
           "-c", "/usr/share/journalbeat/journalbeat.yml",
           "-e"

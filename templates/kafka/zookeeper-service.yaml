@@ -16,7 +16,7 @@ spec:
   - port: 9191
     name: exporter
   clusterIP: None
-  selector: {{ include "logging.metadata.labels" . | indent 4 }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: zk
 ---
 apiVersion: v1
@@ -34,6 +34,6 @@ spec:
     name: admin  
   - port: 9191
     name: exporter
-  selector: {{ include "logging.metadata.labels" . | indent 4 }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: zk
 {{- end }}    

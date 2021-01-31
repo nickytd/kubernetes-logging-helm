@@ -9,7 +9,7 @@ spec:
   - name: ui
     port: 5601
     targetPort: ui
-  selector: {{ include "logging.metadata.labels" . | indent 4 }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: kibana
   type: {{ .Values.kibana.service_type | default "ClusterIP" }}
 {{- end }}

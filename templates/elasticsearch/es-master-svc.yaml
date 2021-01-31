@@ -6,7 +6,7 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   type: ClusterIP
-  selector: {{ include "logging.metadata.labels" . | indent 4 }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
     node: es
     type: master
   ports:

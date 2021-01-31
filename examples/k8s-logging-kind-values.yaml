@@ -43,6 +43,7 @@ kibana:
       memory: 500Mi      
 
 filebeat:
+  log_level: info
   mem_queue: 1024
   host_path: /var/log/pods
   tolerations:
@@ -51,6 +52,7 @@ filebeat:
 #Configuration of journal path
 #needs to be adjusted corresponding to the host
 journalbeat:
+  log_level: info
   enabled: true
   host_path: /run/log/journal
   tolerations:
