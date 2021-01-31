@@ -36,7 +36,7 @@ spec:
           name: init
       containers:
       - name: kafka
-        image: wurstmeister/kafka:{{ .Values.kafka.tag }}
+        image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
         ports:
         - containerPort: 9092
           name: kafka
@@ -83,9 +83,7 @@ spec:
   - metadata:
       name: kafka-data
     spec:
-      {{- with .Values.storage_class }}
-      storageClassName: {{ . | quote }}
-      {{- end }}
+      storageClassName: {{ default .Values.storage_class .Values.kafka.storage_class | quote }}
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:

@@ -142,9 +142,7 @@ spec:
   - metadata:
       name: es-data
     spec:
-      {{- with .Values.storage_class }}
-      storageClassName: {{ . | quote }}
-      {{- end }}
+      storageClassName: {{ default .Values.storage_class .Values.master.storage_class | quote }}
       accessModes:
       - ReadWriteOnce
       resources:

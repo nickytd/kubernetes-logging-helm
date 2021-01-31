@@ -117,14 +117,14 @@ data:
 
     # generate a heap dump when an allocation from the Java heap fails
     # heap dumps are created in the working directory of the JVM
-    -XX:+HeapDumpOnOutOfMemoryError    
+    #-XX:+HeapDumpOnOutOfMemoryError    
 
     # specify an alternative path for heap dumps
     # ensure the directory exists and has sufficient space
     #-XX:HeapDumpPath=${LOGSTASH_HOME}/heapdump.hprof    
 
     ## GC logging
-    -XX:+PrintGCDetails
+    #-XX:+PrintGCDetails
     #-XX:+PrintGCTimeStamps
     #-XX:+PrintGCDateStamps
     #-XX:+PrintClassHistogram
@@ -139,5 +139,4 @@ data:
     -Djava.security.egd=file:/dev/urandom    
 
     # Copy the logging context from parent threads to children
-    -Dlog4j2.isThreadContextMapInheritable=true  
- 
+    -Dlog4j2.isThreadContextMapInheritable=true

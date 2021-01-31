@@ -30,9 +30,9 @@ logstash_indexer:
   heap_size: 512m
   resources:
     requests:
-      memory: 800Mi
+      memory: 1Gi
     limits:
-      memory: 800Mi   
+      memory: 1Gi
 
 kibana:
   oldSpaceSize: 350
@@ -43,7 +43,11 @@ kibana:
       memory: 500Mi      
 
 filebeat:
-  log_level: info
+  logging:
+    level: info
+    json: true
+    metrics:
+      enabled: true
   mem_queue: 1024
   host_path: /var/log/pods
   tolerations:
@@ -52,8 +56,12 @@ filebeat:
 #Configuration of journal path
 #needs to be adjusted corresponding to the host
 journalbeat:
-  log_level: info
   enabled: true
+  logging:
+    level: info
+    json: true
+    metrics:
+      enabled: true
   host_path: /run/log/journal
   tolerations:
     - operator: "Exists"

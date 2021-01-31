@@ -1,13 +1,13 @@
 # Default values for kubernetes-logging.
 # Global values
-cluster_name: logging
+cluster_name: "logging"
 imagePullSecrets: []
-storage_class: ""
+storage_class: "standard"
 
 #Opendistro configuration 
 opendistro:
-  image: amazon/opendistro-for-elasticsearch
-  imageTag: 1.12.0
+  image: "amazon/opendistro-for-elasticsearch"
+  imageTag: "1.12.0"
   saml:
     enabled: false
 #    idp:
@@ -22,13 +22,13 @@ opendistro:
 
 #ES Curator job configuration
 es_curator_image:
-  image: nickytd/es-curator
-  imageTag: 5.8
+  image: "nickytd/es-curator"
+  imageTag: "5.8"
 
 #Init container configuration. Used for multiple application startup checks
 init_container_image:
-  image: nickytd/init-container
-  imageTag: latest
+  image: "nickytd/init-container"
+  imageTag: "latest"
   imagePullPolicy: IfNotPresent
 
 #ES configuration
@@ -37,49 +37,50 @@ init_container_image:
 #In case "in_cluster" is set to false, the logstash-indexer uses it as an output destination. The coordination, master and data nodes
 #are skiped.
 elasticsearch:
-  image: docker.elastic.co
-  imageTag: 7.10.0
+  image: "docker.elastic.co"
+  imageTag: "7.10.0"
   in_cluster: true
   with_node_roles: true
   snapshot:
     enabled: false
-    storage_class:
-    size: 5Gi
+    storage_class: ""
+    size: "5Gi"
   index_shards: 1
   index_replicas: 0
   retention_days: 1
   additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
-  url:
-  user: esadmin
-  password: esadmin
+  url: ""
+  user: "esadmin"
+  password: "esadmin"
 
 #Configuration of ES master node if "in_cluster" is true
 master:
   minimum_nodes: 1
   replicas: 1
-  storage: 1Gi
-  heap_size: 256m
+  storage: "1Gi"
+  heap_size: "256m"
   resources:
     requests:
-      memory: 600Mi
+      memory: "600Mi"
     limits:
-      memory: 600Mi
+      memory: "600Mi"
+  storage_class: ""    
   tolerations: []
   affinity: {}    
 
 #Configuration of ES coordination node if "in_cluster" is true
 client:
   replicas: 1
-  heap_size: 256m
+  heap_size: "512m"
   resources:
     requests:
-      memory: 600Mi
+      memory: "800Mi"
     limits:
-      memory: 600Mi
+      memory: "800Mi"
   host:
   ingress:
-    path: /
-    secret_name: null
+    path: "/"
+    secret_name: ""
     enabled: false
     annotations: {}
   tolerations: []
@@ -88,13 +89,14 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: 512M
-  storage: 1Gi
+  heap_size: "256m"
+  storage: "1Gi"
   resources:
     requests:
-      memory: 800Mi
+      memory: "600Mi"
     limits:
-      memory: 800Mi
+      memory: "600Mi"
+  storage_class: ""    
   tolerations: []
   affinity: {} 
 
@@ -102,22 +104,22 @@ data:
 #In this case only jobs creating index templates and kibana objects are executed.
 kibana:
   in_cluster: true
-  url:
-  user: kibana
-  password: kibana
+  url: ""
+  user: "kibana"
+  password: "kibana"
   replicas: 1
   service_type: ClusterIP
   ingress:
-    path: /
+    path: "/"
     enabled: false
     annotations: {}
-  index: containers,journals,all
+  index: "containers,filebeats,journals,all"
   oldSpaceSize: 350
   resources:
     requests:
-      memory: 600Mi
+      memory: "600Mi"
     limits:
-      memory: 600Mi
+      memory: "600Mi"
   tolerations: []
   affinity: {}    
 
@@ -130,14 +132,14 @@ kibana:
 #wherer values are mapped to different ES field types.
 logstash_indexer:
   json_messages: true
-  ca_cert: root-ca.pem
+  ca_cert: "root-ca.pem"
   replicas: 1
-  heap_size: 512m
+  heap_size: "512m"
   resources:
     requests:
-      memory: 800Mi
+      memory: "800Mi"
     limits:
-      memory: 800Mi
+      memory: "800Mi"
   tolerations: []
   affinity: {}
   code_snippet: 
@@ -149,12 +151,16 @@ logstash_indexer:
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
-  log_level: warning
+  logging:
+    level: "warning"
+    json: true
+    metrics:
+      enabled: false
   queue_size: 1024
-  containers_host_path: /var/lib/docker/containers
+  containers_host_path: "/var/lib/docker/containers"
   resources:
     limits: 
-      memory: 100Mi     
+      memory: "100Mi"
   tolerations: []
   affinity: {}
 
@@ -162,14 +168,18 @@ filebeat:
 #It depends on the concrete minion OS
 #Those logs help to catch states related to OS services such as container runtimes and kubelet services
 journalbeat:
-  log_level: warning
+  logging:
+    level: "warning"
+    json: true
+    metrics:
+      enabled: false
   resources:
     limits: 
-      memory: 100Mi     
+      memory: "100Mi"    
   enabled: true
 #needs adaptation for minikube case
 # host_path: /var/log/journal 
-  journals_host_path: /var/run/log/journal
+  journals_host_path: "/var/run/log/journal"
   tolerations: []
   affinity: {}  
 
@@ -177,9 +187,10 @@ journalbeat:
 kafka:
   enabled: true
   replicas: 1
-  tag: 2.13-2.6.0
-  heap_size: 256m
-  storage: 1Gi
+  image: "wurstmeister/kafka"
+  imageTag: "2.13-2.6.0"
+  heap_size: "256m"
+  storage: "1Gi"
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
     name: ["containers","journals"]
@@ -187,22 +198,25 @@ kafka:
     partitions: 1
   resources:
     requests:
-      memory: 600Mi
+      memory: "600Mi"
     limits:
-      memory: 600Mi    
+      memory: "600Mi"
+  storage_class: ""    
   tolerations: []
   affinity: {}   
 
 #Zookeeper is a dependecy of kafka
 zookeeper:
   replicas: 1
-  tag: 3.6.2
-  heap_size: 128m
+  image: "zookeeper"
+  imageTag: "3.6.2"
+  heap_size: "128m"
   storage: 1Gi
   resources:
     requests:
       memory: 300Mi
     limits:
       memory: 300Mi
+  storage_class: ""
   tolerations: []
   affinity: {}

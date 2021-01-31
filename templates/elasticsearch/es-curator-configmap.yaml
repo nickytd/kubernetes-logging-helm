@@ -67,8 +67,24 @@ data:
             kind: prefix
             value: journals-
             exclude:
-        
+
       4:
+        action: alias
+        description: >-
+          Alias newly created indices under filebeats alias
+        options:
+          ignore_empty_list: True
+          name: filebeats
+          warn_if_no_indices: False
+          disable_action: False
+        add:
+          filters:
+          - filtertype: pattern
+            kind: prefix
+            value: filebeats-
+            exclude:      
+        
+      5:
         action: alias
         description: >-
           Alias newly created indices under logging alias
@@ -94,7 +110,7 @@ data:
             range_to: 0
             timestring: '%Y.%m.%d'
             unit: days
-      5:
+      6:
         action: alias
         description: >-
           Alias newly created indices under monitoring alias
@@ -120,7 +136,7 @@ data:
             range_to: 0
             timestring: '%Y.%m.%d'
             unit: days  
-      6:
+      7:
         action: alias
         description: >-
           Alias for all indices

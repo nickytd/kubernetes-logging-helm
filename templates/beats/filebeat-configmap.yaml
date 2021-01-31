@@ -6,7 +6,11 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   filebeat.yml: |-
-    logging.level: {{ .Values.filebeat.log_level }}
+    logging:
+      level: {{ .Values.filebeat.logging.level }}
+      json: {{ .Values.filebeat.logging.json }}
+      metrics:
+        enabled: {{ .Values.filebeat.logging.metrics.enabled }}
     tags: ["filebeat"]
 
     queue.mem:
