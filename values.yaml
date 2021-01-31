@@ -93,9 +93,9 @@ data:
   storage: 1Gi
   resources:
     requests:
-      memory: 1Gi
+      memory: 800Mi
     limits:
-      memory: 1Gi
+      memory: 800Mi
   tolerations: []
   affinity: {} 
 
@@ -113,12 +113,12 @@ kibana:
     enabled: false
     annotations: {}
   index: containers,journals,all
-  oldSpaceSize: 750
+  oldSpaceSize: 350
   resources:
     requests:
-      memory: 1Gi
+      memory: 600Mi
     limits:
-      memory: 1Gi
+      memory: 600Mi
   tolerations: []
   affinity: {}    
 
@@ -133,12 +133,12 @@ logstash_indexer:
   json_messages: true
   ca_cert: root-ca.pem
   replicas: 1
-  heap_size: 256m
+  heap_size: 512m
   resources:
     requests:
-      memory: 600Mi
+      memory: 800Mi
     limits:
-      memory: 600Mi
+      memory: 800Mi
   tolerations: []
   affinity: {}
   code_snippet: 
@@ -150,6 +150,7 @@ logstash_indexer:
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
 filebeat:
+  log_level: warning
   queue_size: 1024
   containers_host_path: /var/lib/docker/containers
   resources:
@@ -162,6 +163,7 @@ filebeat:
 #It depends on the concrete minion OS
 #Those logs help to catch states related to OS services such as container runtimes and kubelet services
 journalbeat:
+  log_level: warning
   resources:
     limits: 
       memory: 100Mi     

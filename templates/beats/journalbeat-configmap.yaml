@@ -6,7 +6,7 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   journalbeat.yml: |-
-    logging.level: warning
+    logging.level: {{ .Values.filebeat.log_level }}
     tags: ["journalbeat"]
 
     journalbeat.inputs:

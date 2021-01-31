@@ -1,5 +1,3 @@
-elasticsearch:
-  additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
 #Configuration of ES master node if "in_cluster" is true
 master:
   storage: 1Gi
@@ -20,21 +18,21 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: 500m
+  heap_size: 750m
   storage: 1Gi
   resources:
     requests:
-      memory: 800Mi
+      memory: 1200Mi
     limits:
-      memory: 800Mi
+      memory: 1200Mi
 
 logstash_indexer:
-  heap_size: 1g
+  heap_size: 512m
   resources:
     requests:
-      memory: 1500Mi
+      memory: 800Mi
     limits:
-      memory: 1500Mi   
+      memory: 800Mi   
 
 kibana:
   oldSpaceSize: 350
