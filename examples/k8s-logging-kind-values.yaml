@@ -9,22 +9,22 @@ master:
       memory: 500Mi
 #Configuration of ES coordination node if "in_cluster" is true
 client:
-  heap_size: 128m
+  heap_size: 256m
   resources:
     requests:
-      memory: 500Mi
+      memory: 600Mi
     limits:  
-      memory: 500Mi
+      memory: 600Mi
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: 750m
+  heap_size: 256m
   storage: 1Gi
   resources:
     requests:
-      memory: 1200Mi
+      memory: 600Mi
     limits:
-      memory: 1200Mi
+      memory: 600Mi
 
 logstash_indexer:
   heap_size: 512m

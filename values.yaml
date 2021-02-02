@@ -107,6 +107,12 @@ kibana:
   url: ""
   user: "kibana"
   password: "kibana"
+  readonly:
+     user: "viewer"
+     password: "view"
+  developer:
+     user: "developer"
+     password: "develop"   
   replicas: 1
   service_type: ClusterIP
   ingress:

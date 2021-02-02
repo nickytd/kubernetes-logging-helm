@@ -8,38 +8,35 @@ _meta:
 
 # Define your roles mapping here
 
-## Demo roles mapping
-
-all_access:
-  reserved: false
-  backend_roles:
-  - admin
-  description: "Maps admin to all_access"
-
 admin:
   reserved: false
-  users:
-  - {{ .Values.elasticsearch.user }}
-  and_backend_roles:
-  - admin
+  backend_roles:
+    - "administrator"
   description: "Maps external es user to admin role"
 
-logstash:
-  reserved: false
-  backend_roles:
-  - "logstash"
 
-readall:
+kibana_admin:
   reserved: false
-  backend_roles:
-  - "readall"
-
-manage_snapshots:
-  reserved: false
-  backend_roles:
-  - "snapshotrestore"
-
-kibana_server:
-  reserved: true
   users:
-  - "{{ .Values.kibana.user }}"
+  - {{ .Values.kibana.user }} 
+  description: "Maps external es user to admin role"
+
+
+kibana_viewer:
+  reserved: false
+  backend_roles:
+    - "viewer"
+  description: "Maps viewer backend role"
+
+kibana_developer:
+  reserved: false
+  backend_roles:
+    - "developer"
+  description: "Maps developer backend role"  
+
+kibana_user:
+  reserved: false
+  backend_roles:
+    - "viewer"
+    - "developer"
+  description: "Maps viewer and developer backend roles to kibana user"  

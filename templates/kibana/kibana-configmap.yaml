@@ -42,8 +42,9 @@ data:
 {{ end }}    
 
     opendistro_security.multitenancy.enabled: true
+    opendistro_security.multitenancy.tenants.enable_global: true
     opendistro_security.multitenancy.tenants.enable_private: true
-    opendistro_security.multitenancy.tenants.preferred: ["Private","Global"]
+    opendistro_security.multitenancy.tenants.preferred: ["Developer","Global","Private"]
     opendistro_security.cookie.secure: false
 
   create_index_pattern.sh: |-

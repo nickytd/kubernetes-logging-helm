@@ -8,19 +8,31 @@ _meta:
 
 # Define your internal users here
 
-## Demo users
-## $$... are placeholders for the generated username and passwords during helm chart installation
-
 {{ .Values.elasticsearch.user }}:
   hash: "$$ELASTICSEARCH_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "admin"
-  description: "Demo admin user"
+  - "administrator"
+  description: "{{ .Values.elasticsearch.user }} user for ES"
 
 {{ .Values.kibana.user }}:
   hash: "$$KIBANA_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "admin"
-  description: "Demo kibanaserver user"
+  - "administrator"
+  description: "{{ .Values.kibana.user }} user for Kibana"
+
+
+{{ .Values.kibana.readonly.user }}:
+  hash: "$$KIBANA_READONLY_PASSWORD_HASH"
+  reserved: true
+  backend_roles:
+  - "viewer"
+  description: "{{ .Values.kibana.readonly.user }} read only user for Kibana"  
+
+{{ .Values.kibana.developer.user }}:
+  hash: "$$KIBANA_DEVELOPER_PASSWORD_HASH"
+  reserved: true
+  backend_roles:
+  - "developer"
+  description: "{{ .Values.kibana.developer.user }} developer user for Kibana"    

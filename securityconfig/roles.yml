@@ -9,44 +9,74 @@ kibana_read_only:
 admin:
   reserved: true
   cluster_permissions:
-  - "unlimited"
-  index_permissions:
-  - index_patterns:
     - "*"
-    allowed_actions:
-      - unlimited
+    - "unlimited"
+  index_permissions:
+    - index_patterns:
+      - "*"
+      allowed_actions:      
+        - "*"
+  tenant_permissions:    
+    - tenant_patterns:
+        - "*"    
+      allowed_actions:    
+        - "*"
 
 kibana_viewer:
-  reserved: true
+  reserved: false
   cluster_permissions:
-  - "cluster_composite_ops_ro"
+    - "cluster_composite_ops_ro"
   index_permissions:
-  - index_patterns:  
-    - "containers*"
-    - "journals*"
-    - "all"
-    - ".kibana*"
-    allowed_actions:
-    - "read"
-    - "search"
+    - index_patterns:  
+        - "*"
+      allowed_actions:
+        - "read"
+        - "search"
+        - "get"
+        - "manage"
+        - "suggest" 
   tenant_permissions:
   - tenant_patterns:
-    - "global*"
+      - "global_tenant"
     allowed_actions:
-    - "kibana_all_read"  
+      - "kibana_all_read"
+
+kibana_developer:
+  reserved: false
+  cluster_permissions:
+    - "cluster_composite_ops_ro"
+  index_permissions:
+    - index_patterns:  
+        - "*"
+      allowed_actions:
+        - "read"
+        - "search"
+        - "get"
+        - "manage"
+        - "suggest"
+  tenant_permissions:
+  - tenant_patterns:
+      - "global_tenant"
+    allowed_actions:
+      - "kibana_all_read"  
+  - tenant_patterns:
+      - "Developer"
+    allowed_actions:
+      - "kibana_all_read"
+      - "kibana_all_write"       
+
   
 
 kibana_admin:
   reserved: true
   cluster_permissions:
-  - "unlimited"
+    - "unlimited"
   index_permissions:
-  - index_patterns:
-    - "*"
-    allowed_actions:
-      - unlimited
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - unlimited
   
-
 # The security REST API access role is used to assign specific users access to change the security settings through the REST API.
 security_rest_api_access:
   reserved: true
@@ -77,22 +107,4 @@ alerting_full_access:
       - ".opendistro-alerting-config"
       - ".opendistro-alerting-alert*"
       allowed_actions:
-        - crud 
-
-kibana_logging_tenant:
-  reserved: false
-  hidden: false
-  cluster_permissions:
-  - "indices:data/read/mget*"
-  index_permissions:
-  - index_patterns:
-    - "logging"
-    allowed_actions:
-    - "indices:data/read/search"
-    - "indices:data/read/mget*"
-  tenant_permissions:
-  - tenant_patterns:
-    - "logging_tenant"
-    allowed_actions:
-    - "kibana_all_read"
-  static: false     
+        - crud    

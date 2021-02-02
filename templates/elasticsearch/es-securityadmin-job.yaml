@@ -42,7 +42,15 @@ spec:
           - name: ki_user
             value: {{ .Values.kibana.user }}
           - name: ki_pass
-            value: {{ .Values.kibana.password }}      
+            value: {{ .Values.kibana.password }}   
+          - name: ki_ro_user
+            value: {{ .Values.kibana.readonly.user }}
+          - name: ki_ro_pass
+            value: {{ .Values.kibana.readonly.password }}
+          - name: ki_dev_user
+            value: {{ .Values.kibana.developer.user }}
+          - name: ki_dev_pass
+            value: {{ .Values.kibana.developer.password }}       
         volumeMounts:
         - name: setup
           mountPath: /setup.sh
