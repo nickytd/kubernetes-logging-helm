@@ -93,7 +93,6 @@ zookeeper:
         topologyKey: kubernetes.io/hostname     
 
 kibana:
-  oldSpaceSize: 2048
   resources:
     requests:
       memory: 3Gi

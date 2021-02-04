@@ -35,7 +35,6 @@ logstash_indexer:
       memory: 1Gi
 
 kibana:
-  oldSpaceSize: 350
   resources:
     requests:
       memory: 500Mi

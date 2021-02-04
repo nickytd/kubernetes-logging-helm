@@ -120,7 +120,6 @@ kibana:
     enabled: false
     annotations: {}
   index: "containers,filebeats,journals,all"
-  oldSpaceSize: 350
   resources:
     requests:
       memory: "600Mi"
