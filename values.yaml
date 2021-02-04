@@ -104,21 +104,26 @@ data:
 #In this case only jobs creating index templates and kibana objects are executed.
 kibana:
   in_cluster: true
+  extraEnvs:
+  - name: "NODE_OPTIONS"
+    value: "--max-old-space-size=350"
   url: ""
   user: "kibana"
   password: "kibana"
   readonly:
-     user: "viewer"
-     password: "view"
+    user: "viewer"
+    password: "view"
   developer:
-     user: "developer"
-     password: "develop"   
+    user: "developer"
+    password: "develop"   
   replicas: 1
   service_type: ClusterIP
   ingress:
     path: "/"
     enabled: false
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: cookie
+      nginx.ingress.kubernetes.io/session-cookie-name: security_authentication
   index: "containers,filebeats,journals,all"
   resources:
     requests:

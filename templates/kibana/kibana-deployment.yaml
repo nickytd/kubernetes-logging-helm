@@ -5,7 +5,7 @@ metadata:
   name: {{ .Release.Name }}-kibana
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.kibana.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       type: kibana
@@ -43,6 +43,9 @@ spec:
         - name: SERVER_BASEPATH
           value: {{ .Values.kibana.server_base_path }}  
         {{- end }}   
+        {{- if .Values.kibana.extraEnvs }}
+          {{- toYaml .Values.kibana.extraEnvs | nindent 8 }}
+        {{- end }}
         ports:
         - containerPort: 5601
           name: ui

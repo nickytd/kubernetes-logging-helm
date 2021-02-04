@@ -35,6 +35,7 @@ logstash_indexer:
       memory: 1Gi
 
 kibana:
+  replicas: 1
   resources:
     requests:
       memory: 500Mi
