@@ -1,26 +1,29 @@
 {{- if .Values.elasticsearch.in_cluster }}
 {{- if .Values.client.ingress.enabled -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-es
   labels: {{ include "logging.labels" . | indent 4 }}
-    {{- with .Values.client.ingress.annotations }}
+  {{- with .Values.client.ingress.annotations }}
   annotations:
-{{ toYaml . | indent 4 }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  {{- with .Values.client.ingress.tls }}
   tls:
-  - hosts:
-    - {{ .Values.client.host }}
-    secretName: {{ .Values.client.ingress.secret_name }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   rules:
-  - host: {{ .Values.client.host }}
+  - host: {{ .Values.client.ingress.host }}
     http:
       paths:
       - path: {{ .Values.client.ingress.path }}
+        pathType: Prefix
         backend:
-          serviceName: {{ .Release.Name}}-client
-          servicePort: 9200
+          service:
+            name: {{ .Release.Name}}-client
+            port:
+              number: 9200
 {{- end -}}
 {{- end }}

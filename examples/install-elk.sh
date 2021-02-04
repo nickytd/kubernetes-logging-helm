@@ -16,9 +16,6 @@ helm upgrade elk \
    -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/.. \
    --install
 
-kubectl apply -f $sourcedir/elk-ingresses.yaml \
-  --dry-run=client -o yaml | kubectl apply -f -
-
 for var in "$@"
 do
     if [[ "$var" = "--with-lb" ]]; then

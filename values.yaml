@@ -77,12 +77,15 @@ client:
       memory: "800Mi"
     limits:
       memory: "800Mi"
-  host:
+  host: ""
   ingress:
     path: "/"
-    secret_name: ""
     enabled: false
-    annotations: {}
+    annotations: {}     
+      #nginx.ingress.kubernetes.io/rewrite-target: /  
+      #nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      #nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    tls: {}  
   tolerations: []
   affinity: {}
 
@@ -120,10 +123,13 @@ kibana:
   service_type: ClusterIP
   ingress:
     path: "/"
+    host: ""
     enabled: false
-    annotations:
-      nginx.ingress.kubernetes.io/affinity: cookie
-      nginx.ingress.kubernetes.io/session-cookie-name: security_authentication
+    annotations: {}
+      #nginx.ingress.kubernetes.io/affinity: cookie
+      #nginx.ingress.kubernetes.io/session-cookie-name: security_authentication
+      #nginx.ingress.kubernetes.io/force-ssl-redirect: false
+    tls: {}  
   index: "containers,filebeats,journals,all"
   resources:
     requests:

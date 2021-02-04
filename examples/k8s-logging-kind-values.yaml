@@ -9,6 +9,13 @@ master:
       memory: 500Mi
 #Configuration of ES coordination node if "in_cluster" is true
 client:
+  ingress:
+    enabled: true
+    host: es.develop
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
   heap_size: 256m
   resources:
     requests:
@@ -35,7 +42,14 @@ logstash_indexer:
       memory: 1Gi
 
 kibana:
-  replicas: 1
+  ingress:
+    enabled: true 
+    host: kibana.develop
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/session-cookie-name: "security_authentication"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  replicas: 2
   resources:
     requests:
       memory: 500Mi
