@@ -15,7 +15,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: kafka
     spec:
-      priorityClassName: logging-critical
+      priorityClassName: {{ default .Values.priority_class .Values.kafka.priority_class }}
       {{ with .Values.kafka.affinity -}}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end -}}

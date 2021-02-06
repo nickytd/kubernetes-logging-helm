@@ -20,6 +20,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: logstash-indexer
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.logstash_indexer.priority_class }}
       {{- with .Values.logstash_indexer.affinity }}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

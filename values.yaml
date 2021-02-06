@@ -3,6 +3,7 @@
 cluster_name: "logging"
 imagePullSecrets: []
 storage_class: "standard"
+priority_class: "logging"
 
 #Opendistro configuration 
 opendistro:
@@ -64,7 +65,8 @@ master:
       memory: "600Mi"
     limits:
       memory: "600Mi"
-  storage_class: ""    
+  storage_class: ""
+  priority_class: ""
   tolerations: []
   affinity: {}    
 
@@ -88,6 +90,7 @@ client:
     tls: {}  
   tolerations: []
   affinity: {}
+  priority_class: ""
 
 #Configuration of ES data node if "in_cluster" is true
 data:
@@ -99,7 +102,8 @@ data:
       memory: "600Mi"
     limits:
       memory: "600Mi"
-  storage_class: ""    
+  storage_class: ""
+  priority_class: ""    
   tolerations: []
   affinity: {} 
 
@@ -137,7 +141,8 @@ kibana:
     limits:
       memory: "500Mi"
   tolerations: []
-  affinity: {}    
+  affinity: {}
+  priority_class: ""    
 
 #Logstash indexer is a target of various logging streams and can perform document routing decisions
 #based on the documents content. Example the logs from journals stream are directed to "journal-<date>" indices.
@@ -163,6 +168,7 @@ logstash_indexer:
     code: |-
       # code snippet for ruby filter plugin
       # https://www.elastic.co/guide/en/logstash/current/plugins-filters-ruby.html
+  priority_class: ""    
 
 #ES filebeats are used to collect containers stdout and stderror. 
 #The workload is running as a deamon set on each node with the appropriate tollerations definitions
@@ -179,6 +185,7 @@ filebeat:
       memory: "100Mi"
   tolerations: []
   affinity: {}
+  priority_class: ""
 
 #ES journalbeats are used to collect system logs from OS journalctl
 #It depends on the concrete minion OS
@@ -197,7 +204,8 @@ journalbeat:
 # host_path: /var/log/journal 
   journals_host_path: "/var/run/log/journal"
   tolerations: []
-  affinity: {}  
+  affinity: {}
+  priority_class: ""
 
 #In scaled out setup kafka queues are used as ingestion points to accomodate spiked in the logging stream volumes
 kafka:
@@ -217,7 +225,8 @@ kafka:
       memory: "600Mi"
     limits:
       memory: "600Mi"
-  storage_class: ""    
+  storage_class: ""
+  priority_class: ""  
   tolerations: []
   affinity: {}   
 
@@ -234,5 +243,6 @@ zookeeper:
     limits:
       memory: 300Mi
   storage_class: ""
+  priority_class: ""
   tolerations: []
   affinity: {}

@@ -28,7 +28,6 @@ data:
   elasticsearch.yml: |-
     cluster.name: {{ .Values.cluster_name | quote }}
     path.data: /data
-    indices.breaker.total.use_real_memory: false
 
 {{- if .Values.elasticsearch.snapshot.enabled }}    
     path.repo: /snapshot

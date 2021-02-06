@@ -17,6 +17,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: filebeat
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.filebeat.priority_class }}
       securityContext:
         runAsUser: 0
       {{- with .Values.filebeat.affinity }}     
@@ -27,7 +28,6 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       terminationGracePeriodSeconds: 30
-      priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}

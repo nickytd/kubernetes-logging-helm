@@ -18,6 +18,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/beats/journalbeat-configmap.yaml") . | sha256sum }}      
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.journalbeat.priority_class }}
       securityContext:
         runAsUser: 0
       {{- with .Values.journalbeat.affinity }}     
@@ -28,7 +29,6 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       terminationGracePeriodSeconds: 30
-      priorityClassName: logging-critical
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}

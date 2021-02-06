@@ -16,6 +16,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: kibana
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.kibana.priority_class }}
       {{- with .Values.kibana.affinity }}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

@@ -16,7 +16,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: zk
     spec:
-      priorityClassName: logging-critical
+      priorityClassName: {{ default .Values.priority_class .Values.zookeeper.priority_class }}
       {{- with .Values.zookeeper.affinity }}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

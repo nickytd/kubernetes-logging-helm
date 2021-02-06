@@ -23,6 +23,7 @@ spec:
         type: master
         node: es
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.master.priority_class }}
       {{- with .Values.master.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

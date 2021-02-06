@@ -20,6 +20,7 @@ spec:
         type: client
         node: es
     spec:
+      priorityClassName: {{ default .Values.priority_class .Values.client.priority_class }}
       {{- with .Values.client.affinity }}     
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
