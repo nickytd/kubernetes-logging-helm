@@ -29,7 +29,7 @@ es_curator_image:
 #Init container configuration. Used for multiple application startup checks
 init_container_image:
   image: "nickytd/init-container"
-  imageTag: "latest"
+  imageTag: "0.1.0"
   imagePullPolicy: IfNotPresent
 
 #ES configuration
@@ -134,7 +134,14 @@ kibana:
       #nginx.ingress.kubernetes.io/session-cookie-name: security_authentication
       #nginx.ingress.kubernetes.io/force-ssl-redirect: false
     tls: {}  
-  index: "containers,filebeats,journals,all"
+  index_patterns:
+    - containers
+    - filebeats
+    - journals
+    - all
+  tenants:
+    - Global
+    - Developer
   resources:
     requests:
       memory: "500Mi"

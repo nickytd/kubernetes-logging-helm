@@ -1,5 +1,6 @@
-{{/* vim: set filetype=mustache: */}}
-{{/*Expand the name of the chart.*/}}
+{{/*
+Expand the name of the chart.
+*/}}
 {{- define "logging.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
@@ -22,12 +23,16 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
-{{/*Create chart name and version as used by the chart label.*/}}
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
 {{- define "logging.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{/*Create default labels section*/}}
+{{/*
+Create default labels section
+*/}}
 {{- define "logging.labels" }}
 {{ include "logging.selectorLabels" . }}
 {{- if .Chart.Version }}
@@ -38,13 +43,17 @@ app.kubernetes.io/elastic: {{ .Values.elasticsearch.imageTag  }}
 app.kubernetes.io/openDistro: {{ .Values.opendistro.imageTag }}
 {{- end }}
 
-{{/*Create default labels section*/}}
+{{/*
+Create default labels section
+*/}}
 {{- define "logging.selectorLabels" }}
 app.kubernetes.io/name: {{ include "logging.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*Create zookeeper server str*/}}
+{{/*
+Create zookeeper server str
+*/}}
 {{- define "zookeeper_servers" -}}
 {{- $zk_size := default 1 .Values.zookeeper.replicas | int -}}
 {{- $global := . -}}
@@ -55,7 +64,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- $str -}}
 {{- end -}}
 {{- end -}}
-
 
 {{- define "init_container.image" -}}
 {{- $image := .Values.init_container_image.image -}}
@@ -69,4 +77,20 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- else -}}
 {{- printf "%s" .Values.elasticsearch.url -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "kibanaurl" -}}
+{{- if $.Values.kibana.in_cluster -}}
+{{ printf "http://%s-kibana.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
+{{- else -}}
+{{- printf "%s" .Values.kibana.url -}}
+{{- end -}}
+{{- end -}}	
+
+{{/*
+https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templates/utils/_joinListWithComma.tpl
+*/}}
+{{- define "helm-toolkit.utils.joinListWithComma" -}}
+{{- $local := dict "first" true -}}
+{{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
 {{- end -}}
