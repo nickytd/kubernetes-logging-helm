@@ -25,7 +25,7 @@ spec:
         command: ["/config/check_kibana.sh"]
         env:
         - name: KIBANA_URL
-          value: {{ include "kibanaurl" . }} 
+          value: {{ include "kibana_url" . }} 
         volumeMounts:
         - name: config
           mountPath: "/config"
@@ -36,7 +36,7 @@ spec:
         command: ["/config/create_index_pattern.sh"]
         env:
           - name: KIBANA_URL
-            value: {{ include "kibanaurl" . }}
+            value: {{ include "kibana_url" . }}
           - name: KIBANA_USER
             value: {{ .Values.kibana.user }}
           - name: KIBANA_PASSWORD

@@ -36,9 +36,9 @@ spec:
         imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
         image: {{ include "init_container.image" . }}
         {{- if .Values.kafka.enabled }}
-        command: ["sh","-c",'/init.sh {{ include "esurl" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
+        command: ["sh","-c",'/init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
         {{ else }}
-        command: ["sh","-c",'/init.sh {{ include "esurl" . }} && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
+        command: ["sh","-c",'/init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
         {{- end }}
         volumeMounts:
         - mountPath: "/init.sh"

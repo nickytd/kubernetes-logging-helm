@@ -35,7 +35,7 @@ spec:
         image: {{ .Values.es_curator_image.image }}:{{ .Values.es_curator_image.imageTag }}
         env:
         - name: ES_HOST
-          value: {{ include "esurl" . }}
+          value: {{ include "es_url" . }}
         command: ["/curator/curator", "--config", "/config/curator.yml", "/config/actions.yml"]
         volumeMounts:
         - name: curator

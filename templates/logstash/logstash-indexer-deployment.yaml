@@ -38,12 +38,12 @@ spec:
         command: 
           - sh
           - -c
-          - /init.sh {{ include "esurl" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092
+          - /init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092
         {{ else }}
         command: 
         - sh
         - -c
-        - /init.sh {{ include "esurl" . }}
+        - /init.sh {{ include "es_url" . }}
         {{- end }}
         volumeMounts:
         - mountPath: "/init.sh"

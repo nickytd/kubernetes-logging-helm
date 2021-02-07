@@ -71,7 +71,7 @@ Create zookeeper server str
 {{- printf "%s:%s" $image $imageTag -}}
 {{- end -}}
 
-{{- define "esurl" -}}
+{{- define "es_url" -}}
 {{- if .Values.elasticsearch.in_cluster -}}
 {{ printf "https://%s-client.%s.%s:9200" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
@@ -79,7 +79,7 @@ Create zookeeper server str
 {{- end -}}
 {{- end -}}
 
-{{- define "kibanaurl" -}}
+{{- define "kibana_url" -}}
 {{- if $.Values.kibana.in_cluster -}}
 {{ printf "http://%s-kibana.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
 {{- else -}}

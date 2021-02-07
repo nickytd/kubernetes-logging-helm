@@ -30,7 +30,7 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-c", '/init.sh {{ include "esurl" . }}']
+        command: ["sh", "-c", '/init.sh {{ include "es_url" . }}']
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
