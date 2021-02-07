@@ -25,6 +25,8 @@ data:
     echo "KIBANA URL: $KIBANA_URL"
     echo "KIBANA USER: $KIBANA_USER"
     echo "KIBANA PASSWORD: $KIBANA_PASSWORD"
+    echo "KIBANA DEVELOPER USER: $KIBANA_DEVELOPER_USER"
+    echo "KIBANA DEVELOPER PASSWORD: $KIBANA_DEVELOPER_PASSWORD"
     echo "INDEX_PATTERNS: $INDEX_PATTERNS"
     echo "TENANTS: $TENANTS"
     
@@ -42,8 +44,19 @@ data:
     version="${version%\"}"
     version="${version#\"}"  
 
+    echo "KIBANA VERSION: ${version}"
+
 
     for tenant in "${TENANTS[@]}"; do
+
+      if [ $tenant == "Developer" ]; then
+        KIBANA_USER_=$KIBANA_DEVELOPER_USER
+        KIBANA_PASSWORD_=$KIBANA_DEVELOPER_PASSWORD
+      else
+        KIBANA_USER_=$KIBANA_USER
+        KIBANA_PASSWORD_=$KIBANA_PASSWORD
+      fi  
+
       
       for i in "${PATTERNS[@]}"; do
         
@@ -53,12 +66,12 @@ data:
           pattern="${i}-*"
         fi  
         
-        check=`curl -s -o /dev/null -w "%{http_code}" -X GET -u$KIBANA_USER:$KIBANA_PASSWORD \
+        check=`curl -s -o /dev/null -w "%{http_code}" -X GET -u$KIBANA_USER_:$KIBANA_PASSWORD_ \
           -H "securitytenant: ${tenant}" $KIBANA_URL/api/saved_objects/index-pattern/${pattern}`
         
         if [ "$check" == "404" ]; then
   
-            result=`curl -s -o /dev/null -w "%{http_code}" -X POST -u$KIBANA_USER:$KIBANA_PASSWORD \
+            result=`curl -s -o /dev/null -w "%{http_code}" -X POST -u$KIBANA_USER_:$KIBANA_PASSWORD_ \
               $KIBANA_URL/api/saved_objects/index-pattern/${pattern} \
               -H "securitytenant: ${tenant}" -H "kbn-xsrf: true" -H "Content-Type: application/json" \
               -d "{\"attributes\": {\"title\": \"${pattern}\",\"timeFieldName\": \"@timestamp\"}}"`
@@ -82,7 +95,7 @@ data:
         default="${PATTERNS[0]}-*"
       fi  
 
-      result=`curl -s -o /dev/null -w "%{http_code}" -X PUT -u$KIBANA_USER:$KIBANA_PASSWORD \
+      result=`curl -s -o /dev/null -w "%{http_code}" -X PUT -u$KIBANA_USER_:$KIBANA_PASSWORD_ \
           $KIBANA_URL/api/saved_objects/config/${version} \
           -H "securitytenant: ${tenant}" -H "kbn-xsrf: true" -H "Content-Type: application/json" \
           -d "{\"attributes\": {\"defaultIndex\": \"${default}\"}}"` 
@@ -93,17 +106,18 @@ data:
         echo "setting default index pattern ${tenant}/${default} failed ${result}"  
       fi    
         
-    done
+    
         
-    echo "Import saved objects"
+    echo "Import saved objects ${tenant}"
     for f in /saved_objects/* ; do
-      result=`curl -s -o /dev/null -w "%{http_code}" -X POST -u$KIBANA_USER:$KIBANA_PASSWORD \
+      result=`curl -s -o /dev/null -w "%{http_code}" -X POST -u$KIBANA_USER_:$KIBANA_PASSWORD_ \
         $KIBANA_URL/api/saved_objects/_import?overwrite=true \
-        -H "kbn-xsrf: true" --form file=@${f}`
+        -H "securitytenant: ${tenant}" -H "kbn-xsrf: true" --form file=@${f}`
       
       if [ "${result}" == "200" ]; then 
         echo "${f} imported"
       else 
         echo "importing ${f} failed ${result}"  
       fi  
+    done
     done

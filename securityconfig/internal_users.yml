@@ -20,6 +20,7 @@ _meta:
   reserved: true
   backend_roles:
   - "administrator"
+  - "Developer"
   description: "{{ .Values.kibana.user }} user for Kibana"
 
 
@@ -27,12 +28,12 @@ _meta:
   hash: "$$KIBANA_READONLY_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "viewer"
+  - "Viewer"
   description: "{{ .Values.kibana.readonly.user }} read only user for Kibana"  
 
 {{ .Values.kibana.developer.user }}:
   hash: "$$KIBANA_DEVELOPER_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "developer"
+  - "Developer"
   description: "{{ .Values.kibana.developer.user }} developer user for Kibana"    

@@ -37,9 +37,13 @@ kibana_viewer:
         - "suggest" 
   tenant_permissions:
   - tenant_patterns:
-      - "global_tenant"
+      - "Global*"
     allowed_actions:
       - "kibana_all_read"
+  - tenant_patterns:
+      - "Developer"
+    allowed_actions:
+      - "kibana_all_read"    
 
 kibana_developer:
   reserved: false
@@ -56,7 +60,7 @@ kibana_developer:
         - "suggest"
   tenant_permissions:
   - tenant_patterns:
-      - "global_tenant"
+      - "Global*"
     allowed_actions:
       - "kibana_all_read"  
   - tenant_patterns:
@@ -64,8 +68,6 @@ kibana_developer:
     allowed_actions:
       - "kibana_all_read"
       - "kibana_all_write"       
-
-  
 
 kibana_admin:
   reserved: true

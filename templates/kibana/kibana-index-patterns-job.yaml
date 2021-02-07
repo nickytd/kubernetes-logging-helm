@@ -40,7 +40,11 @@ spec:
           - name: KIBANA_USER
             value: {{ .Values.kibana.user }}
           - name: KIBANA_PASSWORD
-            value: {{ .Values.kibana.password }}  
+            value: {{ .Values.kibana.password }} 
+          - name: KIBANA_DEVELOPER_USER
+            value: {{ .Values.kibana.developer.user }}
+          - name: KIBANA_DEVELOPER_PASSWORD
+            value: {{ .Values.kibana.developer.password }}    
           - name: INDEX_PATTERNS  
             value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.kibana.index_patterns }}
           - name: TENANTS

@@ -25,18 +25,21 @@ kibana_admin:
 kibana_viewer:
   reserved: false
   backend_roles:
-    - "viewer"
+    - "Viewer"
   description: "Maps viewer backend role"
 
 kibana_developer:
   reserved: false
-  backend_roles:
-    - "developer"
+  users:
+    - {{ .Values.kibana.user }}
+    - {{ .Values.kibana.developer.user }}
+  and_backend_roles:
+    - "Developer"
   description: "Maps developer backend role"  
 
 kibana_user:
   reserved: false
   backend_roles:
-    - "viewer"
-    - "developer"
+    - "Viewer"
+    - "Developer"
   description: "Maps viewer and developer backend roles to kibana user"  
