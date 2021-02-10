@@ -26,7 +26,7 @@ data:
     sed -i -e "s|\$\$ELASTICSEARCH_PASSWORD_HASH|$es_pass_hash|" /tmp/internal_users.yml
     sed -i -e "s|\$\$KIBANA_PASSWORD_HASH|$ki_pass_hash|" /tmp/internal_users.yml
     sed -i -e "s|\$\$KIBANA_READONLY_PASSWORD_HASH|$ki_ro_pass_hash|" /tmp/internal_users.yml
-     sed -i -e "s|\$\$KIBANA_DEVELOPER_PASSWORD_HASH|$ki_dev_pass_hash|" /tmp/internal_users.yml
+    sed -i -e "s|\$\$KIBANA_DEVELOPER_PASSWORD_HASH|$ki_dev_pass_hash|" /tmp/internal_users.yml
 
 
     echo "##### internal_users.yml #####"
