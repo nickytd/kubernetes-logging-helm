@@ -11,7 +11,7 @@ master:
 client:
   ingress:
     enabled: true
-    host: es.develop
+    host: es.local.dev
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: "/"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
@@ -44,7 +44,7 @@ logstash_indexer:
 kibana:
   ingress:
     enabled: true 
-    host: kibana.develop
+    host: kibana.local.dev
     annotations:
       nginx.ingress.kubernetes.io/affinity: "cookie"
       nginx.ingress.kubernetes.io/session-cookie-name: "security_authentication"
