@@ -7,6 +7,7 @@ data:
   init.sh: |-
     #!/bin/bash
 
+
     set -e    
 
     if [[ $1 == http* ]]; then
