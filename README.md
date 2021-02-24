@@ -1,3 +1,4 @@
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubernetes-logging-helm)](https://artifacthub.io/packages/search?repo=kubernetes-logging-helm)
 # kubernetes-logging-helm
 
 This is a comprehensive helm chart for deploying complete Kubernetes logging stack featuring few design options suitable from a minikube/kind setup up to a scaled production grade deployment capable of processing billions of records.
