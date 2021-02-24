@@ -48,5 +48,10 @@ Usually logs are searched and inspected via the Discovery view
 1. Containers Logs enhanced with Kubernetes metadata. 
 ![Containers Logs](images/LogswithMetadata.png)
 
-```
 In Kibana multi tenant layout is also supported. The Helm chart sets up a Developer tenant with the corresponding role having read/write permission in the tenant space.
+
+Add helm chart repository
+```
+helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
+helm repo update
+```
