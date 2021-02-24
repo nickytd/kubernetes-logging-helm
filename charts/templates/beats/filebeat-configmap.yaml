@@ -21,7 +21,7 @@ data:
     filebeat.inputs:
     - type: container
       paths:
-        - '/logs/*/*.log'
+        - '/logs/**/*.log'
       multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
       multiline.negate: false
       multiline.match: after
@@ -47,7 +47,7 @@ data:
           - config:
               - type: container 
                 paths:
-                  - '/logs/*/*.log'
+                  - '/logs/**/*.log'
                          
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}

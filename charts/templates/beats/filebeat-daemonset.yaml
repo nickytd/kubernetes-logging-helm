@@ -77,7 +77,7 @@ spec:
           name: {{ .Release.Name}}-filebeat-config
       - name: var-lib-docker-containers
         hostPath:
-          path: {{ .Values.filebeat.containers_host_path }}
+          path: {{ .Values.filebeat.host_path }}
           type: Directory
       - name: data
         emptyDir: {}

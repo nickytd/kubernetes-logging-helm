@@ -38,7 +38,7 @@ do
       echo " generate helm templates"
       
       helm template elk -n logging \
-        -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/.. \
+        -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/../charts \
         > $sourcedir/templates.yaml
     fi
 
