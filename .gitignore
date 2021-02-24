@@ -1,0 +1,4 @@
+*.tgz
+.DS_Store
+templates.yaml
+.cr-*
