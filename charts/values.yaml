@@ -8,7 +8,7 @@ priority_class: "logging"
 #Opendistro configuration 
 opendistro:
   image: "amazon/opendistro-for-elasticsearch"
-  imageTag: "1.12.0"
+  imageTag: "1.13.0"
   saml:
     enabled: false
 #    idp:

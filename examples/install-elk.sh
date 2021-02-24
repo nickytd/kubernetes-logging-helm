@@ -13,7 +13,7 @@ kubectl create namespace logging \
 
 helm upgrade elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/.. \
+   -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/../charts \
    --install
 
 for var in "$@"
