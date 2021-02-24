@@ -1,6 +1,11 @@
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubernetes-logging-helm)](https://artifacthub.io/packages/search?repo=kubernetes-logging-helm)
 # kubernetes-logging-helm
 
+```
+helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
+helm repo update
+```
+
 This is a comprehensive helm chart for deploying complete Kubernetes logging stack featuring few design options suitable from a minikube/kind setup up to a scaled production grade deployment capable of processing billions of records.
 
 ![Containers Logs](images/k8s-logging-stack.jpg)
@@ -49,9 +54,3 @@ Usually logs are searched and inspected via the Discovery view
 ![Containers Logs](images/LogswithMetadata.png)
 
 In Kibana multi tenant layout is also supported. The Helm chart sets up a Developer tenant with the corresponding role having read/write permission in the tenant space.
-
-Add helm chart repository
-```
-helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
-helm repo update
-```
