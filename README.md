@@ -3,7 +3,7 @@
 
 This is a comprehensive helm chart for deploying complete Kubernetes logging stack featuring few design options suitable from a minikube/kind setup up to a scaled production grade deployment capable of processing billions of records.
 
-![Containers Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/k8s-logging-stack.jpg)
+![Containers Logs](images/k8s-logging-stack.jpg)
 
 Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing based on [kind](https://kind.sigs.k8s.io)
 
@@ -38,15 +38,15 @@ The chart also supports external(outside the cluster) Elasticsearch instance. In
 
 Kibana by default comes with 2 predefined dashboards and set of searches
 1. Containers logs dashboard, grouping container logs per namespace and pod
-![Containers Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/LogStream.png)
+![Containers Logs](images/LogStream.png)
 2. Journals logs dashboard, grouping systemlogs per system unit and node
-![Journals Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/JournalLogs.png)
+![Journals Logs](images/JournalLogs.png)
 
 Usually logs are searched and inspected via the Discovery view
 1. Containers Logs in Discovery View
-![Containers Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/ContainersLogs.png)
+![Containers Logs](images/ContainersLogs.png)
 1. Containers Logs enhanced with Kubernetes metadata. 
-![Containers Logs](https://github.com/nickytd/kubernetes-logging-helm/blob/master/images/LogswithMetadata.png)
+![Containers Logs](images/LogswithMetadata.png)
 
 ```
 In Kibana multi tenant layout is also supported. The Helm chart sets up a Developer tenant with the corresponding role having read/write permission in the tenant space.
