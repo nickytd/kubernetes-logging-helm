@@ -46,7 +46,7 @@ spec:
           name: init       
       containers:
       - name: filebeat
-        image: {{ .Values.elasticsearch.image }}/beats/filebeat:{{ .Values.elasticsearch.imageTag }}
+        image: {{ .Values.elasticsearch.image }}/beats/filebeat-oss:{{ .Values.elasticsearch.imageTag }}
         args: [
           "-c", "/usr/share/filebeat/filebeat.yml",
           "-e",

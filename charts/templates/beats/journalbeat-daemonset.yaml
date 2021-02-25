@@ -47,7 +47,7 @@ spec:
           name: init 
       containers:
       - name: journalbeat
-        image: {{ .Values.elasticsearch.image }}/beats/journalbeat:{{ .Values.elasticsearch.imageTag }}
+        image: {{ .Values.elasticsearch.image }}/beats/journalbeat-oss:{{ .Values.elasticsearch.imageTag }}
         args: [
           "-c", "/usr/share/journalbeat/journalbeat.yml",
           "-e"
