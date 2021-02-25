@@ -10,14 +10,23 @@ The locations of journal logs or container logs may differ from one platform to 
 
 Ubuntu | Kind | Minikube
 --- | --- | ---
-/var/log/journal | /run/log/journal | /var/run/log/journal
+/var/log/journal | /run/log/journal | /run/log/journal
 /var/log/containers | /var/log/pods | /var/lib/docker/containers
 
 The exact locations needs to be adjusted in the host_path value supplied to the helm chart.
 ```
+#for kind clusters
 filebeat:
   host_path: /var/log/pods
 
 journalbeat:  
   host_path: /run/log/journal  
+
+
+#for minikube
+filebeat:
+  host_path: /var/lib/docker/containers
+
+journalbeat:  
+  host_path: /run/log/journal
 ```
