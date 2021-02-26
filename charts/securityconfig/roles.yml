@@ -7,15 +7,28 @@ kibana_read_only:
   reserved: true
 
 admin:
-  reserved: true
+  reserved: false
   cluster_permissions:
-    - "*"
-    - "unlimited"
+    - "cluster_all"
+    - "cluster_monitor"
+    - "cluster_composite_ops"
+    - "manage_snapshots"    
   index_permissions:
     - index_patterns:
       - "*"
       allowed_actions:      
-        - "*"
+        - "indices_all"
+        - "get"
+        - "read"
+        - "write"
+        - "delete"
+        - "crud"
+        - "search"
+        - "suggest"
+        - "create_index"
+        - "indices_monitor"
+        - "manage_aliases"
+        - "manage"
   tenant_permissions:    
     - tenant_patterns:
         - "*"    

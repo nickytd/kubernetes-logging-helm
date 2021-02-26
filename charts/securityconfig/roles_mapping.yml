@@ -8,6 +8,12 @@ _meta:
 
 # Define your roles mapping here
 
+all_access:
+  reserved: false
+  backend_roles:
+    - "administrator"
+  description: "Maps external es user to admin role"
+
 admin:
   reserved: false
   backend_roles:
