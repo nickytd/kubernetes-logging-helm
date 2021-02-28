@@ -39,7 +39,7 @@ init_container_image:
 #are skiped.
 elasticsearch:
   image: "docker.elastic.co"
-  imageTag: "7.10.0"
+  imageTag: "7.10.2"
   in_cluster: true
   with_node_roles: true
   snapshot:
