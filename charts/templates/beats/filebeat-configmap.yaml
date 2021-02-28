@@ -10,8 +10,7 @@ data:
       level: {{ .Values.filebeat.logging.level }}
       json: {{ .Values.filebeat.logging.json }}
       metrics:
-        enabled: {{ .Values.filebeat.logging.metrics.enabled }}
-    tags: ["filebeat"]
+        enabled: {{ .Values.filebeat.logging.metrics.enabled }}    
 
     queue.mem:
       events: {{ .Values.filebeat.queue_size | default 4096 }}
@@ -39,6 +38,9 @@ data:
             - logs_path:
                 logs_path: '/logs'
                 resource_type: containers
+      - drop_fields:
+          fields: ["agent","input.type"]
+          ignore_missing: true          
             
     filebeat.autodiscover:
       providers:
