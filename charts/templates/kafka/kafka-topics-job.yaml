@@ -29,7 +29,7 @@ spec:
           name: init
       containers:
       - name: kafka-topic-config
-        image: wurstmeister/kafka:{{ .Values.kafka.tag }}
+        image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
         command: ["/bin/sh","-c","{{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --create  --topic {{ . }} --partitions {{ $.Values.kafka.topics.partitions }} --replication-factor {{ $.Values.kafka.topics.replication_factor }} --if-not-exists && {{ end -}}
 {{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter  --topic {{ . }} --partitions {{ $.Values.kafka.topics.partitions }} --if-exists || true && {{ end -}}
 {{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-configs.sh --zookeeper $KAFKA_ZOOKEEPER_CONNECT --alter --entity-type topics --entity-name {{ . }} --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]
