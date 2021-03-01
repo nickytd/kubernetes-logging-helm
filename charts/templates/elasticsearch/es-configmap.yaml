@@ -1,4 +1,5 @@
 {{- if .Values.elasticsearch.in_cluster }}
+{{ $root := . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
