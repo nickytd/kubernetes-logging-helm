@@ -2,11 +2,11 @@ apiVersion: v1
 entries:
   kubernetes-logging:
   - apiVersion: v1
-    created: "2021-03-01T13:55:47.738203+01:00"
+    created: "2021-03-01T22:29:52.345167+01:00"
     description: A Helm chart for kubernetes logging stack
-    digest: 86b9c0c171fc27af3d7443a1f95b6e99900ded51a4ac70e60ba8e85918ede364
+    digest: 89fa5fabd4c0fa43691c07d39ac8c1645c089269ea3a39bd2959255470ebdea3
     name: kubernetes-logging
     urls:
-    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.15.4/kubernetes-logging-0.15.4.tgz
-    version: 0.15.4
-generated: "2021-03-01T13:55:47.738233+01:00"
+    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.15.5/kubernetes-logging-0.15.5.tgz
+    version: 0.15.5
+generated: "2021-03-01T22:29:52.34518+01:00"
