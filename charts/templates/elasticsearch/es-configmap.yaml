@@ -41,7 +41,7 @@ data:
 
     cluster.initial_master_nodes:
     {{- range $k := (int .Values.master.replicas | until ) }}
-      - {{ $root.Release.Name }}-master-{{$k}}.{{ $root.Release.Namespace}}.svc.cluster.local
+      - {{ $root.Release.Name }}-master-{{$k}}
     {{- end }}
 
     node.master: ${NODE_MASTER:true}
