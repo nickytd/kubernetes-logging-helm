@@ -186,7 +186,7 @@ filebeat:
     metrics:
       enabled: false
   queue_size: 1024
-  containers_host_path: "/var/lib/docker/containers"
+  host_path: "/var/lib/docker/containers"
   resources:
     limits: 
       memory: "100Mi"
@@ -209,7 +209,7 @@ journalbeat:
   enabled: true
 #needs adaptation for minikube case
 # host_path: /var/log/journal 
-  journals_host_path: "/var/run/log/journal"
+  host_path: "/var/run/log/journal"
   tolerations: []
   affinity: {}
   priority_class: ""
