@@ -80,7 +80,7 @@ spec:
           name: {{ .Release.Name}}-journalbeat-config
       - name: journal-log
         hostPath:
-          path: {{ .Values.journalbeat.journals_host_path }}
+          path: {{ .Values.journalbeat.host_path }}
           type: Directory
       - name: systemd
         hostPath:
