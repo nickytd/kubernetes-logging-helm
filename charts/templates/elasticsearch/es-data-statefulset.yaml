@@ -94,6 +94,8 @@ spec:
           value: "-Xms{{ .Values.data.heap_size }} -Xmx{{ .Values.data.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
         - name: NODE_MASTER
           value: "false"  
+        - name: NODE_DATA
+          value: "true"  
         - name: discovery.seed_hosts
           value: {{ .Release.Name }}-master  
       volumes:
