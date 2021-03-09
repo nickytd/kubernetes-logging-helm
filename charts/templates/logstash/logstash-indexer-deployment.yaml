@@ -60,6 +60,9 @@ spec:
         - containerPort: 5045
           protocol: TCP
           name: journals
+        - containerPort: 5046
+          protocol: TCP
+          name: metrics
         {{- end }}      
         env:
         - name: ELASTICSEARCH_HOST

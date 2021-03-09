@@ -93,3 +93,66 @@ roleRef:
   kind: ClusterRole
   name: {{ .Release.Name }}-psp
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Name }}-metricbeat
+  labels: {{ include "logging.labels" . | indent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-metricbeat
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name }}-metricbeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Name }}-metricbeat
+  labels: {{ include "logging.labels" . | indent 4 }}
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - namespaces
+  - events
+  - pods
+  - secrets
+  - services
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources:
+  - replicasets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+  - statefulsets
+  - deployments
+  - replicasets
+  verbs: ["get", "list", "watch"]
+- apiGroups:
+  - ""
+  resources:
+  - nodes/stats
+  verbs:
+  - get
+- nonResourceURLs:
+  - "/metrics"
+  verbs:
+  - get
+- apiGroups:
+    - coordination.k8s.io
+  resources:
+    - leases
+  verbs:
+    - '*'
+---
+apiVersion: v1
+kind: ServiceAccount  
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Release.Name }}-metricbeat
+  labels: {{ include "logging.labels" . | indent 4 }} 

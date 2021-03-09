@@ -4,16 +4,34 @@ sourcedir=$(dirname "$0")
 
 set -eo pipefail
 
+type=$1
 
+if [[ $type == "-kind" ]] || [[ $type == "-minikube" ]]; then
+   echo "runtime $type"
+else 
+  echo "usage install-elk.sh -kind or install-elk.sh -minikube"
+  exit 0
+fi
 
 echo "setting up kubernetes-logging"
 
 kubectl create namespace logging \
   --dry-run=client -o yaml | kubectl apply -f -
 
+if [ -d "$sourcedir/ssl" ]; then
+  echo "setting up tls secrtes"
+  certs=("kibana" "es")
+  for c in ${certs[@]}; do
+    kubectl create secret tls "$c-tls" -n logging \
+      --cert=$sourcedir/ssl/wildcard.crt \
+      --key=$sourcedir/ssl/wildcard.key \
+      --dry-run=client -o yaml | kubectl apply -f - 
+  done 
+fi    
+
 helm upgrade elk \
    -n logging --create-namespace \
-   -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/../charts \
+   -f "$sourcedir/k8s-logging$type-values.yaml" $sourcedir/../charts \
    --install
 
 for var in "$@"

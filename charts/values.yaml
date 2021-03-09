@@ -136,8 +136,9 @@ kibana:
     tls: {}  
   index_patterns:
     - containers
-    - filebeats
+    - beats
     - journals
+    - metrics
     - all
   tenants:
     - Global
@@ -214,6 +215,19 @@ journalbeat:
   affinity: {}
   priority_class: ""
 
+metricbeat:
+  logging:
+    level: "warning"
+    json: true    
+  resources:
+    limits: 
+      memory: "100Mi"    
+  enabled: false
+  host_path: "/sys/fs/cgroup"
+  tolerations: []
+  affinity: {}
+  priority_class: ""  
+
 #In scaled out setup kafka queues are used as ingestion points to accomodate spiked in the logging stream volumes
 kafka:
   enabled: true
@@ -224,7 +238,7 @@ kafka:
   storage: "1Gi"
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
-    name: ["containers","journals"]
+    name: ["containers","journals","metrics"]
     replication_factor: 0
     partitions: 1
   resources:
@@ -233,7 +247,7 @@ kafka:
     limits:
       memory: "600Mi"
   storage_class: ""
-  priority_class: ""  
+  priority_class: ""
   tolerations: []
   affinity: {}   
 

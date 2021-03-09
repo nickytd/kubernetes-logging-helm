@@ -1,8 +1,16 @@
 {
   "settings": {
     "index" : {
+      "codec": "best_compression",
+      "mapping": {
+        "total_fields": {
+          "limit": 10000
+        }
+      },
+      "max_docvalue_fields_search": 200,
     	"number_of_shards" : "{{ .Values.elasticsearch.index_shards }}",
-      "number_of_replicas" : "{{ .Values.elasticsearch.index_replicas }}"
+      "number_of_replicas" : "{{ .Values.elasticsearch.index_replicas }}",
+      "refresh_interval": "5s"
     }
   },
   "mappings" : {
@@ -14,9 +22,6 @@
           "type" : "date"
       },
       "id" : {
-          "type" : "keyword"
-      },
-      "fingerprint" : {
           "type" : "keyword"
       }
     }

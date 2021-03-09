@@ -1,0 +1,93 @@
+{{ if .Values.metricbeat.enabled }}
+# Deploy a Metricbeat instance per node for node metrics retrieval
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-metricbeat
+  labels: {{ include "logging.labels" . | indent 4 }}
+    type: metricbeat
+spec:
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+      k8s-app: metricbeat
+  updateStrategy:
+    type: RollingUpdate    
+  template:
+    metadata:
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        k8s-app: metricbeat
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/beats/metricbeat-configmap.yaml") . | sha256sum }}        
+    spec:
+      serviceAccountName: {{ .Release.Name }}-metricbeat
+      terminationGracePeriodSeconds: 30
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      initContainers:
+      - name: init  
+        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        {{- if .Values.kafka.enabled }}
+        command: ["sh","-c",'/init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}.kafka 9092']
+        {{ else }}
+        command: ["sh","-c",'/init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name}}-logstash-indexer 5044']
+        {{- end }}
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init       
+      containers:
+      - name: metricbeat
+        image: {{ .Values.elasticsearch.image }}/beats/metricbeat-oss:{{ .Values.elasticsearch.imageTag }}
+        args: [
+          "-c", "/usr/share/metricbeat/metricbeat.yml",
+          "-e",
+          "-system.hostfs=/hostfs",
+        ]
+        resources: {{ toYaml .Values.metricbeat.resources | nindent 10 }}          
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          runAsUser: 0
+          #privileged: true        
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/metricbeat/metricbeat.yml
+          readOnly: true
+          subPath: metricbeat.yml
+        - name: data
+          mountPath: /usr/share/metricbeat/data        
+        - name: proc
+          mountPath: /hostfs/proc
+          readOnly: true
+        - name: cgroup
+          mountPath: /hostfs/sys/fs/cgroup
+          readOnly: true
+      volumes:      
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755  
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: cgroup
+        hostPath:
+          path: {{ .Values.metricbeat.host_path }}
+      - name: config
+        configMap:
+          defaultMode: 0644
+          name: {{ .Release.Name}}-metricsbeat-config
+      - name: data
+        hostPath:
+          # When metricbeat runs as non-root user, this directory needs to be writable by group (g+w)
+          path: /var/lib/metricbeat-data
+          type: DirectoryOrCreate
+---
+{{- end -}}

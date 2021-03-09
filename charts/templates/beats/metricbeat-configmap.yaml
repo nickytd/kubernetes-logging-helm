@@ -1,0 +1,98 @@
+{{ if .Values.metricbeat.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-metricsbeat-config
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  metricbeat.yml: |-
+    logging:
+      level: {{ .Values.metricbeat.logging.level }}
+      json: {{ .Values.metricbeat.logging.json }}
+
+    metricbeat.autodiscover:
+    providers:
+    - type: kubernetes
+      scope: cluster
+      node: ${NODE_NAME}
+      unique: true
+      identifier: leader-election-metricbeat
+      templates:
+        - config:
+            - module: elasticsearch
+              enabled: true
+              metricsets:
+                - node
+                - node_stats
+                - index 
+                - cluster_stats
+                - index_summary
+              period: 10s
+              hosts: ["{{ include "es_url" . }}"]
+              username: {{ .Values.elasticsearch.user }}
+              password: {{ .Values.elasticsearch.password }}            
+            
+            - module: kibana
+              metricsets:
+                - status
+                - stats
+              period: 10s
+              hosts: ["{{ .Release.Name}}-kibana:5601"]
+              #basepath: ""
+              username: {{ .Values.kibana.user }}
+              password: {{ .Values.kibana.password }}   
+              enabled: true
+    
+    metricbeat.modules:
+    - module: system
+      period: 30s
+      metricsets:
+        - cpu
+        - load
+        - memory
+        - network
+        - process
+        - process_summary
+        #- core
+        #- diskio
+        #- socket
+      processes: ['.*']
+      process.include_top_n:
+        by_cpu: 5      # include top 5 processes by CPU
+        by_memory: 5   # include top 5 processes by memory
+
+    - module: system
+      period: 1m
+      metricsets:
+        - filesystem
+        - fsstat
+      processors:
+      - drop_event.when.regexp:
+          system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib|snap)($|/)'          
+
+    processors:
+    - add_id: ~
+    - add_kubernetes_metadata:
+        in_cluster: true   
+    - drop_fields:
+          fields: ["agent","input.type"]
+          ignore_missing: true     
+
+    output.kafka:
+      enabled: {{ printf "%t" .Values.kafka.enabled }}
+      hosts: ["kafka-svc.{{ .Release.Namespace }}:9092"]
+      topic: 'metrics'
+      partition.hash:
+        reachable_only: true
+      required_acks: 1
+      max_message_bytes: 15728640
+      client_id: "${NODE_NAME}"
+
+    output.console:
+      enabled: false
+      pretty: true
+
+    output.logstash:
+      enabled: {{ printf "%t" (not .Values.kafka.enabled) }}
+      hosts: ["{{ .Release.Name}}-logstash-indexer:5046"]    
+{{ end }}

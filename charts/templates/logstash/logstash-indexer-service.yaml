@@ -11,7 +11,10 @@ spec:
     targetPort: containers
   - name: journals
     port: 5045
-    targetPort: journals  
+    targetPort: journals
+  - name: metrics
+    port: 5046
+    targetPort: metrics    
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: logstash-indexer
   type: ClusterIP

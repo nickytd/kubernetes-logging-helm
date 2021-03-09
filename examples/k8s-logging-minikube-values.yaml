@@ -1,0 +1,107 @@
+#Configuration of ES master node if "in_cluster" is true
+master:
+  storage: 1Gi
+  heap_size: 128m
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+#Configuration of ES coordination node if "in_cluster" is true
+client:
+  ingress:
+    enabled: true
+    host: es.local.dev
+    annotations:
+      nginx.ingress.kubernetes.io/enable-access-log: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    tls:
+      - hosts:
+          - es.local.dev
+        secretName: es-tls  
+  heap_size: 256m
+  resources:
+    requests:
+      memory: 600Mi
+    limits:  
+      memory: 600Mi
+#Configuration of ES data node if "in_cluster" is true
+data:
+  replicas: 1
+  heap_size: 256m
+  storage: 1Gi
+  resources:
+    requests:
+      memory: 600Mi
+    limits:
+      memory: 600Mi
+
+logstash_indexer:
+  heap_size: 512m
+  resources:
+    requests:
+      memory: 1Gi
+    limits:
+      memory: 1Gi
+
+kibana:
+  ingress:
+    enabled: true 
+    host: kibana.local.dev
+    annotations:
+      nginx.ingress.kubernetes.io/enable-access-log: "false"
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/session-cookie-name: "security_authentication"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    tls:
+      - hosts:
+          - kibana.local.dev
+        secretName: kibana-tls     
+  replicas: 1
+  resources:
+    requests:
+      memory: 500Mi
+    limits:
+      memory: 500Mi
+
+#Configuration for containers logs path needs to be adjusted corresponding to the host
+filebeat:
+  logging:
+    level: info
+    json: true
+    metrics:
+      enabled: true
+  mem_queue: 1024
+  host_path: /var/lib/docker/containers/
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
+
+#Configuration for journal logs path needs to be adjusted corresponding to the host
+journalbeat:
+  enabled: true
+  logging:
+    level: info
+    json: true
+    metrics:
+      enabled: true
+  host_path: /run/log/journal
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
+
+#Configuration for sys cgroups path needs to be adjusted corresponding to the host      
+metricbeat:
+  logging:
+    level: info
+    json: true
+  enabled: true
+  host_path: "/sys/fs/cgroup"
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
+#kafka buffering should be enabled in scaled out configuration
+kafka:
+  enabled: false
