@@ -10,34 +10,27 @@ This is a comprehensive helm chart for deploying complete Kubernetes logging sta
 
 ![Containers Logs](images/k8s-logging-stack.jpg)
 
-Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing based on [kind](https://kind.sigs.k8s.io)
+Here is a [setup example](examples) for local development and testing based on [kind](https://kind.sigs.k8s.io) or [minikube](https://minikube.sigs.k8s.io/)
 
 Start a sample provisioning with setting up a local cluster, followed by deployment of the logging stack.
-[examples/setup-cluster.sh](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/setup-cluster.sh)
-[examples/install-elk.sh](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/install-elk.sh)
-
+[examples/setup-cluster.sh](examples/setup-cluster.sh)
+[examples/install-elk.sh](examples/install-elk.sh)
+```ìnstall-elk.sh -minikube``` or ```ìnstall-elk.sh -kind```
 
 Provisioning options:
 By default the helm chart setup following components:
  1. Elastic coordination node
  1. Elastic master node
  1. Elastic data node
- 1. Filebeat
- 1. Journalbeat
+ 1. Filebeat 
  1. Logstash
  1. Kibana
+and optionally  
+ 1. Journalbeat
+ 1. MetricBeat
+ 1. Kafka and Zookeeper
  
-In this option setup, the beats directly talk to the logstash instance. 
-
-There are two options to scale the setup:
-* For medium logging stream volumes the chart can be horizontally scaled by increasing the replicas of the Elastic nodes and Logstash deployment.
-M size example for indexing less than 1 000 000 docs per min [M-size-k8s-logging-values.yaml](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/M-size-k8s-logging-values.yaml)
-
-* For high logging stream volume a Kafka broker can be enabled in the chart so the beats( or application pods sidecars) can push logs to the Kafka topics. Then the Logstash fetches the logs stream from the Kafka queues and the outputs to the dedicated Elasticsearch instance. 
-
-L size example for indexing more than 1 000 000 docs per min [L-size-k8s-logging-values.yaml](https://github.com/nickytd/kubernetes-logging-helm/blob/master/examples/L-size-k8s-logging-values.yaml)
-
-The logging stream has dedicated Elasticsearch indices. The stdout and stderr from containers are pushed to "containers-<date>" indices and the systemlog of the hosts, if journabeat is enabled. is pushed to "journals-<date>".
+The logging stream has dedicated Elasticsearch indices. The stdout and stderr from containers are pushed to "containers-<date>" indices and the systemlog of the hosts, if journabeat is enabled. is pushed to "journals-<date>". When enabled metrics are delivered to "containers-<date>" indices.
 
 The chart also supports external(outside the cluster) Elasticsearch instance. In this configuration no elastic (coordination, data, master) nodes will be provisioned by the helm chart.
 
