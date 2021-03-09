@@ -134,6 +134,6 @@ data:
       master_only: false
       
     logging:
-      loglevel: INFO
-      logformat: default
+      loglevel: warning
+      logformat: json
 {{- end }}      
