@@ -134,6 +134,8 @@ data:
       master_only: false
       
     logging:
-      loglevel: warning
+      loglevel: ERROR
+      logfile:
       logformat: json
+      blacklist: ['urllib3']
 {{- end }}      
