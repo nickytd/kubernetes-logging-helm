@@ -9,4 +9,12 @@ entries:
     urls:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.15.6/kubernetes-logging-0.15.6.tgz
     version: 0.15.6
-generated: "2021-03-04T11:31:13.831967+01:00"
+  - apiVersion: v1
+    created: "2021-03-11T20:23:06.875399+01:00"
+    description: A Helm chart for kubernetes logging stack
+    digest: a7de1cbcaba1c8337c1ee0b5c2157aca875bb589e9b864b6cd87d42f975ccfe4
+    name: kubernetes-logging
+    urls:
+    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.16.1/kubernetes-logging-0.16.1.tgz
+    version: 0.16.1
+generated: "2021-03-11T20:23:06.875408+01:00"
