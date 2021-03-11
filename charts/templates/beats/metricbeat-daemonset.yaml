@@ -48,7 +48,11 @@ spec:
           "-system.hostfs=/hostfs",
         ]
         resources: {{ toYaml .Values.metricbeat.resources | nindent 10 }}          
-        env:
+        env:        
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name  
         - name: NODE_NAME
           valueFrom:
             fieldRef:

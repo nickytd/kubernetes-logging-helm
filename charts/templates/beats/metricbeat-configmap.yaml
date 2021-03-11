@@ -6,42 +6,47 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   metricbeat.yml: |-
+    name: ${POD_NAME}
     logging:
       level: {{ .Values.metricbeat.logging.level }}
       json: {{ .Values.metricbeat.logging.json }}
+      metrics:
+        enabled: {{ .Values.metricbeat.logging.metrics.enabled }}
 
     metricbeat.autodiscover:
-    providers:
-    - type: kubernetes
-      scope: cluster
-      node: ${NODE_NAME}
-      unique: true
-      identifier: leader-election-metricbeat
-      templates:
-        - config:
-            - module: elasticsearch
-              enabled: true
-              metricsets:
-                - node
-                - node_stats
-                - index 
-                - cluster_stats
-                - index_summary
-              period: 10s
-              hosts: ["{{ include "es_url" . }}"]
-              username: {{ .Values.elasticsearch.user }}
-              password: {{ .Values.elasticsearch.password }}            
-            
-            - module: kibana
-              metricsets:
-                - status
-                - stats
-              period: 10s
-              hosts: ["{{ .Release.Name}}-kibana:5601"]
-              #basepath: ""
-              username: {{ .Values.kibana.user }}
-              password: {{ .Values.kibana.password }}   
-              enabled: true
+      providers:
+      - type: kubernetes
+        scope: cluster
+        node: ${NODE_NAME}
+        unique: true
+        identifier: leader-election-metricbeat
+        templates:
+          - config:
+              - module: elasticsearch
+                enabled: true
+                metricsets:
+                  - node
+                  - node_stats
+                  - index 
+                  - cluster_stats
+                  - index_summary
+                period: 10s
+                hosts: ["{{ include "es_url" . }}"]
+                username: {{ .Values.elasticsearch.user }}
+                password: {{ .Values.elasticsearch.password }}
+                ssl.verification_mode: "none"            
+              
+              - module: kibana
+                metricsets:
+                  - status
+                  - stats
+                period: 10s
+                hosts: ["{{ .Release.Name}}-kibana:5601"]
+                #basepath: ""
+                username: {{ .Values.kibana.user }}
+                password: {{ .Values.kibana.password }}   
+                enabled: true
+
     
     metricbeat.modules:
     - module: system
@@ -72,8 +77,8 @@ data:
 
     processors:
     - add_id: ~
-    - add_kubernetes_metadata:
-        in_cluster: true   
+    #- add_kubernetes_metadata:
+    #    in_cluster: true
     - drop_fields:
           fields: ["agent","input.type"]
           ignore_missing: true     
@@ -86,7 +91,7 @@ data:
         reachable_only: true
       required_acks: 1
       max_message_bytes: 15728640
-      client_id: "${NODE_NAME}"
+      client_id: "${HOSTNAME}"
 
     output.console:
       enabled: false

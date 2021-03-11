@@ -218,7 +218,9 @@ journalbeat:
 metricbeat:
   logging:
     level: "warning"
-    json: true    
+    json: true 
+    metrics:
+      enabled: false   
   resources:
     limits: 
       memory: "100Mi"    

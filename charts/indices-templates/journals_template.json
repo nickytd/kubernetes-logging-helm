@@ -17,11 +17,49 @@
     "_source" : {
       "enabled" : true
     },
+    "dynamic_templates": [   
+      {
+        "container.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "container.*"
+        }
+      },   
+      {
+        "kubernetes.labels.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "kubernetes.labels.*"
+        }
+      },
+      {
+        "kubernetes.annotations.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "kubernetes.annotations.*"
+        }
+      },
+      {
+        "host.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "host.*"
+        }
+      }
+     ],
     "properties" : {
       "@timestamp" : {
           "type" : "date"
       },
-      "id" : {
+      "_id" : {
           "type" : "keyword"
       }
     }

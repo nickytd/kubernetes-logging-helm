@@ -17,13 +17,982 @@
     "_source" : {
       "enabled" : true
     },
+    "dynamic_templates": [   
+      {
+        "container.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "container.*"
+        }
+      },   
+      {
+        "kubernetes.labels.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "kubernetes.labels.*"
+        }
+      },
+      {
+        "kubernetes.annotations.*": {
+          "mapping": {
+            "type": "keyword"
+          },
+          "match_mapping_type": "*",
+          "path_match": "kubernetes.annotations.*"
+        }
+      }
+     ],
     "properties" : {
       "@timestamp" : {
           "type" : "date"
       },
-      "id" : {
+      "host" : {
+          "properties" : {
+            "name" : {
+              "type" : "keyword"
+            }
+          }
+        },
+        "_id" : {
           "type" : "keyword"
-      }
+        },        
+        "logger" : {
+          "type" : "keyword"          
+        },
+        "level" : {
+          "type" : "keyword"          
+        },
+        "message" : {
+          "type" : "text"          
+        },
+        "monitoring" : {
+          "properties" : {
+            "metrics" : {
+              "properties" : {
+                "beat" : {
+                  "properties" : {
+                    "cgroup" : {
+                      "properties" : {
+                        "cpu" : {
+                          "properties" : {
+                            "id" : {
+                              "type" : "keyword",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "cpuacct" : {
+                          "properties" : {
+                            "id" : {
+                              "type" : "text",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "memory" : {
+                          "properties" : {
+                            "id" : {
+                              "type" : "text",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "cpu" : {
+                      "properties" : {
+                        "system" : {
+                          "properties" : {
+                            "ticks" : {
+                              "type" : "long"
+                            },
+                            "time" : {
+                              "properties" : {
+                                "ms" : {
+                                  "type" : "long"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "total" : {
+                          "properties" : {
+                            "ticks" : {
+                              "type" : "long"
+                            },
+                            "time" : {
+                              "properties" : {
+                                "ms" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "value" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "user" : {
+                          "properties" : {
+                            "ticks" : {
+                              "type" : "long"
+                            },
+                            "time" : {
+                              "properties" : {
+                                "ms" : {
+                                  "type" : "long"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "handles" : {
+                      "properties" : {
+                        "limit" : {
+                          "properties" : {
+                            "hard" : {
+                              "type" : "long"
+                            },
+                            "soft" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "open" : {
+                          "type" : "long"
+                        }
+                      }
+                    },
+                    "info" : {
+                      "properties" : {
+                        "ephemeral_id" : {
+                          "type" : "text",
+                          "fields" : {
+                            "keyword" : {
+                              "type" : "keyword",
+                              "ignore_above" : 256
+                            }
+                          }
+                        },
+                        "uptime" : {
+                          "properties" : {
+                            "ms" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "memstats" : {
+                      "properties" : {
+                        "gc_next" : {
+                          "type" : "long"
+                        },
+                        "memory_alloc" : {
+                          "type" : "long"
+                        },
+                        "memory_total" : {
+                          "type" : "long"
+                        },
+                        "rss" : {
+                          "type" : "long"
+                        }
+                      }
+                    },
+                    "runtime" : {
+                      "properties" : {
+                        "goroutines" : {
+                          "type" : "long"
+                        }
+                      }
+                    }
+                  }
+                },
+                "filebeat" : {
+                  "properties" : {
+                    "events" : {
+                      "properties" : {
+                        "active" : {
+                          "type" : "long"
+                        },
+                        "added" : {
+                          "type" : "long"
+                        },
+                        "done" : {
+                          "type" : "long"
+                        }
+                      }
+                    },
+                    "harvester" : {
+                      "properties" : {
+                        "closed" : {
+                          "type" : "long"
+                        },
+                        "open_files" : {
+                          "type" : "long"
+                        },
+                        "running" : {
+                          "type" : "long"
+                        },
+                        "started" : {
+                          "type" : "long"
+                        }
+                      }
+                    }
+                  }
+                },
+                "journalbeat" : {
+                  "properties" : {
+                    "beat" : {
+                      "properties" : {
+                        "cgroup" : {
+                          "properties" : {
+                            "cpu" : {
+                              "properties" : {
+                                "id" : {
+                                  "type" : "text",
+                                  "fields" : {
+                                    "keyword" : {
+                                      "type" : "keyword",
+                                      "ignore_above" : 256
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "cpuacct" : {
+                              "properties" : {
+                                "id" : {
+                                  "type" : "text",
+                                  "fields" : {
+                                    "keyword" : {
+                                      "type" : "keyword",
+                                      "ignore_above" : 256
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "memory" : {
+                              "properties" : {
+                                "id" : {
+                                  "type" : "text",
+                                  "fields" : {
+                                    "keyword" : {
+                                      "type" : "keyword",
+                                      "ignore_above" : 256
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "cpu" : {
+                          "properties" : {
+                            "system" : {
+                              "properties" : {
+                                "ticks" : {
+                                  "type" : "long"
+                                },
+                                "time" : {
+                                  "properties" : {
+                                    "ms" : {
+                                      "type" : "long"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "total" : {
+                              "properties" : {
+                                "ticks" : {
+                                  "type" : "long"
+                                },
+                                "time" : {
+                                  "properties" : {
+                                    "ms" : {
+                                      "type" : "long"
+                                    }
+                                  }
+                                },
+                                "value" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "user" : {
+                              "properties" : {
+                                "ticks" : {
+                                  "type" : "long"
+                                },
+                                "time" : {
+                                  "properties" : {
+                                    "ms" : {
+                                      "type" : "long"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "handles" : {
+                          "properties" : {
+                            "limit" : {
+                              "properties" : {
+                                "hard" : {
+                                  "type" : "long"
+                                },
+                                "soft" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "open" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "info" : {
+                          "properties" : {
+                            "ephemeral_id" : {
+                              "type" : "text",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            },
+                            "uptime" : {
+                              "properties" : {
+                                "ms" : {
+                                  "type" : "long"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "memstats" : {
+                          "properties" : {
+                            "gc_next" : {
+                              "type" : "long"
+                            },
+                            "memory_alloc" : {
+                              "type" : "long"
+                            },
+                            "memory_total" : {
+                              "type" : "long"
+                            },
+                            "rss" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "runtime" : {
+                          "properties" : {
+                            "goroutines" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "journals" : {
+                      "properties" : {
+                        "journal_0" : {
+                          "properties" : {
+                            "path" : {
+                              "type" : "text",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            },
+                            "size_in_bytes" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "libbeat" : {
+                      "properties" : {
+                        "output" : {
+                          "properties" : {
+                            "events" : {
+                              "properties" : {
+                                "acked" : {
+                                  "type" : "long"
+                                },
+                                "batches" : {
+                                  "type" : "long"
+                                },
+                                "failed" : {
+                                  "type" : "long"
+                                },
+                                "total" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "read" : {
+                              "properties" : {
+                                "bytes" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "type" : {
+                              "type" : "text",
+                              "fields" : {
+                                "keyword" : {
+                                  "type" : "keyword",
+                                  "ignore_above" : 256
+                                }
+                              }
+                            },
+                            "write" : {
+                              "properties" : {
+                                "bytes" : {
+                                  "type" : "long"
+                                },
+                                "errors" : {
+                                  "type" : "long"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "pipeline" : {
+                          "properties" : {
+                            "clients" : {
+                              "type" : "long"
+                            },
+                            "events" : {
+                              "properties" : {
+                                "published" : {
+                                  "type" : "long"
+                                },
+                                "retry" : {
+                                  "type" : "long"
+                                },
+                                "total" : {
+                                  "type" : "long"
+                                }
+                              }
+                            },
+                            "queue" : {
+                              "properties" : {
+                                "acked" : {
+                                  "type" : "long"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "system" : {
+                      "properties" : {
+                        "cpu" : {
+                          "properties" : {
+                            "cores" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "load" : {
+                          "properties" : {
+                            "1" : {
+                              "type" : "float"
+                            },
+                            "15" : {
+                              "type" : "float"
+                            },
+                            "5" : {
+                              "type" : "float"
+                            },
+                            "norm" : {
+                              "properties" : {
+                                "1" : {
+                                  "type" : "float"
+                                },
+                                "15" : {
+                                  "type" : "float"
+                                },
+                                "5" : {
+                                  "type" : "float"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "libbeat" : {
+                  "properties" : {
+                    "config" : {
+                      "properties" : {
+                        "module" : {
+                          "properties" : {
+                            "running" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "output" : {
+                      "properties" : {
+                        "events" : {
+                          "properties" : {
+                            "acked" : {
+                              "type" : "long"
+                            },
+                            "batches" : {
+                              "type" : "long"
+                            },
+                            "failed" : {
+                              "type" : "long"
+                            },
+                            "total" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "read" : {
+                          "properties" : {
+                            "bytes" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "type" : {
+                          "type" : "text",
+                          "fields" : {
+                            "keyword" : {
+                              "type" : "keyword",
+                              "ignore_above" : 256
+                            }
+                          }
+                        },
+                        "write" : {
+                          "properties" : {
+                            "bytes" : {
+                              "type" : "long"
+                            },
+                            "errors" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "pipeline" : {
+                      "properties" : {
+                        "clients" : {
+                          "type" : "long"
+                        },
+                        "events" : {
+                          "properties" : {
+                            "active" : {
+                              "type" : "long"
+                            },
+                            "filtered" : {
+                              "type" : "long"
+                            },
+                            "published" : {
+                              "type" : "long"
+                            },
+                            "retry" : {
+                              "type" : "long"
+                            },
+                            "total" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "queue" : {
+                          "properties" : {
+                            "acked" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "metricbeat" : {
+                  "properties" : {
+                    "system" : {
+                      "properties" : {
+                        "cpu" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "filesystem" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "fsstat" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "load" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "memory" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "network" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "process" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        },
+                        "process_summary" : {
+                          "properties" : {
+                            "events" : {
+                              "type" : "long"
+                            },
+                            "success" : {
+                              "type" : "long"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "registrar" : {
+                  "properties" : {
+                    "states" : {
+                      "properties" : {
+                        "current" : {
+                          "type" : "long"
+                        },
+                        "update" : {
+                          "type" : "long"
+                        }
+                      }
+                    },
+                    "writes" : {
+                      "properties" : {
+                        "success" : {
+                          "type" : "long"
+                        },
+                        "total" : {
+                          "type" : "long"
+                        }
+                      }
+                    }
+                  }
+                },
+                "system" : {
+                  "properties" : {
+                    "cpu" : {
+                      "properties" : {
+                        "cores" : {
+                          "type" : "long"
+                        }
+                      }
+                    },
+                    "load" : {
+                      "properties" : {
+                        "1" : {
+                          "type" : "float"
+                        },
+                        "15" : {
+                          "type" : "float"
+                        },
+                        "5" : {
+                          "type" : "float"
+                        },
+                        "norm" : {
+                          "properties" : {
+                            "1" : {
+                              "type" : "float"
+                            },
+                            "15" : {
+                              "type" : "float"
+                            },
+                            "5" : {
+                              "type" : "float"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "stream" : {
+          "type" : "text",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+        "system_info" : {
+          "properties" : {
+            "beat" : {
+              "properties" : {
+                "path" : {
+                  "properties" : {
+                    "config" : {
+                      "type" : "text"
+                    },
+                    "data" : {
+                      "type" : "text"
+                    },
+                    "home" : {
+                      "type" : "text"
+                    },
+                    "logs" : {
+                      "type" : "text"
+                    }
+                  }
+                },
+                "type" : {
+                  "type" : "text"
+                },
+                "uuid" : {
+                  "type" : "text",
+                  "fields" : {
+                    "keyword" : {
+                      "type" : "keyword",
+                      "ignore_above" : 256
+                    }
+                  }
+                }
+              }
+            },
+            "build" : {
+              "properties" : {
+                "commit" : {
+                  "type" : "text"
+                },
+                "libbeat" : {
+                  "type" : "text"
+                },
+                "time" : {
+                  "type" : "date"
+                },
+                "version" : {
+                  "type" : "keyword"
+                }
+              }
+            },
+            "go" : {
+              "properties" : {
+                "arch" : {
+                  "type" : "keyword"
+                },
+                "max_procs" : {
+                  "type" : "long"
+                },
+                "os" : {
+                  "type" : "keyword"
+                },
+                "version" : {
+                  "type" : "keyword"
+                }
+              }
+            },
+            "host" : {
+              "properties" : {
+                "architecture" : {
+                  "type" : "keyword"
+                },
+                "boot_time" : {
+                  "type" : "date"
+                },
+                "containerized" : {
+                  "type" : "boolean"
+                },
+                "id" : {
+                  "type" : "keyword"
+                },
+                "ip" : {
+                  "type" : "ip"
+                },
+                "kernel_version" : {
+                  "type" : "keyword"
+                },
+                "mac" : {
+                  "type" : "keyword"
+                },
+                "name" : {
+                  "type" : "keyword"
+                },
+                "os" : {
+                  "properties" : {
+                    "codename" : {
+                      "type" : "keyword"
+                    },
+                    "family" : {
+                      "type" : "keyword"
+                    },
+                    "major" : {
+                      "type" : "long"
+                    },
+                    "minor" : {
+                      "type" : "long"
+                    },
+                    "name" : {
+                      "type" : "text"
+                    },
+                    "patch" : {
+                      "type" : "long"
+                    },
+                    "platform" : {
+                      "type" : "keyword"
+                    },
+                    "version" : {
+                      "type" : "keyword"
+                    }
+                  }
+                },
+                "timezone" : {
+                  "type" : "text"
+                },
+                "timezone_offset_sec" : {
+                  "type" : "long"
+                }
+              }
+            },
+            "process" : {
+              "properties" : {
+                "capabilities" : {
+                  "properties" : {
+                    "bounding" : {
+                      "type" : "text"
+                    },
+                    "effective" : {
+                      "type" : "text"
+                    },
+                    "inheritable" : {
+                      "type" : "text"
+                    },
+                    "permitted" : {
+                      "type" : "text"
+                    }
+                  }
+                },
+                "cwd" : {
+                  "type" : "text"
+                },
+                "exe" : {
+                  "type" : "text"
+                },
+                "name" : {
+                  "type" : "text"
+                },
+                "pid" : {
+                  "type" : "long"
+                },
+                "ppid" : {
+                  "type" : "long"
+                },
+                "seccomp" : {
+                  "properties" : {
+                    "mode" : {
+                      "type" : "text"
+                    },
+                    "no_new_privs" : {
+                      "type" : "boolean"
+                    }
+                  }
+                },
+                "start_time" : {
+                  "type" : "date"
+                }
+              }
+            }
+          }
+        },
+        "tags" : {
+          "type" : "keyword"
+        }      
     }
   },
   "index_patterns":["beats-*"]

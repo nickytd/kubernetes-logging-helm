@@ -24,6 +24,9 @@ data:
     - add_id: ~
     - add_kubernetes_metadata:
         in_cluster: true
+    - drop_fields:
+          fields: ["agent","input.type"]
+          ignore_missing: true    
     
     output.kafka:
       enabled: {{ printf "%t" .Values.kafka.enabled }}
