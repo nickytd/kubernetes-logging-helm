@@ -31,6 +31,7 @@ data:
                   - cluster_stats
                   - index_summary
                 period: 10s
+                scope: cluster
                 hosts: ["{{ include "es_url" . }}"]
                 username: {{ .Values.elasticsearch.user }}
                 password: {{ .Values.elasticsearch.password }}
