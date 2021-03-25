@@ -56,10 +56,7 @@
                   "type":"keyword"
                }
             }
-         },
-         "_id":{
-            "type":"keyword"
-         },
+         },         
          "logger":{
             "type":"keyword"
          },

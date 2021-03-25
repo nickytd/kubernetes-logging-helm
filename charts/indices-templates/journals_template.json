@@ -58,9 +58,6 @@
       "properties":{
          "@timestamp":{
             "type":"date"
-         },
-         "_id":{
-            "type":"keyword"
          }
       }
    },
