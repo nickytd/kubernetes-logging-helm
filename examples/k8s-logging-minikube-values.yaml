@@ -13,7 +13,7 @@ client:
     enabled: true
     host: es.local.dev
     annotations:
-      nginx.ingress.kubernetes.io/enable-access-log: "false"
+      nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/rewrite-target: "/"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
@@ -51,7 +51,7 @@ kibana:
     enabled: true 
     host: kibana.local.dev
     annotations:
-      nginx.ingress.kubernetes.io/enable-access-log: "false"
+      nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/affinity: "cookie"
       nginx.ingress.kubernetes.io/session-cookie-name: "security_authentication"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
