@@ -19,12 +19,12 @@
       },
       "dynamic_templates":[
          {
-            "container.*":{
+            "container.labels.*":{
                "mapping":{
                   "type":"keyword"
                },
                "match_mapping_type":"*",
-               "path_match":"container.*"
+               "path_match":"container.labels.*"
             }
          },
          {
