@@ -41,16 +41,7 @@ data:
       - drop_fields:
           fields: ["agent","input.type"]
           ignore_missing: true          
-            
-    filebeat.autodiscover:
-      providers:
-        - type: kubernetes
-          templates:
-          - config:
-              - type: container 
-                paths:
-                  - '/logs/*/*.log'
-                         
+                                     
     output.kafka:
       enabled: {{ .Values.kafka.enabled }}
       hosts: ["kafka-svc.{{ .Release.Namespace }}:9092"]
