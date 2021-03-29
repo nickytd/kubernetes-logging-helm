@@ -1,6 +1,6 @@
 {
    "index_patterns":[
-      "metricbeat-*"
+      "metrics-*"
    ],
    "mappings":{
       "_meta":{
