@@ -21,6 +21,7 @@ data:
     - type: container
       paths:
         - '/logs/*/*.log'
+      publisher_pipeline.disable_host: true  
       multiline.pattern: '^}|^[[:space:]]+|^[[:cntrl:]][[:graph:]]([[:digit:]]+)[m|K]([[:space:]]+)'
       multiline.negate: false
       multiline.match: after
