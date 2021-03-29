@@ -24,8 +24,15 @@ data:
     - add_id: ~
     - add_kubernetes_metadata:
         in_cluster: true
+        default_indexers.enabled: false
+        default_matchers.enabled: false
+        indexers:
+          - pod_name:
+        matchers:
+          - field_format:
+              format: '${POD_NAMESPACE}/${POD_NAME}'    
     - drop_fields:
-          fields: ["agent","input.type"]
+          fields: ["agent","input"]
           ignore_missing: true    
     
     output.kafka:

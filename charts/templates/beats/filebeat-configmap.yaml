@@ -30,16 +30,13 @@ data:
       - add_id: ~
       - add_kubernetes_metadata:
           in_cluster: true
-          default_indexers.enabled: false
           default_matchers.enabled: false
-          indexers:
-            - container:
           matchers:
             - logs_path:
                 logs_path: '/logs'
                 resource_type: containers
       - drop_fields:
-          fields: ["agent","input.type"]
+          fields: ["agent","input"]
           ignore_missing: true          
                                      
     output.kafka:
