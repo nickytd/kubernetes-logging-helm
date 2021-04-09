@@ -16,16 +16,7 @@
                "match_mapping_type":"string",
                "path_match":"labels.*"
             }
-         },
-         {
-            "container.labels":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"string",
-               "path_match":"container.labels.*"
-            }
-         },
+         },         
          {
             "fields":{
                "mapping":{

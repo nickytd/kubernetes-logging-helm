@@ -139,6 +139,7 @@ kibana:
     - beats
     - journals
     - metrics
+    - nginx-ingress-access-log
     - all
   tenants:
     - Global

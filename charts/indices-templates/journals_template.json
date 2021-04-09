@@ -17,16 +17,7 @@
       "_source":{
          "enabled":true
       },
-      "dynamic_templates":[
-         {
-            "container.labels.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"container.labels.*"
-            }
-         },
+      "dynamic_templates":[         
          {
             "kubernetes.labels.*":{
                "mapping":{
