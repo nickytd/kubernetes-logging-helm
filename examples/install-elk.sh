@@ -57,8 +57,20 @@ do
       
       helm template elk -n logging \
         -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/../charts \
-        > $sourcedir/templates.yaml
+        > $sourcedir/templates.yaml 
     fi
 
+    if [[ "$var" = "--with-exporter" ]]; then
+      echo " installing elasticsearch prometheus exporter"
+
+      kubectl create secret generic elastic-certs -n logging \
+        --from-file=ca.pem=$sourcedir/../charts/certificates/ca/root-ca/root-ca.pem \
+        --dry-run=client -o yaml | kubectl apply -f -
+
+      helm upgrade elk-exporter \
+        -n logging --create-namespace  -f "$sourcedir/elasticsearch-exporter.yaml" \
+        prometheus-community/prometheus-elasticsearch-exporter \
+        --install
+    fi
 
 done      
