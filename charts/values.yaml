@@ -38,10 +38,10 @@ init_container_image:
 #In case "in_cluster" is set to false, the logstash-indexer uses it as an output destination. The coordination, master and data nodes
 #are skiped.
 elasticsearch:
+  single_type_node: false
   image: "docker.elastic.co"
   imageTag: "7.10.2"
   in_cluster: true
-  with_node_roles: true
   snapshot:
     enabled: false
     storage_class: ""
@@ -76,9 +76,9 @@ client:
   heap_size: "512m"
   resources:
     requests:
-      memory: "800Mi"
+      memory: "1000Mi"
     limits:
-      memory: "800Mi"
+      memory: "2000Mi"
   host: ""
   ingress:
     path: "/"
@@ -95,13 +95,13 @@ client:
 #Configuration of ES data node if "in_cluster" is true
 data:
   replicas: 1
-  heap_size: "256m"
+  heap_size: "512m"
   storage: "1Gi"
   resources:
     requests:
-      memory: "600Mi"
+      memory: "1000Mi"
     limits:
-      memory: "600Mi"
+      memory: "2000Mi"
   storage_class: ""
   priority_class: ""    
   tolerations: []
@@ -167,9 +167,9 @@ logstash_indexer:
   heap_size: "512m"
   resources:
     requests:
-      memory: "800Mi"
+      memory: "1000Mi"
     limits:
-      memory: "800Mi"
+      memory: "2000Mi"
   tolerations: []
   affinity: {}
   code_snippet: 

@@ -1,4 +1,4 @@
-{{- if .Values.elasticsearch.in_cluster }}
+{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_type_node) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -47,13 +47,8 @@ spec:
         ports:
         - containerPort: 9300
           name: transport
-          protocol: TCP
         - containerPort: 9200
           name: http
-          protocol: TCP
-        - containerPort: 9600
-          name: metrics
-          protocol: TCP  
         volumeMounts:
         - name: elasticsearch
           mountPath: /usr/share/elasticsearch/config/elasticsearch.yml

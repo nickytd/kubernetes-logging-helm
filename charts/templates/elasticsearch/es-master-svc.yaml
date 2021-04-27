@@ -7,15 +7,13 @@ metadata:
 spec:
   type: ClusterIP
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    node: es
+    {{- if .Values.elasticsearch.single_type_node }}
+    type: single
+    {{- else }}
     type: master
+    {{- end }}    
   ports:
   - name: transport
     port: 9300
-    targetPort: transport
-    protocol: TCP
-  - name: metrics
-    port: 9600
-    targetPort: metrics
-    protocol: TCP  
+    targetPort: transport    
 {{- end }}

@@ -1,13 +1,8 @@
-#Configuration of ES master node if "in_cluster" is true
-master:
-  storage: 1Gi
-  heap_size: 128m
-  resources:
-    requests:
-      memory: 500Mi
-    limits:
-      memory: 500Mi
-#Configuration of ES coordination node if "in_cluster" is true
+#Elasticsearch general configuration
+elasticsearch:
+  single_type_node: false
+
+#Elasticsearch coordination node configuration
 client:
   ingress:
     enabled: true
@@ -20,32 +15,9 @@ client:
     tls:
       - hosts:
           - es.local.dev
-        secretName: es-tls  
-  heap_size: 256m
-  resources:
-    requests:
-      memory: 600Mi
-    limits:  
-      memory: 600Mi
-#Configuration of ES data node if "in_cluster" is true
-data:
-  replicas: 1
-  heap_size: 256m
-  storage: 1Gi
-  resources:
-    requests:
-      memory: 600Mi
-    limits:
-      memory: 600Mi
+        secretName: es-tls
 
-logstash_indexer:
-  heap_size: 512m
-  resources:
-    requests:
-      memory: 1Gi
-    limits:
-      memory: 1Gi
-
+#Kibana configuration
 kibana:
   ingress:
     enabled: true 
@@ -58,22 +30,10 @@ kibana:
     tls:
       - hosts:
           - kibana.local.dev
-        secretName: kibana-tls     
-  replicas: 1
-  resources:
-    requests:
-      memory: 500Mi
-    limits:
-      memory: 500Mi
-
+        secretName: kibana-tls  
+             
 #Configuration for containers logs path needs to be adjusted corresponding to the host
 filebeat:
-  logging:
-    level: info
-    json: true
-    metrics:
-      enabled: true
-  mem_queue: 1024
   host_path: /var/lib/docker/containers/
   tolerations:
     - operator: "Exists"
@@ -82,11 +42,6 @@ filebeat:
 #Configuration for journal logs path needs to be adjusted corresponding to the host
 journalbeat:
   enabled: true
-  logging:
-    level: info
-    json: true
-    metrics:
-      enabled: true
   host_path: /run/log/journal
   tolerations:
     - operator: "Exists"
@@ -94,9 +49,6 @@ journalbeat:
 
 #Configuration for sys cgroups path needs to be adjusted corresponding to the host      
 metricbeat:
-  logging:
-    level: info
-    json: true
   enabled: true
   host_path: "/sys/fs/cgroup"
   tolerations:

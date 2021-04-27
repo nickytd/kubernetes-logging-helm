@@ -1,4 +1,4 @@
-{{- if .Values.elasticsearch.in_cluster }}
+{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_type_node) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -43,8 +43,6 @@ spec:
           name: transport
         - containerPort: 9200
           name: http
-        - containerPort: 9600
-          name: metrics
         volumeMounts:
         - name: es-data
           mountPath: /data

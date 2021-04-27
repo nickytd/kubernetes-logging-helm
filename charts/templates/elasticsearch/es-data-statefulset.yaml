@@ -12,7 +12,11 @@ spec:
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       node: es
-      type: data
+      {{- if .Values.elasticsearch.single_type_node }}
+      type: single
+      {{- else }}
+      type: data      
+      {{- end }}
   template:
     metadata:
       annotations:
@@ -20,7 +24,11 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         node: es
+        {{- if .Values.elasticsearch.single_type_node }}
+        type: single
+        {{- else }}
         type: data
+        {{- end }}
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.data.priority_class }}
       {{- with .Values.data.affinity }}     
@@ -43,12 +51,12 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 10
         ports:
+        {{- if .Values.elasticsearch.single_type_node }}
+        - containerPort: 9200
+          name: http
+        {{- end }}  
         - containerPort: 9300
           name: transport
-          protocol: TCP
-        - containerPort: 9600
-          name: metrics
-          protocol: TCP  
         volumeMounts:
         - name: es-data
           mountPath: /data
@@ -92,8 +100,10 @@ spec:
           value: {{ .Values.master.minimum_nodes | quote }}
         - name: ES_JAVA_OPTS
           value: "-Xms{{ .Values.data.heap_size }} -Xmx{{ .Values.data.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
+        {{- if not .Values.elasticsearch.single_type_node }}
         - name: NODE_MASTER
           value: "false"  
+        {{- end }}
         - name: NODE_DATA
           value: "true"  
         - name: discovery.seed_hosts

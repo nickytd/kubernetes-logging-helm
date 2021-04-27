@@ -9,10 +9,11 @@ spec:
   - name: http
     port: 9200
     targetPort: http
-  - name: metrics
-    port: 9600
-    targetPort: metrics  
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
+    {{- if .Values.elasticsearch.single_type_node }}
+    type: single
+    {{- else }}
     type: client
+    {{- end }}
   type: ClusterIP
 {{- end }}

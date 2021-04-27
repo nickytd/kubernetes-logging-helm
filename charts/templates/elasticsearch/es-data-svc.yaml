@@ -9,11 +9,11 @@ spec:
   - name: transport
     port: 9300
     targetPort: transport
-  - name: metrics
-    port: 9600
-    targetPort: metrics  
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    node: es
+    {{- if .Values.elasticsearch.single_type_node }}
+    type: single
+    {{- else }}
     type: data
+    {{- end }}
   type: ClusterIP
 {{- end }}

@@ -30,9 +30,9 @@ data:
     cluster.name: {{ .Values.cluster_name | quote }}
     path.data: /data
 
-{{- if .Values.elasticsearch.snapshot.enabled }}    
+    {{- if .Values.elasticsearch.snapshot.enabled }}    
     path.repo: /snapshot
-{{- end }}    
+    {{- end }}    
 
     network.host: 0.0.0.0
 
@@ -40,8 +40,14 @@ data:
       - {{ .Release.Name}}-master.{{ .Release.Namespace}}.svc.cluster.local
 
     cluster.initial_master_nodes:
+    {{- if .Values.elasticsearch.single_type_node }}    
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }}
+    {{- else }}
     {{- range $k := (int .Values.master.replicas | until ) }}
       - {{ $root.Release.Name }}-master-{{$k}}
+    {{- end }}  
     {{- end }}
 
     node.master: ${NODE_MASTER:true}
