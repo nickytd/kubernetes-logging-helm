@@ -1,8 +1,11 @@
-#Elasticsearch general configuration
+# Elasticsearch general configuration
+# Single type node deploys only one ALL type elasticsearch node
+# Otherwise it deploys coordination, data and master nodes
+# The recommended configuration in scaled out setups is to disable single_type_node and enable kafka
 elasticsearch:
-  single_type_node: false
+  single_type_node: true
 
-#Elasticsearch coordination node configuration
+# Elasticsearch coordination node configuration
 client:
   ingress:
     enabled: true
@@ -17,7 +20,7 @@ client:
           - es.local.dev
         secretName: es-tls
 
-#Kibana configuration
+# Kibana configuration
 kibana:
   ingress:
     enabled: true 
@@ -31,15 +34,15 @@ kibana:
       - hosts:
           - kibana.local.dev
         secretName: kibana-tls  
-             
-#Configuration for containers logs path needs to be adjusted corresponding to the host
+
+# Configuration for containers logs path needs to be adjusted corresponding to the host
 filebeat:
   host_path: /var/lib/docker/containers/
   tolerations:
     - operator: "Exists"
       effect: "NoSchedule"
 
-#Configuration for journal logs path needs to be adjusted corresponding to the host
+# Configuration for journal logs path needs to be adjusted corresponding to the host
 journalbeat:
   enabled: true
   host_path: /run/log/journal
@@ -47,13 +50,13 @@ journalbeat:
     - operator: "Exists"
       effect: "NoSchedule"
 
-#Configuration for sys cgroups path needs to be adjusted corresponding to the host      
+# Configuration for sys cgroups path needs to be adjusted corresponding to the host      
 metricbeat:
   enabled: true
   host_path: "/sys/fs/cgroup"
   tolerations:
     - operator: "Exists"
       effect: "NoSchedule"
-#kafka buffering should be enabled in scaled out configuration
+# Kafka should be enabled in scaled out configuration
 kafka:
   enabled: false
