@@ -36,22 +36,7 @@ helm upgrade elk \
 
 for var in "$@"
 do
-    if [[ "$var" = "--with-lb" ]]; then
-      echo "creating kibana LoadBalancer"
-      
-      kubectl expose svc/elk-kibana \
-        -n logging --name elk-kibana-lb --type=LoadBalancer \
-        --port 5601 --target-port=5601 \
-        --dry-run=client -o yaml | kubectl apply -f -
-
-      echo "creating es LoadBalancer"
-      
-      kubectl expose svc/elk-client \
-        -n logging --name elk-client-lb --type=LoadBalancer \
-        --port 9200 --target-port=9200 \
-         --dry-run=client -o yaml | kubectl apply -f -
-    fi
-
+    
     if [[ "$var" = "--templates" ]]; then
       echo " generate helm templates"
       
