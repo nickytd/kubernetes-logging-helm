@@ -4,6 +4,22 @@ sourcedir=$(dirname "$0")
 
 set -eo pipefail
 
+
+if [[ "$1" == "-h" ]]; then
+   echo "## installs kubernetes logging stack ##"
+   echo "   supported options:"
+   echo "     --with-templates"
+   echo "         saves helm generated deployment manifests"
+   echo "     --with-exporter"
+   echo "         adds elastic logging prometheus exporter"
+   echo "     -minikube"
+   echo "         minikube specific configurations"
+   echo "     -kind"
+   echo "         kind specific configurations - work in progress"
+   
+   exit
+fi
+
 type=$1
 
 if [[ $type == "-kind" ]] || [[ $type == "-minikube" ]]; then
