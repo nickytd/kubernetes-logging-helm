@@ -62,6 +62,7 @@ kibana_developer:
   reserved: false
   cluster_permissions:
     - "cluster_composite_ops_ro"
+    - "cluster:admin/opendistro/reports/*"    
   index_permissions:
     - index_patterns:  
         - "*"
