@@ -188,5 +188,5 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 | zookeeper.tolerarions | Zookeeper pod tolerations definition | [] |
 
 Example configuration:
- 1. [single node setup](examples/single-node-setup.yaml)
- 1. [multi node ha setup](examples/multi-node-ha-setup.yaml)
+ 1. [single node setup](charts/examples/single-node-setup.yaml)
+ 2. [multi node ha setup](charts/examples/multi-node-ha-setup.yaml)
