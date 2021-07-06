@@ -11,7 +11,7 @@ Finally the helm chart provides index templates management in elastic and index 
 
 Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing based on [minikube](https://minikube.sigs.k8s.io)
 
-Here is a [single node setup](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-minikube-values.yaml)
+Here is a [single node setup](https://github.com/nickytd/kubernetes-logging-helm/blob/6b29902b317f9f9d3f9cafbba4a1ca15a82655fd/examples/single-node-setup.yaml)
 
 Provisioned components:
  1. Single Elastic node
@@ -19,7 +19,7 @@ Provisioned components:
  1. (optional elastic-exporter)
 
 
-And a [scaled out multi node setup](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-scaled-minikube-values.yaml)
+And a [scaled out multi node setup](https://github.com/nickytd/kubernetes-logging-helm/blob/6b29902b317f9f9d3f9cafbba4a1ca15a82655fd/examples/multi-node-ha-setup.yaml)
 
 Provisioned components:
  1. 2 Elastic coordination nodes
