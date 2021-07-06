@@ -1,0 +1,106 @@
+# Elasticsearch general configuration
+# Single type node deploys only one ALL type elasticsearch node
+# Otherwise it deploys coordination, data and master nodes
+# The recommended configuration in scaled out setups is to disable single_node and enable kafka
+elasticsearch:
+  single_node: false  
+
+# Elasticsearch coordination node configuration
+data:
+  replicas: 2
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: type
+              operator: In
+              values:
+              - data
+          topologyKey: kubernetes.io/hostname
+master:
+  replicas: 2
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: type
+              operator: In
+              values:
+              - master
+          topologyKey: kubernetes.io/hostname  
+client:
+  replicas: 2
+  ingress:
+    enabled: true
+    host: es.local.dev
+    annotations:
+      nginx.ingress.kubernetes.io/enable-access-log: "true"
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    tls:
+      - hosts:
+          - es.local.dev
+        secretName: es-tls  
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        type: client            
+
+# Kibana configuration
+kibana:
+  ingress:
+    enabled: true 
+    host: kibana.local.dev
+    annotations:
+      nginx.ingress.kubernetes.io/enable-access-log: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    tls:
+      - hosts:
+          - kibana.local.dev
+        secretName: kibana-tls   
+
+# Kafka should be enabled in scaled out configuration
+kafka:
+  replicas: 2
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: type
+              operator: In
+              values:
+              - kafka
+          topologyKey: kubernetes.io/hostname
+
+  enabled: true
+  topics:
+    replication_factor: 1
+
+zookeeper:
+  replicas: 2    
+
+fluentbit:
+  journal_host_path: /run/log
+
+fluentd:
+  replicas: 2
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        k8s-app: fluentd

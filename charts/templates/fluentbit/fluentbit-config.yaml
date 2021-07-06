@@ -1,0 +1,178 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-fluent-bit
+  labels: {{ include "logging.labels" . | indent 4 }}
+    k8s-app: fluent-bit
+data:
+  # Configuration files: server, input, filters and output
+  # ======================================================
+  fluent-bit.conf: |-
+    [SERVICE]
+        Flush         1
+        Log_Level     info
+        Daemon        off
+        Parsers_File  parsers.conf
+        HTTP_Server   On
+        HTTP_Listen   0.0.0.0
+        HTTP_Port     2020        
+
+    @INCLUDE input-*.conf
+    @INCLUDE filter-kubernetes.conf
+    @INCLUDE filter-parser.conf
+    @INCLUDE filter-rewrite.conf
+    {{- if .Values.kafka.enabled }}
+    @INCLUDE output-kafka.conf
+    {{- else }}
+    @INCLUDE output-elasticsearch-*.conf
+    {{- end }}
+        
+  input-kubernetes.conf: |-
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        DB                /var/log/flb_kube.db
+        Mem_Buf_Limit     10MB
+        Buffer_Max_Size   5MB
+        Buffer_Chunk_Size 1024k
+        Skip_Long_Lines   Off
+        Refresh_Interval  10
+        Parser            docker
+        Read_from_Head    False
+
+  input-systemd.conf: |-
+    [INPUT]
+        Name                systemd
+        Tag                 systemd.*
+        Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
+        Systemd_Filter      _SYSTEMD_UNIT=docker.service        
+        Systemd_Filter_Type Or
+        Read_From_Tail      Off    
+        Path                /run/log/journal
+        Strip_Underscores   On
+
+  filter-kubernetes.conf: |-
+    [FILTER]
+        Name                kubernetes
+        Match               kube.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Tag_Prefix     kube.var.log.containers.
+        Merge_Log           On
+        Merge_Log_Key       log_processed
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Labels              On
+  
+  filter-parser.conf: |-
+    [FILTER]
+        Name                parser
+        Match               kube.*
+        Key_Name            log
+        Parser              k8s-nginx-ingress  
+        Reserve_Data        True    
+
+  filter-rewrite.conf: |-
+    [FILTER]
+        Name          rewrite_tag
+        Match         kube.*
+        Rule          $kubernetes['labels']['app.kubernetes.io/name'] "^(ingress-nginx)$" nginx false  
+
+  output-elasticsearch-nginx.conf: |-
+    [OUTPUT]
+        Name            es
+        Match           nginx
+        Host            ${FLUENT_ELASTICSEARCH_HOST}
+        Port            ${FLUENT_ELASTICSEARCH_PORT}
+        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
+        Logstash_Format On
+        Logstash_Prefix nginx
+        Replace_Dots    On
+        Retry_Limit     False
+        tls             On
+        tls.Verify      On
+        tls.ca_file     /fluent-bit/ssl/root-ca.pem
+        tls.crt_file    /fluent-bit/ssl/admin.pem
+        tls.key_file    /fluent-bit/ssl/admin-key.pem                             
+
+  output-elasticsearch-journals.conf: |-
+    [OUTPUT]
+        Name            es
+        Match           systemd.*
+        Host            ${FLUENT_ELASTICSEARCH_HOST}
+        Port            ${FLUENT_ELASTICSEARCH_PORT}
+        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
+        Logstash_Format On
+        Logstash_Prefix systemd
+        Replace_Dots    On
+        Retry_Limit     False
+        tls             On
+        tls.Verify      On
+        tls.ca_file     /fluent-bit/ssl/root-ca.pem
+        tls.crt_file    /fluent-bit/ssl/admin.pem
+        tls.key_file    /fluent-bit/ssl/admin-key.pem
+
+  output-elasticsearch-containers.conf: |-
+    [OUTPUT]
+        Name            es
+        Match           kube.*
+        Host            ${FLUENT_ELASTICSEARCH_HOST}
+        Port            ${FLUENT_ELASTICSEARCH_PORT}
+        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
+        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
+        Logstash_Format On
+        Logstash_Prefix containers
+        Replace_Dots    On
+        Retry_Limit     False
+        tls             On
+        tls.Verify      On
+        tls.ca_file     /fluent-bit/ssl/root-ca.pem
+        tls.crt_file    /fluent-bit/ssl/admin.pem
+        tls.key_file    /fluent-bit/ssl/admin-key.pem
+
+  output-kafka.conf: |-
+    [OUTPUT]
+        Name                          kafka
+        Match                         *
+        Brokers                       {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+        Topics                        containers
+        timestamp_format              iso8601
+        rdkafka.log.connection.close  false
+        rdkafka.request.required.acks 1
+
+  parsers.conf: |-
+    [PARSER]
+        Name        k8s-nginx-ingress        
+        Format      regex
+        Regex       ^(?<host>[^ ]*) - (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<request_length>[^ ]*) (?<request_time>[^ ]*) \[(?<proxy_upstream_name>[^ ]*)\] (\[(?<proxy_alternative_upstream_name>[^ ]*)\] )?(?<upstream_addr>[^ ]*) (?<upstream_response_length>[^ ]*) (?<upstream_response_time>[^ ]*) (?<upstream_status>[^ ]*) (?<reg_id>[^ ]*).*$
+        Time_Key    time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name   json
+        Format json
+        Time_Key time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        Name        docker
+        Format      json
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L
+        Time_Keep   On
+
+    [PARSER]
+        Name        logfmt
+        Format      logfmt   
+        Time_Key    time
+
+    [PARSER]
+        Name        syslog
+        Format      regex
+        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
+        Time_Key    time
+        Time_Format %b %d %H:%M:%S

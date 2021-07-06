@@ -28,8 +28,8 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-zk-{{ (sub (.Values.zookeeper.replicas | int) 1) }}.zk 2181"]
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-zk-{{ (sub (.Values.zookeeper.replicas | int) 1) }} 2181"]
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
@@ -51,7 +51,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: KAFKA_ZOOKEEPER_CONNECT
-          value: zk-svc.{{ .Release.Namespace}}.svc.cluster.local:2181/kafka/logging
+          value: {{ include "zookeeperServers" (dict "replicas" .Values.zookeeper.replicas "releaseName" $.Release.Name) }}
         - name: BROKER_ID_COMMAND
           value: "hostname | awk -F'-' '{print $NF}'"
         - name: KAFKA_LISTENERS

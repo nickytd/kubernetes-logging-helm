@@ -2,61 +2,56 @@
 # Global values
 cluster_name: "logging"
 imagePullSecrets: []
-storage_class: "standard"
 priority_class: "logging"
-
-#Opendistro configuration 
-opendistro:
-  image: "amazon/opendistro-for-elasticsearch"
-  imageTag: "1.13.1"
-  saml:
-    enabled: false
-#    idp:
-#      metadata_url:
-#      entity_id:
-#    sp:
-#      entity_id:
-#    exchange_key:
-#    admin_role:
-#    viewer_role:  
-#    tenant_role:  
-
-#ES Curator job configuration
-es_curator_image:
-  image: "nickytd/es-curator"
-  imageTag: "5.8"
-
-#Init container configuration. Used for multiple application startup checks
-init_container_image:
-  image: "nickytd/init-container"
-  imageTag: "0.1.0"
-  imagePullPolicy: IfNotPresent
+storage_class: "standard"
 
 #ES configuration
 #A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
 #with the concrete configurations of the nodes that follow.
-#In case "in_cluster" is set to false, the logstash-indexer uses it as an output destination. The coordination, master and data nodes
-#are skiped.
+#In case "in_cluster" is set to false, logs are pushed to an external ES.
 elasticsearch:
-  single_type_node: false
-  image: "docker.elastic.co"
-  imageTag: "7.10.2"
+  single_node: false
   in_cluster: true
   snapshot:
     enabled: false
     storage_class: ""
     size: "5Gi"
-  index_shards: 1
-  index_replicas: 0
   retention_days: 7
   additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
   url: ""
+  port: 9200
   user: "esadmin"
   password: "esadmin"
 
+#Opendistro configuration 
+opendistro:
+  image: "amazon/opendistro-for-elasticsearch"
+  imageTag: 1.13.2
+  saml:
+    enabled: false
+    idp: {}
+      #metadata_url:
+      #entity_id:
+    sp: {}
+      #entity_id:
+    exchange_key: ""
+    admin_role: ""
+    viewer_role: ""
+    tenant_role: ""
+
+#ES Curator job configuration
+es_curator:
+  image: "nickytd/es-curator"
+  imageTag: "5.8"
+
+#Init container configuration. Used for multiple application startup checks
+init_container:
+  image: "nickytd/init-container"
+  imageTag: "0.1.0"
+  imagePullPolicy: IfNotPresent
+
 #Configuration of ES master node if "in_cluster" is true
-master:
-  minimum_nodes: 1
+master:  
   replicas: 1
   storage: "1Gi"
   heap_size: "256m"
@@ -79,17 +74,20 @@ client:
       memory: "1000Mi"
     limits:
       memory: "2000Mi"
-  host: ""
   ingress:
     path: "/"
     enabled: false
-    annotations: {}     
-      #nginx.ingress.kubernetes.io/rewrite-target: /  
-      #nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-      #nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    annotations: {}      
     tls: {}  
   tolerations: []
   affinity: {}
+  topologySpreadConstraints: {}
+  #- maxSkew: 1
+  #  topologyKey: kubernetes.io/hostname
+  #  whenUnsatisfiable: ScheduleAnyway
+  #  labelSelector:
+  #    matchLabels:
+  #      type: client
   priority_class: ""
 
 #Configuration of ES data node if "in_cluster" is true
@@ -111,10 +109,11 @@ data:
 #In this case only jobs creating index templates and kibana objects are executed.
 kibana:
   in_cluster: true
+  url: ""  
+  replicas: 1
   extraEnvs:
   - name: "NODE_OPTIONS"
     value: "--max-old-space-size=350"
-  url: ""
   user: "kibana"
   password: "kibana"
   readonly:
@@ -123,24 +122,15 @@ kibana:
   developer:
     user: "developer"
     password: "develop"   
-  replicas: 1
-  service_type: ClusterIP
   ingress:
     path: "/"
-    host: ""
     enabled: false
     annotations: {}
-      #nginx.ingress.kubernetes.io/affinity: cookie
-      #nginx.ingress.kubernetes.io/session-cookie-name: security_authentication
-      #nginx.ingress.kubernetes.io/force-ssl-redirect: false
     tls: {}  
   index_patterns:
     - containers
-    - beats
-    - journals
-    - metrics
-    - nginx-ingress-access-log
-    - all
+    - nginx
+    - systemd    
   tenants:
     - Global
     - Developer
@@ -151,99 +141,53 @@ kibana:
       memory: "500Mi"
   tolerations: []
   affinity: {}
-  priority_class: ""    
+  priority_class: "" 
 
-#Logstash indexer is a target of various logging streams and can perform document routing decisions
-#based on the documents content. Example the logs from journals stream are directed to "journal-<date>" indices.
-#The logs from containers stdout and stderr are routed to "container-<date>" indices in ES.
-#
-#Json formated log messages are additionaly parsed when "json_messages" is set to true. In this case if an container
-#output is json formatted it will be parsed. There could be a problem if two different containers logs use the same key
-#wherer values are mapped to different ES field types.
-logstash_indexer:
-  json_messages: true
-  ca_cert: "root-ca.pem"
-  replicas: 1
-  heap_size: "512m"
+fluentbit:
+  image: "fluent/fluent-bit"
+  imageTag: "1.7.9"
+  host_path: /var/log
   resources:
     requests:
-      memory: "1000Mi"
+      memory: "50Mi"
     limits:
-      memory: "2000Mi"
-  tolerations: []
-  affinity: {}
-  code_snippet: 
-    enabled: false
-    code: |-
-      # code snippet for ruby filter plugin
-      # https://www.elastic.co/guide/en/logstash/current/plugins-filters-ruby.html
-  priority_class: ""    
-
-#ES filebeats are used to collect containers stdout and stderror. 
-#The workload is running as a deamon set on each node with the appropriate tollerations definitions
-filebeat:
-  logging:
-    level: "warning"
-    json: true
-    metrics:
-      enabled: false
-  queue_size: 1024
-  host_path: "/var/lib/docker/containers"
-  resources:
-    limits: 
       memory: "100Mi"
-  tolerations: []
-  affinity: {}
   priority_class: ""
-
-#ES journalbeats are used to collect system logs from OS journalctl
-#It depends on the concrete minion OS
-#Those logs help to catch states related to OS services such as container runtimes and kubelet services
-journalbeat:
-  logging:
-    level: "warning"
-    json: true
-    metrics:
-      enabled: false
-  resources:
-    limits: 
-      memory: "100Mi"    
-  enabled: true
-#needs adaptation for minikube case
-# host_path: /var/log/journal 
-  host_path: "/var/run/log/journal"
   tolerations: []
   affinity: {}
+
+fluentd:
+  replicas: 1
+  image: "fluent/fluentd-kubernetes-daemonset"
+  imageTag: "v1.12-debian-kafka-1"
+  resources:
+    requests:
+      memory: "100Mi"
+    limits:
+      memory: "500Mi"  
   priority_class: ""
-
-metricbeat:
-  logging:
-    level: "warning"
-    json: true 
-    metrics:
-      enabled: false   
-  resources:
-    limits: 
-      memory: "100Mi"    
-  enabled: false
-  host_path: "/sys/fs/cgroup"
   tolerations: []
   affinity: {}
-  priority_class: ""  
+  topologySpreadConstraints: {}
+  #- maxSkew: 1
+  #  topologyKey: kubernetes.io/hostname
+  #  whenUnsatisfiable: ScheduleAnyway
+  #  labelSelector:
+  #    matchLabels:
+  #      k8s-app: fluentd
 
-#In scaled out setup kafka queues are used as ingestion points to accomodate spiked in the logging stream volumes
+
+#In scaled out setup kafka queues are used as ingestion points to accommodate spiked in the logging stream volumes
 kafka:
   enabled: true
   replicas: 1
   image: "wurstmeister/kafka"
-  imageTag: "2.13-2.6.0"
+  imageTag: "2.13-2.7.0"
   heap_size: "256m"
   storage: "1Gi"
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
-    name: ["containers","journals","metrics"]
-    replication_factor: 0
-    partitions: 1
+    name: ["containers"]    
   resources:
     requests:
       memory: "600Mi"
@@ -254,18 +198,18 @@ kafka:
   tolerations: []
   affinity: {}   
 
-#Zookeeper is a dependecy of kafka
+#Zookeeper is a dependency of kafka
 zookeeper:
   replicas: 1
   image: "zookeeper"
-  imageTag: "3.6.2"
+  imageTag: "3.7.0"
   heap_size: "128m"
   storage: 1Gi
   resources:
     requests:
-      memory: 300Mi
+      memory: "300Mi"
     limits:
-      memory: 300Mi
+      memory: "300Mi"
   storage_class: ""
   priority_class: ""
   tolerations: []

@@ -10,7 +10,7 @@ spec:
     port: 9200
     targetPort: http
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    {{- if .Values.elasticsearch.single_type_node }}
+    {{- if .Values.elasticsearch.single_node }}
     type: single
     {{- else }}
     type: client

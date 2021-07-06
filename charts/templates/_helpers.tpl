@@ -39,7 +39,6 @@ Create default labels section
 app.kubernetes.io/version: {{ .Chart.Version | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/elastic: {{ .Values.elasticsearch.imageTag  }}
 app.kubernetes.io/openDistro: {{ .Values.opendistro.imageTag }}
 {{- end }}
 
@@ -51,23 +50,9 @@ app.kubernetes.io/name: {{ include "logging.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{/*
-Create zookeeper server str
-*/}}
-{{- define "zookeeper_servers" -}}
-{{- $zk_size := default 1 .Values.zookeeper.replicas | int -}}
-{{- $global := . -}}
-{{- $str := "" -}}
-
-{{- range $i, $e := until $zk_size -}}
-{{- $str := (printf "server.%d=%s-zk-%d.zk.%s.svc.cluster.local:2888:3888;2181 " $i $global.Release.Name $i $global.Release.Namespace) -}}
-{{- $str -}}
-{{- end -}}
-{{- end -}}
-
 {{- define "init_container.image" -}}
-{{- $image := .Values.init_container_image.image -}}
-{{- $imageTag := .Values.init_container_image.imageTag -}}
+{{- $image := .Values.init_container.image -}}
+{{- $imageTag := .Values.init_container.imageTag -}}
 {{- printf "%s:%s" $image $imageTag -}}
 {{- end -}}
 
@@ -76,6 +61,22 @@ Create zookeeper server str
 {{ printf "https://%s-client.%s.%s:9200" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
 {{- printf "%s" .Values.elasticsearch.url -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "es_host" -}}
+{{- if .Values.elasticsearch.in_cluster -}}
+{{ printf "%s-client.%s.%s" .Release.Name .Release.Namespace "svc.cluster.local" }}
+{{- else -}}
+{{- printf "%s" .Values.elasticsearch.url -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "es_port" -}}
+{{- if .Values.elasticsearch.in_cluster -}}
+{{ printf "%d" 9200 }}
+{{- else -}}
+{{- printf "%d" .Values.elasticsearch.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -93,4 +94,36 @@ https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templ
 {{- define "helm-toolkit.utils.joinListWithComma" -}}
 {{- $local := dict "first" true -}}
 {{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- end -}}
+
+{{- define "kafkaBrokers" -}}
+{{- $rn := .releaseName -}}
+{{- $kafka := dict "servers" (list) -}}
+{{- range int .replicas | until -}}
+{{- $noop := printf "%s-kafka-%d:9092" $rn . | append $kafka.servers | set $kafka "servers" -}}
+{{- end -}}
+{{- join "," $kafka.servers -}}
+{{- end -}}
+
+{{- define "zookeeperServers" -}}
+{{- $rn := .releaseName -}}
+{{- $zk := dict "servers" (list) -}}
+{{- range int .replicas | until -}}
+{{- $noop := printf "%s-zk-%d:2181/kafka/logging" $rn . | append $zk.servers | set $zk "servers" -}}
+{{- end -}}
+{{- join "," $zk.servers -}}
+{{- end -}}
+
+{{/*
+Create zookeeper server str
+*/}}
+{{- define "zooServers" -}}
+{{- $zk_size := default 1 .Values.zookeeper.replicas | int -}}
+{{- $global := . -}}
+{{- $str := "" -}}
+
+{{- range $i, $e := until $zk_size -}}
+{{- $str := (printf "server.%d=%s-zk-%d:2888:3888;2181 " $i $global.Release.Name $i ) -}}
+{{- $str -}}
+{{- end -}}
 {{- end -}}

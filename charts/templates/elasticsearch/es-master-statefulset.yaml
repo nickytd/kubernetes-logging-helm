@@ -1,4 +1,4 @@
-{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_type_node) }}
+{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_node) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -41,8 +41,6 @@ spec:
         ports:
         - containerPort: 9300
           name: transport
-        - containerPort: 9200
-          name: http
         volumeMounts:
         - name: es-data
           mountPath: /data
@@ -85,8 +83,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: "MINIMUM_MASTER_NODES"
-          value: {{ .Values.master.minimum_nodes | quote }}
         - name: ES_JAVA_OPTS
           value: "-Xms{{ .Values.master.heap_size }} -Xmx{{ .Values.master.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
         - name: NODE_DATA
@@ -95,11 +91,9 @@ spec:
           value: "false"
         - name: NODE_MASTER
           value: "true"  
-        - name: discovery.seed_hosts
-          value: {{ .Release.Name }}-master  
         readinessProbe:
           tcpSocket:
-            port: http
+            port: transport
           initialDelaySeconds: 10
         livenessProbe:
           tcpSocket:
@@ -127,7 +121,7 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh","-c","/sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000 /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
         volumeMounts:
         - name: es-data

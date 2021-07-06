@@ -1,9 +1,9 @@
 # Elasticsearch general configuration
 # Single type node deploys only one ALL type elasticsearch node
 # Otherwise it deploys coordination, data and master nodes
-# The recommended configuration in scaled out setups is to disable single_type_node and enable kafka
+# The recommended configuration in scaled out setups is to disable single_node and enable kafka
 elasticsearch:
-  single_type_node: true
+  single_node: true
 
 # Elasticsearch coordination node configuration
 client:
@@ -18,8 +18,8 @@ client:
     tls:
       - hosts:
           - es.local.dev
-        secretName: es-tls
-
+        secretName: es-tls  
+             
 # Kibana configuration
 kibana:
   ingress:
@@ -27,36 +27,19 @@ kibana:
     host: kibana.local.dev
     annotations:
       nginx.ingress.kubernetes.io/enable-access-log: "true"
-      nginx.ingress.kubernetes.io/affinity: "cookie"
-      nginx.ingress.kubernetes.io/session-cookie-name: "security_authentication"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     tls:
       - hosts:
           - kibana.local.dev
         secretName: kibana-tls  
+  index_patterns:
+    - containers
+    - systemd
+    - nginx    
 
-# Configuration for containers logs path needs to be adjusted corresponding to the host
-filebeat:
-  host_path: /var/lib/docker/containers/
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
-
-# Configuration for journal logs path needs to be adjusted corresponding to the host
-journalbeat:
-  enabled: true
-  host_path: /run/log/journal
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
-
-# Configuration for sys cgroups path needs to be adjusted corresponding to the host      
-metricbeat:
-  enabled: true
-  host_path: "/sys/fs/cgroup"
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
 # Kafka should be enabled in scaled out configuration
 kafka:
   enabled: false
+
+fluentbit:
+  journal_host_path: /run/log

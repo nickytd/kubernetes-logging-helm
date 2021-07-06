@@ -8,41 +8,14 @@
       },
       "dynamic_templates":[
          {
-            "commonLabels.*":{
+            "kubernetes.annotations.*/*":{
                "mapping":{
                   "type":"keyword"
                },
                "match_mapping_type":"*",
-               "path_match":"commonLabels.*"
+               "path_match":"kubernetes.annotations.*/*"
             }
-         },
-         {
-            "labels.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"labels.*"
-            }
-         },
-         {
-            "kubernetes.annotations.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"kubernetes.annotations.*"
-            }
-         },
-         {
-            "kubernetes.container.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"kubernetes.container.*"
-            }
-         }, 
+         },          
          {
             "kubernetes.labels.*":{
                "mapping":{
@@ -51,88 +24,54 @@
                "match_mapping_type":"*",
                "path_match":"kubernetes.labels.*"
             }
-         },
-         {
-            "kubernetes.pod.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"kubernetes.pod.*"
-            }
-         },
-         {
-            "kubernetes.replicaset.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"kubernetes.replicaset.*"
-            }
-         },
-         {
-            "kubernetes.statefulset.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"kubernetes.statefulset.*"
-            }
-         },
-         {
-            "host.*":{
-               "mapping":{
-                  "type":"keyword"
-               },
-               "match_mapping_type":"*",
-               "path_match":"host.*"
-            }
-         }
+         }         
       ],
       "properties":{
          "@timestamp":{
             "type":"date"
          },
-         "container":{
-            "properties":{
-               "id":{
-                  "type":"keyword",
-                  "ignore_above":1024
-               },
-               "image":{
-                  "properties":{
-                     "name":{
-                        "type":"keyword",
-                        "ignore_above":1024
-                     }
-                  }
-               },
-               "runtime":{
-                  "type":"keyword",
-                  "ignore_above":1024
-               }
-            }
-         },
-         "kubernetes":{
-            "properties":{
-               "namespace":{
-                  "type":"keyword",
-                  "ignore_above":1024
-               }
-            }
-         },
-         "message":{
+         "location":{
+            "type":"keyword"
+         },         
+         "log":{
             "type":"text"
          },
-         "status":{
-            "type":"text",
-            "fields":{
-               "keyword":{
+         "kubernetes":{
+            "properties":{               
+               "container_name":{
                   "type":"keyword",
-                  "ignore_above":256
-               }
+                  "ignore_above":"256"
+               },
+               "container_image":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "container_hash":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "docker_id":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "host":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "namespace_name":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "pod_id":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               },
+               "pod_name":{
+                  "type":"keyword",
+                  "ignore_above":"256"
+               }               
             }
-         }
+         }         
       }
    },
    "order":1,
@@ -144,27 +83,13 @@
             }
          },
          "max_docvalue_fields_search":200,
-         "number_of_shards":"{{ .Values.elasticsearch.index_shards }}",
-         "number_of_replicas":"{{ .Values.elasticsearch.index_replicas }}",
+         "number_of_shards":"{{ (.Values.data.replicas | int) }}",
+         "number_of_replicas":"{{ (sub (.Values.data.replicas | int) 1) }}",
          "query":{
             "default_field":[
-               "message",
-               "tags",               
-               "container.id",
-               "container.image.name",
-               "container.image.tag",
-               "container.name",
-               "container.runtime",                           
-               "kubernetes.pod.name",
-               "kubernetes.pod.uid",
-               "kubernetes.namespace",
-               "kubernetes.node.name",
-               "kubernetes.node.hostname",
-               "kubernetes.replicaset.name",
-               "kubernetes.deployment.name",
-               "kubernetes.statefulset.name",
-               "kubernetes.container.name",
-               "kubernetes.container.image",               
+               "log",
+               "kubernetes.pod_name",
+               "kubernetes.namespace_name",               
                "fields.*"
             ]
          },

@@ -22,8 +22,8 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master 9300"]
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }} 9300"]        
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
@@ -31,10 +31,12 @@ spec:
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        command: ["/setup.sh"]
+        command: ["sh", "-c", "/setup.sh && /templates.sh"]
         env:
+          - name: es_url
+            value: {{ include "es_url" . }}
           - name: es_node
-            value: {{ .Release.Name }}-master
+            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
           - name: es_user
             value: {{ .Values.elasticsearch.user }}
           - name: es_pass
@@ -55,6 +57,11 @@ spec:
         - name: setup
           mountPath: /setup.sh
           subPath: setup.sh
+        - name: templates
+          mountPath: /templates.sh
+          subPath: templates.sh
+        - name: templates
+          mountPath: /templates   
         - name: certificates
           mountPath: /usr/share/elasticsearch/config/node.pem
           subPath: node.pem  
@@ -90,5 +97,9 @@ spec:
       - name: setup
         configMap:
           name: {{ .Release.Name}}-securityadmin
-          defaultMode: 0755        
+          defaultMode: 0755
+      - name: templates
+        configMap:
+          name: {{ .Release.Name}}-index-templates
+          defaultMode: 0755              
 {{- end }}          

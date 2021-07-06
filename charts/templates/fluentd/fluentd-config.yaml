@@ -1,0 +1,147 @@
+{{- if .Values.kafka.enabled }} 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-fluentd 
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  fluent.conf: |-
+     <system>
+       log_level debug
+     </system>
+
+     @include 01-sources.conf
+     @include 02-prometheus.conf
+     @include 03-filter.conf
+     @include 04-rewrite-tags.conf
+     @include 05-output.conf
+     
+  01-sources.conf: |-
+    <source>
+      @type kafka_group
+      consumer_group fluentd
+      brokers  {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+      format json
+      topics containers
+      add_headers false
+      time_source record      
+    </source>
+
+  02-prometheus.conf: |-
+    # Prometheus metric exposed on 0.0.0.0:24231/metrics
+    <source>
+      @type prometheus
+      @id in_prometheus
+      bind "#{ENV['FLUENT_PROMETHEUS_BIND'] || '0.0.0.0'}"
+      port "#{ENV['FLUENT_PROMETHEUS_PORT'] || '24231'}"
+      metrics_path "#{ENV['FLUENT_PROMETHEUS_PATH'] || '/metrics'}"
+    </source>   
+
+  03-filter.conf: |-
+    <filter containers**>
+      @type             dedot
+      de_dot            true
+      de_dot_separator  _
+      de_dot_nested     true
+    </filter>   
+
+  04-rewrite-tags.conf: |-
+    <match containers**>
+      @type rewrite_tag_filter
+        <rule>
+          key $['kubernetes']['labels']['app_kubernetes_io/name']
+          pattern /^ingress-nginx$/
+          tag nginx          
+        </rule>   
+        <rule>
+          key SYSTEMD_UNIT
+          pattern /^(.+)$/
+          tag systemd
+        </rule>  
+        <rule>
+          key log
+          pattern /^(.+)$/
+          tag all
+        </rule>   
+    </match>  
+  
+  05-output.conf: |-
+      <match nginx**>
+        @type elasticsearch
+        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
+        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        scheme "https"
+        logstash_format true
+        logstash_prefix nginx
+        ca_file "/fluentd/ssl/root-ca.pem"
+        time_key @timestamp
+        reconnect_on_error true        
+        <buffer>
+          @type file
+          flush_interval 10s
+          retry_type exponential_backoff
+          chunk_limit_size 10m
+          flush_thread_count 8
+          flush_at_shutdown true
+          queue_limit_length 16
+          retry_max_interval 30
+          retry_forever true
+          path /fluentd/buffer/nginx
+        </buffer>
+      </match> 
+
+      <match systemd**>
+        @type elasticsearch
+        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
+        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        scheme "https"
+        logstash_format true
+        logstash_prefix systemd
+        ca_file "/fluentd/ssl/root-ca.pem"
+        time_key @timestamp
+        reconnect_on_error true        
+        <buffer>
+          @type file
+          flush_interval 10s
+          retry_type exponential_backoff
+          chunk_limit_size 10m
+          flush_thread_count 8
+          flush_at_shutdown true
+          queue_limit_length 16
+          retry_max_interval 30
+          retry_forever true
+          path /fluentd/buffer/systemd
+        </buffer>
+      </match>   
+
+      <match all**>
+        @type elasticsearch
+        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
+        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        scheme "https"
+        logstash_format true
+        logstash_prefix containers
+        ca_file "/fluentd/ssl/root-ca.pem"
+        time_key @timestamp
+        reconnect_on_error true        
+        <buffer>
+          @type file
+          flush_interval 10s
+          retry_type exponential_backoff
+          chunk_limit_size 10m
+          flush_thread_count 8
+          flush_at_shutdown true
+          queue_limit_length 16
+          retry_max_interval 30
+          retry_forever true
+          path /fluentd/buffer/containers
+        </buffer>
+      </match> 
+
+{{ end }}    

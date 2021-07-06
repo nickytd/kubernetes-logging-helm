@@ -5,11 +5,11 @@ metadata:
   name: {{ .Release.Name}}-kibana
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
+  type: ClusterIP
   ports:
   - name: ui
     port: 5601
     targetPort: ui
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    type: kibana
-  type: {{ .Values.kibana.service_type | default "ClusterIP" }}
+    type: kibana  
 {{- end }}

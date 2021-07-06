@@ -1,19 +1,25 @@
 {{- if .Values.elasticsearch.in_cluster }}
+{{ range $dataId := until (.Values.data.replicas | int) }}    
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name }}-data
-  labels: {{ include "logging.labels" . | indent 4 }}
+  name: {{ $.Release.Name }}-data-{{ $dataId }}
+  labels: {{ include "logging.labels" $ | indent 4 }}
 spec:
   ports:
-  - name: transport
-    port: 9300
-    targetPort: transport
-  selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    {{- if .Values.elasticsearch.single_type_node }}
+    - port: 9300
+      name: transport    
+    {{- if $.Values.elasticsearch.single_node }}
+    - port: 9200
+      name: http
+    {{- end }}  
+  selector: {{ include "logging.selectorLabels" $ | indent 4 }}
+    {{- if $.Values.elasticsearch.single_node }}
     type: single
     {{- else }}
+    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-data-{{ $dataId }}    
     type: data
     {{- end }}
-  type: ClusterIP
+{{- end }}
 {{- end }}

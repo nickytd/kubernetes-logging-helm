@@ -1,4 +1,4 @@
-{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_type_node) }}
+{{- if and (.Values.elasticsearch.in_cluster) (not .Values.elasticsearch.single_node) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,7 +29,10 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}      
+      {{- end }}
+      {{- with .Values.client.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }} 
       {{- end }}
       containers:
       - name: main
@@ -97,16 +100,16 @@ spec:
         - name: NODE_DATA
           value: "false"
         - name: NODE_INGEST
-          value: "false"
-        - name: discovery.seed_hosts
-          value: {{ .Release.Name }}-master
+          value: "false"        
       # Elasticsearch requires vm.max_map_count to be at least 262144.
       # If your OS already sets up this number to a higher value, feel free
       # to remove this init container.
       initContainers:
       - image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-master 9300 && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }} 9300 \
+                   && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data \
+                   && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
         name: init
         volumeMounts:
         - name: es-data

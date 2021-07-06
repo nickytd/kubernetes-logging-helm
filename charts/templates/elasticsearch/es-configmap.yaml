@@ -7,24 +7,24 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   log4j2.properties: |-
-    status = error
+    status = warn
 
     appender.console.type = Console
     appender.console.name = console
     appender.console.layout.type = PatternLayout
     appender.console.layout.pattern = [%d{ISO8601}][%-5p][%-25c{1.}] [%node_name]%marker %m%n
 
-    rootLogger.level = error
+    rootLogger.level = warn
     rootLogger.appenderRef.console.ref = console
     
     logger.opendistro_security.name = com.amazon.opendistroforelasticsearch.security
     logger.opendistro_security.level = warning
 
     logger.saml.name = com.amazon.dlic.auth.http.saml.Token
-    logger.saml.level = error
+    logger.saml.level = error  
 
-    logger.opendistro_security_jwt.name = com.amazon.dlic.auth.http.jwt
-    logger.opendistro_security_jwt.level = error
+    logger.discovery.name = org.elasticsearch.discovery
+    logger.discovery.level = debug
 
   elasticsearch.yml: |-
     cluster.name: {{ .Values.cluster_name | quote }}
@@ -37,10 +37,18 @@ data:
     network.host: 0.0.0.0
 
     discovery.seed_hosts:
-      - {{ .Release.Name}}-master.{{ .Release.Namespace}}.svc.cluster.local
+    {{- if .Values.elasticsearch.single_node }}    
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }}
+    {{- else }}
+    {{- range $k := (int .Values.master.replicas | until ) }}
+      - {{ $root.Release.Name }}-master-{{$k}}
+    {{- end }}  
+    {{- end }}   
 
     cluster.initial_master_nodes:
-    {{- if .Values.elasticsearch.single_type_node }}    
+    {{- if .Values.elasticsearch.single_node }}    
     {{- range $k := (int .Values.data.replicas | until ) }}
       - {{ $root.Release.Name }}-data-{{$k}}
     {{- end }}

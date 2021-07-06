@@ -10,7 +10,7 @@ data:
 
     set -e     
 
-    echo "setingup users"
+    echo "seting up users"
     echo "node $es_node"
     
     chmod +x /usr/share/elasticsearch/plugins/opendistro_security/tools/hash.sh
@@ -27,7 +27,6 @@ data:
     sed -i -e "s|\$\$KIBANA_PASSWORD_HASH|$ki_pass_hash|" /tmp/internal_users.yml
     sed -i -e "s|\$\$KIBANA_READONLY_PASSWORD_HASH|$ki_ro_pass_hash|" /tmp/internal_users.yml
     sed -i -e "s|\$\$KIBANA_DEVELOPER_PASSWORD_HASH|$ki_dev_pass_hash|" /tmp/internal_users.yml
-
 
     echo "##### internal_users.yml #####"
     

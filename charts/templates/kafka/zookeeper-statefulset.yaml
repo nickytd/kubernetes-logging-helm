@@ -28,7 +28,7 @@ spec:
       {{- end }}
       initContainers:
       - image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid ; do  echo \"retry create data and logs folders\" && sleep 2 ; done"]
         name: init
         env:
@@ -57,7 +57,7 @@ spec:
         - name: ZOO_CFG_EXTRA
           value: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7070"    
         - name: ZOO_SERVERS
-          value: {{ include "zookeeper_servers" .| quote }}
+          value: {{ include "zooServers" .| quote }}
         - name: ZOO_DATA_DIR
           value: /volumes/data
         - name: ZOO_DATA_LOG_DIR

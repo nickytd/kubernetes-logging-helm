@@ -21,7 +21,7 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" .}}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["/config/check_kibana.sh"]
         env:
         - name: KIBANA_URL
@@ -32,7 +32,7 @@ spec:
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}        
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}        
         command: ["/config/create_index_pattern.sh"]
         env:
           - name: KIBANA_URL

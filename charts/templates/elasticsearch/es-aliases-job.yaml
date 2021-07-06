@@ -24,15 +24,15 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master 9300"]
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }} 9300"]
         volumeMounts:
         - mountPath: "/init.sh"
           subPath: init.sh
           name: init
       containers: 
       - name: es-curator
-        image: {{ .Values.es_curator_image.image }}:{{ .Values.es_curator_image.imageTag }}
+        image: {{ .Values.es_curator.image }}:{{ .Values.es_curator.imageTag }}
         env:
         - name: ES_HOST
           value: {{ include "es_url" . }}

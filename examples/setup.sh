@@ -6,27 +6,15 @@ set -eo pipefail
 
 
 if [[ "$1" == "-h" ]]; then
-   echo "## installs kubernetes logging stack ##"
+   echo "### installs kubernetes logging stack ###"
    echo "   supported options:"
+   echo "     --scaled"
+   echo "         provisions multi node elastisearch with kafka and fluentd"
    echo "     --with-templates"
    echo "         saves helm generated deployment manifests"
    echo "     --with-exporter"
-   echo "         adds elastic logging prometheus exporter"
-   echo "     -minikube"
-   echo "         minikube specific configurations"
-   echo "     -kind"
-   echo "         kind specific configurations - work in progress"
-   
+   echo "         adds elastic logging prometheus exporter" 
    exit
-fi
-
-type=$1
-
-if [[ $type == "-kind" ]] || [[ $type == "-minikube" ]]; then
-   echo "runtime $type"
-else 
-  echo "usage install-elk.sh -kind or install-elk.sh -minikube"
-  exit 0
 fi
 
 echo "setting up kubernetes-logging"
@@ -43,24 +31,32 @@ if [ -d "$sourcedir/ssl" ]; then
       --key=$sourcedir/ssl/wildcard.key \
       --dry-run=client -o yaml | kubectl apply -f - 
   done 
-fi    
+fi 
 
-helm upgrade elk \
-   -n logging --create-namespace \
-   -f "$sourcedir/k8s-logging$type-values.yaml" $sourcedir/../charts \
-   --install
-
+values="single-node-setup.yaml"
 for var in "$@"
 do
-    
-    if [[ "$var" = "--templates" ]]; then
-      echo " generate helm templates"
+    if [[ "$var" = "--scaled" ]]; then
+      values="multi-node-ha-setup.yaml"
+    fi
+done    
+
+helm upgrade efk \
+    -n logging --create-namespace \
+    -f "$sourcedir/$values" $sourcedir/../charts \
+    --install   
+
+for var in "$@"
+do    
+
+    if [[ "$var" = "--with-templates" ]]; then
+      echo " generating helm templates"
       
-      helm template elk -n logging \
-        -f $sourcedir/k8s-logging-kind-values.yaml $sourcedir/../charts \
+      helm template efk -n logging \
+        -f "$sourcedir/$values" $sourcedir/../charts \
         > $sourcedir/templates.yaml 
     fi
-
+    
     if [[ "$var" = "--with-exporter" ]]; then
       echo " installing elasticsearch prometheus exporter"
 
@@ -68,7 +64,7 @@ do
         --from-file=ca.pem=$sourcedir/../charts/certificates/ca/root-ca/root-ca.pem \
         --dry-run=client -o yaml | kubectl apply -f -
 
-      helm upgrade elk-exporter \
+      helm upgrade efk-exporter \
         -n logging --create-namespace  -f "$sourcedir/elasticsearch-exporter.yaml" \
         prometheus-community/prometheus-elasticsearch-exporter \
         --install

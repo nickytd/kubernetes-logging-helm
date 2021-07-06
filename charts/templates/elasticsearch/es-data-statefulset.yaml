@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       node: es
-      {{- if .Values.elasticsearch.single_type_node }}
+      {{- if .Values.elasticsearch.single_node }}
       type: single
       {{- else }}
       type: data      
@@ -24,7 +24,7 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/elasticsearch/es-certificates-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         node: es
-        {{- if .Values.elasticsearch.single_type_node }}
+        {{- if .Values.elasticsearch.single_node }}
         type: single
         {{- else }}
         type: data
@@ -51,7 +51,7 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 10
         ports:
-        {{- if .Values.elasticsearch.single_type_node }}
+        {{- if .Values.elasticsearch.single_node }}
         - containerPort: 9200
           name: http
         {{- end }}  
@@ -96,18 +96,14 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: "MINIMUM_MASTER_NODES"
-          value: {{ .Values.master.minimum_nodes | quote }}
         - name: ES_JAVA_OPTS
           value: "-Xms{{ .Values.data.heap_size }} -Xmx{{ .Values.data.heap_size }} {{ .Values.elasticsearch.additional_jvm_params }}"
-        {{- if not .Values.elasticsearch.single_type_node }}
+        {{- if not .Values.elasticsearch.single_node }}
         - name: NODE_MASTER
           value: "false"  
         {{- end }}
         - name: NODE_DATA
-          value: "true"  
-        - name: discovery.seed_hosts
-          value: {{ .Release.Name }}-master  
+          value: "true"        
       volumes:
       - name: elasticsearch
         configMap:
@@ -119,9 +115,11 @@ spec:
 {{- end }}  
       - name: certificates
         secret:
+          defaultMode: 0755
           secretName: {{ .Release.Name }}-certificates
       - name: securityconfig
         secret:
+          defaultMode: 0755        
           secretName: {{ .Release.Name }}-securityconfig    
       # Elasticsearch requires vm.max_map_count to be at least 262144.
       # If your OS already sets up this number to a higher value, feel free
@@ -129,7 +127,7 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh", "-c", "/sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
         volumeMounts:
         - name: es-data

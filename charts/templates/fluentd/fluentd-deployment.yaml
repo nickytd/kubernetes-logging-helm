@@ -1,0 +1,106 @@
+{{- if .Values.kafka.enabled }}        
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-fluentd
+  labels: {{ include "logging.labels" . | indent 4 }}
+    k8s-app: fluend    
+spec:
+  replicas: {{ .Values.fluentd.replicas }}
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+      k8s-app: fluentd
+  template:
+    metadata:
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        k8s-app: fluentd        
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/fluentd/fluentd-config.yaml") . | sha256sum }}          
+    spec:
+      priorityClassName: {{ default .Values.priority_class .Values.fluentd.priority_class }}
+      serviceAccountName: {{ .Release.Name}}-fluentd      
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.fluentd.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }} 
+      {{- end }}
+      initContainers:
+      - name: init
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        command: ["sh","-c",'/init.sh {{ include "es_url" . }} && /init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }} 9092']        
+        volumeMounts:
+        - mountPath: "/init.sh"
+          subPath: init.sh
+          name: init      
+      containers:
+      - name: fluentd
+        imagePullPolicy: Always      
+        image: {{ .Values.fluentd.image }}:{{ .Values.fluentd.imageTag }}       
+        resources: {{ toYaml .Values.fluentd.resources | nindent 10 }}
+        command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          fluent-gem install fluent-plugin-elasticsearch
+          fluent-gem install fluent-plugin-prometheus
+          fluent-gem install fluent-plugin-dedot_filter
+          fluent-gem install fluent-plugin-rewrite-tag-filter          
+          exec /fluentd/entrypoint.sh 
+        env:
+        - name: FLUENT_ELASTICSEARCH_HOST
+          value: "{{ include "es_host" . }}"
+        - name: FLUENT_ELASTICSEARCH_PORT
+          value: "{{ include "es_port" . }}"
+        - name: FLUENT_ELASTICSEARCH_USER
+          value:  {{ .Values.elasticsearch.user }}
+        - name: FLUENT_ELASTICSEARCH_PASSWORD
+          value:  {{ .Values.elasticsearch.password }}
+        livenessProbe:        
+          httpGet:
+            path: /metrics
+            port: metrics
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+        ports:
+        - name: metrics
+          containerPort: 24231
+          protocol: TCP    
+        volumeMounts:
+        - name: fluentd-buffer
+          mountPath: /fluentd/buffer
+        - name: fluentd-config        
+          mountPath: /fluentd/etc
+        - name: certificates
+          mountPath: /fluentd/ssl/root-ca.pem
+          subPath: root-ca.pem
+        - name: certificates
+          mountPath: /fluentd/ssl/admin.pem
+          subPath: admin.pem  
+        - name: certificates
+          mountPath: /fluentd/ssl/admin-key.pem
+          subPath: admin-key.pem          
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755  
+      - name: fluentd-buffer
+        emptyDir: {}
+      - name: fluentd-config
+        configMap:
+          name: {{ .Release.Name}}-fluentd          
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates    
+      {{- with .Values.fluentd.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.fluentd.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}      

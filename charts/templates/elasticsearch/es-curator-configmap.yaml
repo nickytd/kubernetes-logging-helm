@@ -127,7 +127,7 @@ data:
       certificate: /etc/root-ca.pem
       client_cert:
       client_key:
-      ssl_no_validate: true
+      ssl_no_validate: false
       username: {{ .Values.elasticsearch.user }}
       password: {{ .Values.elasticsearch.password }}
       timeout: 300

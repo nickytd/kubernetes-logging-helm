@@ -50,7 +50,7 @@ config:
               entity_id: {{ .Values.opendistro.saml.idp.entity_id }}
             sp:
               entity_id: {{ .Values.opendistro.saml.sp.entity_id }} 
-            kibana_url: https://{{ .Values.kibana.host }}
+            kibana_url: https://{{ .Values.kibana.ingress.host }}
             roles_key: groups 
             exchange_key: {{ .Values.opendistro.saml.exchange_key }}
         authentication_backend:

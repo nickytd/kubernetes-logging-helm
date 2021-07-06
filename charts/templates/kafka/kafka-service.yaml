@@ -1,5 +1,4 @@
 {{- if .Values.kafka.enabled }}
----
 apiVersion: v1
 kind: Service
 metadata:

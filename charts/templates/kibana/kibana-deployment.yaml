@@ -29,7 +29,7 @@ spec:
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container_image.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh", "-c", '/init.sh {{ include "es_url" . }}']
         volumeMounts:
         - mountPath: "/init.sh"
