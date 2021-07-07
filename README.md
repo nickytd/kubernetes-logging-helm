@@ -18,7 +18,7 @@ Provisioned components:
  1. Fluent-Bit instance per kubernetes node
  1. (optional elastic-exporter)
 
-[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-scaled-minikube-values.yaml). Thus example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
+[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-scaled-minikube-values.yaml). This example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
 
 Provisioned components:
  1. 2 Elastic coordination nodes
