@@ -30,6 +30,12 @@ Provisioned components:
  1. 2 FluentD instances
  1. (optional elastic-exporter)
 
+Adding the helm chart repository:
+```
+helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
+helm repo update
+```
+
 Following dashboards in Kibana are also provisioned for illustration purposes
 
 Logs Stream Dashboard 
