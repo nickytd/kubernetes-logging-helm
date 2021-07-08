@@ -4,10 +4,8 @@ metadata:
   name: {{ .Release.Name}}-init
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
-  init.sh: |-
+  check_host_port.sh: |-
     #!/bin/bash
-
-
     set -e    
 
     if [[ $1 == http* ]]; then
@@ -36,11 +34,36 @@ data:
        port=$2
      fi  
      
-     echo "check for host: $host at port: $port"
-     
+     echo "checking $host:$port"
+       
      until $(nc -z -w 5 $host $port); do 
        echo "retrying $host:$port"
        sleep 5
      done  
 
      echo "initialized"
+
+  check_es.sh: |-
+    #!/bin/bash
+    set -e
+
+    if [ -z ${es_url+x} ]; then
+      echo "elasticsearch url env variable (es_url) is expected but not found";
+      exit -1
+    elif [ -z ${es_user+x} ]; then
+      echo "elasticsearch user env variable (es_user) is expected but not found";
+      exit -1
+    elif [ -z ${es_pass+x} ]; then
+      echo "elasticsearch password env variable (es_pass) is expected but not found";
+      exit -1
+    fi
+
+    echo "checking elasticsearch $es_url"
+    
+    check="curl -sk -w "%{http_code}" -u$es_user:$es_pass $es_url -o /dev/null"
+
+    until [[ $($check) == "200" ]]; do
+      echo "retrying $es_url"
+      sleep 5
+    done
+    

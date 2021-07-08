@@ -25,10 +25,16 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-client 9200 && /init.sh {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }} 9300"]
+        command: ["sh", "-c", "/init/check_es.sh"]
+        env:
+          - name: es_url
+            value: {{ include "es_url" . }}
+          - name: es_user
+            value: {{ .Values.elasticsearch.user }}
+          - name: es_pass
+            value: {{ .Values.elasticsearch.password }}
         volumeMounts:
-        - mountPath: "/init.sh"
-          subPath: init.sh
+        - mountPath: "/init"
           name: init
       containers: 
       - name: es-curator

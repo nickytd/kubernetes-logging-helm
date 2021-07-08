@@ -22,10 +22,12 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }} 9092"]
+        command: ["sh", "-c", "/init/check_host_port.sh $kafka 9092"]
+        env:
+          - name: kafka
+            value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}
         volumeMounts:
-        - mountPath: "/init.sh"
-          subPath: init.sh
+        - mountPath: "/init"
           name: init
       containers:
       - name: kafka-topic-config

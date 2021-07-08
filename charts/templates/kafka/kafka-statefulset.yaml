@@ -29,10 +29,12 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-zk-{{ (sub (.Values.zookeeper.replicas | int) 1) }} 2181"]
+        command: ["sh", "-c", "/init/check_host_port.sh $zk 2181"]
+        env:
+          - name: zk
+            value: {{ .Release.Name }}-zk-{{ (sub (.Values.zookeeper.replicas | int) 1) }}
         volumeMounts:
-        - mountPath: "/init.sh"
-          subPath: init.sh
+        - mountPath: "/init"
           name: init
       containers:
       - name: kafka

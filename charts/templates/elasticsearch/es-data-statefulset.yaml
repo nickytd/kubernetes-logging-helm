@@ -45,10 +45,16 @@ spec:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
         resources: {{ toYaml .Values.data.resources | nindent 10 }}
+        {{- if .Values.elasticsearch.single_node }}
+        readinessProbe:
+          tcpSocket:
+            port: "http"  
+          periodSeconds: 10  
+        {{- end }}        
         livenessProbe:
           tcpSocket:
             port: transport
-          initialDelaySeconds: 60
+          initialDelaySeconds: 30
           periodSeconds: 10
         ports:
         {{- if .Values.elasticsearch.single_node }}

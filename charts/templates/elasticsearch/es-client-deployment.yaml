@@ -40,13 +40,13 @@ spec:
         resources: {{ toYaml .Values.client.resources | nindent 10 }}
         readinessProbe:
           tcpSocket:
-            port: http
-          initialDelaySeconds: 10
+            port: "http"  
+          initialDelaySeconds: 30          
         livenessProbe:
           tcpSocket:
             port: transport
-          initialDelaySeconds: 60
-          periodSeconds: 10
+          initialDelaySeconds: 30
+          periodSeconds: 10          
         ports:
         - containerPort: 9300
           name: transport
@@ -107,10 +107,13 @@ spec:
       initContainers:
       - image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init.sh {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }} 9300 \
+        command: ["sh", "-c", "/init/check_host_port.sh $es_master 9300 \
                    && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data \
                    && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
         name: init
+        env:
+          - name: es_master
+            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
         volumeMounts:
         - name: es-data
           mountPath: /data
@@ -118,8 +121,7 @@ spec:
         - name: es-snapshot
           mountPath: /snapshot
         {{- end }} 
-        - mountPath: "/init.sh"
-          subPath: init.sh
+        - mountPath: "/init"          
           name: init          
         securityContext:
           runAsUser: 0
