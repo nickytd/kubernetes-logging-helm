@@ -44,6 +44,8 @@ client:
       nginx.ingress.kubernetes.io/rewrite-target: "/"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      #haproxy.org/server-ssl: "true"
+      #haproxy.org/ssl-redirect: "true" 
     tls:
       - hosts:
           - es.local.dev
