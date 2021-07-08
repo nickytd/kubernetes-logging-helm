@@ -22,13 +22,21 @@ spec:
       - name: init
         image: {{ include "init_container.image" .}}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["/config/check_kibana.sh"]
+        command: ["sh", "-c", "/init/check_es.sh && /config/check_kibana.sh"]
         env:
         - name: KIBANA_URL
           value: {{ include "kibana_url" . }} 
+        - name: es_url
+          value: {{ include "es_url" . }}
+        - name: es_user
+          value: {{ .Values.elasticsearch.user }}
+        - name: es_pass
+          value: {{ .Values.elasticsearch.password }}  
         volumeMounts:
         - name: config
           mountPath: "/config"
+        - name: init    
+          mountPath: "/init"
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
@@ -62,3 +70,7 @@ spec:
       - name: saved-objects
         configMap:    
           name: {{ .Release.Name }}-kibana-saved-objects
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755     
