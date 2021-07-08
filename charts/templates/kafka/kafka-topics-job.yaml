@@ -33,19 +33,22 @@ spec:
       - name: kafka-topic-config
         image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
         command: ["/bin/sh","-c","{{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh \
-          --bootstrap-server {{$.Release.Name}}-kafka-0:9092 --create  --topic {{ . }} \
+          --bootstrap-server $kafka --create  --topic {{ . }} \
           --partitions {{ ($.Values.kafka.replicas | int) }} \
           --replication-factor {{ (sub ($.Values.kafka.replicas | int) 1) }} \
           --if-not-exists && {{ end -}}
         {{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-topics.sh \
-          --bootstrap-server {{$.Release.Name}}-kafka-0:9092  --alter  \
+          --bootstrap-server $kafka  --alter  \
           --topic {{ . }} --partitions {{ ($.Values.kafka.replicas | int) }} \
           --if-exists || true && {{ end -}}
         {{- range .Values.kafka.topics.name -}} /opt/kafka/bin/kafka-configs.sh \
-          --bootstrap-server {{$.Release.Name}}-kafka-0:9092  --alter \
+          --bootstrap-server $kafka  --alter \
           --entity-type topics --entity-name {{ . }} \
           --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]        
-      restartPolicy: Never 
+      restartPolicy: Never
+      env:
+      - name: kafka
+        value: {{$.Release.Name}}-kafka-0:9092 
       volumes:
       - name: init
         configMap:
