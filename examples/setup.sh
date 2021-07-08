@@ -44,7 +44,7 @@ done
 helm upgrade efk \
     -n logging --create-namespace \
     -f "$sourcedir/$values" $sourcedir/../charts \
-    --install --wait --timeout=30m
+    --install --wait-for-jobs --timeout=30m
 
 for var in "$@"
 do    
