@@ -40,6 +40,8 @@ data:
         Refresh_Interval  10
         Parser            docker
         Read_from_Head    False
+        #Multiline         on
+        #Parser_Firstline  multiline 
 
   input-systemd.conf: |-
     [INPUT]
@@ -176,3 +178,10 @@ data:
         Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
         Time_Key    time
         Time_Format %b %d %H:%M:%S
+
+    [PARSER]
+        Name multiline
+        Format regex
+        Regex       ^(?<time>(\d)+(-\d+)+(\S)+\W(\S)+)(\s+)(?<action>\S+)(\s+)(?<on>\S+)(\s+)(?<content>.*)
+        Time_Key    time
+        Time_Format %Y-%m-%d %H:%M:%S.%L

@@ -45,10 +45,10 @@ spec:
           --bootstrap-server $kafka  --alter \
           --entity-type topics --entity-name {{ . }} \
           --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]        
+        env:
+        - name: kafka
+          value: {{$.Release.Name}}-kafka-0:9092 
       restartPolicy: Never
-      env:
-      - name: kafka
-        value: {{$.Release.Name}}-kafka-0:9092 
       volumes:
       - name: init
         configMap:

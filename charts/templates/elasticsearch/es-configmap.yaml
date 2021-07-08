@@ -7,7 +7,7 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
   log4j2.properties: |-
-    status = warn
+    status = info
 
     appender.console.type = Console
     appender.console.name = console
@@ -18,13 +18,13 @@ data:
     rootLogger.appenderRef.console.ref = console
     
     logger.opendistro_security.name = com.amazon.opendistroforelasticsearch.security
-    logger.opendistro_security.level = warning
+    logger.opendistro_security.level = warn
 
     logger.saml.name = com.amazon.dlic.auth.http.saml.Token
-    logger.saml.level = error  
+    logger.saml.level = warn  
 
     logger.discovery.name = org.elasticsearch.discovery
-    logger.discovery.level = debug
+    logger.discovery.level = warn
 
   elasticsearch.yml: |-
     cluster.name: {{ .Values.cluster_name | quote }}

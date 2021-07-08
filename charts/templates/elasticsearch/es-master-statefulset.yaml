@@ -91,10 +91,6 @@ spec:
           value: "false"
         - name: NODE_MASTER
           value: "true"  
-        readinessProbe:
-          tcpSocket:
-            port: transport
-          initialDelaySeconds: 10
         livenessProbe:
           tcpSocket:
             port: transport
