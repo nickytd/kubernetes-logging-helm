@@ -1,9 +1,7 @@
-name: Release Charts
+name: Release Kubernetes Logging Helm Chart
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   release:
