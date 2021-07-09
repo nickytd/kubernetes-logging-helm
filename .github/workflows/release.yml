@@ -27,6 +27,6 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.TOKEN }}"
         with:
-          charts_dir: # optional, default is charts
+          charts_dir: charts
           # The GitHub Pages URL to the charts repo (default: https://<owner>.github.io/<repo>)
           charts_repo_url: https://nickytd.github.io/kubernetes-logging-helm
