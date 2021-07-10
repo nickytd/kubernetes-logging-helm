@@ -38,6 +38,10 @@ spec:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}        
         resources: {{ toYaml .Values.client.resources | nindent 10 }}
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "/livenessProbe.sh"]
+          initialDelaySeconds: 30          
         livenessProbe:
           tcpSocket:
             port: transport
@@ -49,6 +53,9 @@ spec:
         - containerPort: 9200
           name: http
         volumeMounts:
+        - name: elasticsearch
+          mountPath: /livenessProbe.sh
+          subPath: livenessProbe.sh   
         - name: elasticsearch
           mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
           subPath: elasticsearch.yml
@@ -83,6 +90,12 @@ spec:
           mountPath: /snapshot
         {{- end }}          
         env:
+        - name: es_url
+          value: https://localhost:9200
+        - name: es_user
+          value: {{ .Values.elasticsearch.user }}
+        - name: es_pass
+          value: {{ .Values.elasticsearch.password }}  
         - name: ES_JAVA_OPTS
           value: "-Xms{{ .Values.client.heap_size }} -Xmx{{ .Values.client.heap_size }} \
                   {{ .Values.elasticsearch.additional_jvm_params }} \
@@ -126,6 +139,7 @@ spec:
       - name: elasticsearch
         configMap:
           name: {{ .Release.Name }}
+          defaultMode: 0755
       - name: init
         configMap:
           name: {{ .Release.Name}}-init

@@ -10,7 +10,7 @@ data:
     echo "KIBANA URL: $KIBANA_URL"
 
     state="down"
-    while [[ "green" == *"$state"* ]]; do
+    while [[ ! $state =~ "green" ]]; do
       state=`curl -sS -X GET -u$KIBANA_USER:$KIBANA_PASSWORD \
         $KIBANA_URL/api/status | jq '.status.overall.state'`
       echo "kibana overall state $state"

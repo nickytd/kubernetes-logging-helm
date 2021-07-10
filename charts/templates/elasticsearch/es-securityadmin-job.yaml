@@ -33,7 +33,7 @@ spec:
       containers:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
-        command: ["sh", "-c", "/setup.sh && /templates.sh"]
+        command: ["sh", "-c", "/setup.sh"]
         env:
           - name: es_url
             value: {{ include "es_url" . }}
@@ -59,11 +59,6 @@ spec:
         - name: setup
           mountPath: /setup.sh
           subPath: setup.sh
-        - name: templates
-          mountPath: /templates.sh
-          subPath: templates.sh
-        - name: templates
-          mountPath: /templates   
         - name: certificates
           mountPath: /usr/share/elasticsearch/config/node.pem
           subPath: node.pem  
@@ -99,9 +94,5 @@ spec:
       - name: setup
         configMap:
           name: {{ .Release.Name}}-securityadmin
-          defaultMode: 0755
-      - name: templates
-        configMap:
-          name: {{ .Release.Name}}-index-templates
-          defaultMode: 0755              
+          defaultMode: 0755             
 {{- end }}          

@@ -2,11 +2,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Release.Name }}-aliases
+  name: {{ .Release.Name }}-index-templates
   labels: {{ include "logging.labels" . | indent 4 }}
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "-6"
+    "helm.sh/hook-weight": "-9"
     "helm.sh/hook-delete-policy": "before-hook-creation"
 spec:
   backoffLimit: 10
@@ -14,10 +14,8 @@ spec:
     metadata:
       annotations:
         "sidecar.istio.io/inject": "false"
-      labels: {{ include "logging.selectorLabels" . | indent 8 }}            
-        type: es-aliases
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: OnFailure 
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
@@ -25,39 +23,38 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_es.sh"]
+        command: ["sh","-c",'/init/check_es.sh']
         env:
           - name: es_url
             value: {{ include "es_url" . }}
           - name: es_user
             value: {{ .Values.elasticsearch.user }}
           - name: es_pass
-            value: {{ .Values.elasticsearch.password }}
+            value: {{ .Values.elasticsearch.password }}         
         volumeMounts:
-        - mountPath: "/init"
-          name: init
-      containers: 
-      - name: es-curator
-        image: {{ .Values.es_curator.image }}:{{ .Values.es_curator.imageTag }}
+        - name: init
+          mountPath: "/init"          
+      containers:
+      - name: main
+        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
+        command: ["sh", "-c", "/templates/templates.sh"]
         env:
-        - name: ES_HOST
-          value: {{ include "es_url" . }}
-        command: ["/curator/curator", "--config", "/config/curator.yml", "/config/actions.yml"]
+          - name: es_url
+            value: {{ include "es_url" . }}
+          - name: es_user
+            value: {{ .Values.elasticsearch.user }}
+          - name: es_pass
+            value: {{ .Values.elasticsearch.password }}          
         volumeMounts:
-        - name: curator
-          mountPath: "/config"
-        - name: certificates
-          mountPath: /etc/root-ca.pem
-          subPath: root-ca.pem
+        - name: templates
+          mountPath: /templates        
       volumes:
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755  
-      - name: curator
+          defaultMode: 0755
+      - name: templates
         configMap:
-          name: {{ .Release.Name }}-curator
-      - name: certificates
-        secret:
-          secretName: {{ .Release.Name }}-certificates     
-{{- end }}
+          name: {{ .Release.Name}}-index-templates
+          defaultMode: 0755              
+{{- end }}          

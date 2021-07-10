@@ -45,10 +45,16 @@ spec:
       - name: main
         image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
         resources: {{ toYaml .Values.data.resources | nindent 10 }}
+        {{- if .Values.elasticsearch.single_node }}
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "/livenessProbe.sh"]
+          initialDelaySeconds: 30          
+        {{- end }}      
         livenessProbe:
           tcpSocket:
             port: transport
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 10
         ports:
         {{- if .Values.elasticsearch.single_node }}
@@ -64,6 +70,11 @@ spec:
         - name: es-snapshot
           mountPath: /snapshot
         {{- end }}          
+        {{- if .Values.elasticsearch.single_node }}
+        - name: elasticsearch
+          mountPath: /livenessProbe.sh
+          subPath: livenessProbe.sh
+        {{- end }}  
         - name: elasticsearch
           mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
           subPath: elasticsearch.yml
@@ -92,6 +103,12 @@ spec:
           mountPath: /usr/share/elasticsearch/config/http.truststore 
           subPath: http.truststore        
         env:
+        - name: es_url
+          value: https://localhost:9200
+        - name: es_user
+          value: {{ .Values.elasticsearch.user }}
+        - name: es_pass
+          value: {{ .Values.elasticsearch.password }}        
         - name: "NAMESPACE"
           valueFrom:
             fieldRef:
@@ -108,6 +125,7 @@ spec:
       - name: elasticsearch
         configMap:
           name: {{ .Release.Name }}
+          defaultMode: 0755
 {{- if .Values.elasticsearch.snapshot.enabled }}
       - name: es-snapshot
         persistentVolumeClaim:

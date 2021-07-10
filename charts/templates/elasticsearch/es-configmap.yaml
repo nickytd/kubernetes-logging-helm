@@ -6,6 +6,12 @@ metadata:
   name: {{ .Release.Name }}
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
+  livenessProbe.sh: |-
+    #!/bin/bash
+      
+    curl -sSk -X GET -u$es_user:$es_pass $es_url
+
+
   log4j2.properties: |-
     status = info
 
