@@ -148,6 +148,7 @@ Fluentd is supplied only when kafka.enabled is set to true.
 | fluentd.imageTag | Fluentd image tag | "v1.12-debian-kafka-1" |
 | fluentd.replicas | Number of fluentd instances | 1 |
 | fluentd.affinity | Fluentd pod affinity definition | {} |
+| fluentd.extraEnvs | Additional configuration for fluentd | "" |
 | fluentd.priority_class | Fluentd pod priority class | "" |
 | fluentd.resources | Fluentd pod resource definition | {} |
 | fluentd.tolerarions | Fluentd pod tolerations definition | [] |
