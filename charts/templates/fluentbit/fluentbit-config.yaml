@@ -39,9 +39,7 @@ data:
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Parser            docker
-        Read_from_Head    False
-        #Multiline         on
-        #Parser_Firstline  multiline 
+        Read_from_Head    True        
 
   input-systemd.conf: |-
     [INPUT]
@@ -67,6 +65,7 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Labels              On
+        Kube_Meta_Cache_TTL 60s 
   
   filter-parser.conf: |-
     [FILTER]

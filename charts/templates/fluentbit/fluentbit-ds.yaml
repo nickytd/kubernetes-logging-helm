@@ -55,7 +55,8 @@ spec:
         imagePullPolicy: Always
         resources: {{ toYaml .Values.fluentbit.resources | nindent 10 }}
         ports:
-          - containerPort: 2020
+          - name: http
+            containerPort: 2020
         env:
         - name: FLUENT_ELASTICSEARCH_HOST
           value: "{{ include "es_host" . }}"
@@ -64,7 +65,13 @@ spec:
         - name: FLUENT_ELASTICSEARCH_USER
           value:  {{ .Values.elasticsearch.user }}
         - name: FLUENT_ELASTICSEARCH_PASSWORD
-          value:  {{ .Values.elasticsearch.password }}  
+          value:  {{ .Values.elasticsearch.password }}
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 15
         volumeMounts:
         - name: varlog
           mountPath: /var/log

@@ -145,7 +145,7 @@ kibana:
 
 fluentbit:
   image: "fluent/fluent-bit"
-  imageTag: "1.7.9"
+  imageTag: "1.8.1"
   host_path: /var/log
   resources:
     requests:
