@@ -45,3 +45,6 @@ kafka:
 
 fluentbit:
   journal_host_path: /run/log
+  metrics:
+    enabled: true
+    

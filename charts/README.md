@@ -138,6 +138,9 @@ Used for multiple application startup checks.
 | fluentbit.priority_class | Fluentbit pod priority class | "" |
 | fluentbit.resources | Fluentbit pod resource definition | {} |
 | fluentbit.tolerarions | Fluentbit pod tolerations definition. All tainted nodes needs to be reflected in the tolerations array | [] |
+| fluentbit.metrics.enabled | Set to true to enable Prometheus metrics. Requires Prometheus Operator | false |
+| fluentbit.metrics.interval | Metrics scrape interval | "30s" |
+| fluentbit.metrics.namespace | Namespace where servicemonitor is created | "" | 
 
 # Fluentd configuration. 
 Fluentd is supplied only when kafka.enabled is set to true.

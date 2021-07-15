@@ -136,11 +136,11 @@ es:
 
   ## If true, query stats for snapshots in the cluster.
   ##
-  snapshots: true
+  snapshots: false
 
   ## If true, query stats for cluster settings.
   ##
-  cluster_settings: false
+  cluster_settings: true
 
   ## Timeout for trying to get stats from Elasticsearch. (ex: 20s)
   ##
@@ -197,9 +197,9 @@ serviceMonitor:
   ## https://github.com/coreos/prometheus-operator
   ##
   enabled: true
-  namespace: monitoring
+  namespace: ""
   labels: {}
-  interval: 10s
+  interval: 30s
   scrapeTimeout: 10s
   scheme: http
   relabelings: []

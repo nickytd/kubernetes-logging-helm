@@ -1,0 +1,34 @@
+{{- if and .Values.fluentbit.metrics.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-fluentbit
+  labels: {{ include "logging.labels" . | indent 4 }}
+    k8s-app: fluentbit
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 2020
+    targetPort: http
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}    
+    k8s-app: fluentbit
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:  
+  name: {{ .Release.Name}}-fluentbit
+  namespace: {{ default .Release.Namespace .Values.fluentbit.metrics.namespace }}
+  labels:  {{ include "logging.selectorLabels" . | indent 4 }}
+spec:
+  endpoints:
+    - port: http
+      path: /api/v1/metrics/prometheus
+      interval: {{ default "30s" .Values.fluentbit.metrics.interval }}      
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:  {{ include "logging.selectorLabels" . | indent 6 }} 
+      k8s-app: fluentbit
+{{- end }}

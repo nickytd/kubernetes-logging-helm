@@ -155,6 +155,10 @@ fluentbit:
   priority_class: ""
   tolerations: []
   affinity: {}
+  metrics:
+    enabled: false
+    interval: "30s"
+    namespace: ""
 
 fluentd:
   replicas: 1

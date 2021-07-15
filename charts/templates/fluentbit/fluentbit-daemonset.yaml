@@ -1,25 +1,19 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name}}-fluent-bit
-  labels:
-    k8s-app: fluent-bit-logging
-    version: v1
-    kubernetes.io/cluster-service: "true"
+  name: {{ .Release.Name}}-fluentbit
+  labels: {{ include "logging.selectorLabels" . | indent 4 }}
+    k8s-app: fluentbit
 spec:
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      k8s-app: fluent-bit-logging
+      k8s-app: fluentbit
   template:
     metadata:
-      labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        k8s-app: fluent-bit-logging        
-        kubernetes.io/cluster-service: "true"
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config.yaml") . | sha256sum }}  
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "2020"
-        prometheus.io/path: /api/v1/metrics/prometheus
+        checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config.yaml") . | sha256sum }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        k8s-app: fluentbit      
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.fluentbit.priority_class }}
       securityContext:
@@ -50,7 +44,7 @@ spec:
         - mountPath: "/init"
           name: init      
       containers:
-      - name: fluent-bit
+      - name: fluentbit
         image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.imageTag }}
         imagePullPolicy: Always
         resources: {{ toYaml .Values.fluentbit.resources | nindent 10 }}

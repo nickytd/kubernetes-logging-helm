@@ -96,6 +96,8 @@ zookeeper:
 
 fluentbit:
   journal_host_path: /run/log
+  metrics:
+    enabled: true
 
 fluentd:
   replicas: 2
