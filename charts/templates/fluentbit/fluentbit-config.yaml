@@ -38,8 +38,11 @@ data:
         Buffer_Chunk_Size 1024k
         Skip_Long_Lines   Off
         Refresh_Interval  10
+        Read_from_Head    True
+        Docker_Mode       On
         Parser            docker
-        Read_from_Head    True        
+        Log_Level         info
+        #multiline.parser docker, cri        
 
   input-systemd.conf: |-
     [INPUT]
@@ -61,7 +64,7 @@ data:
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
         Kube_Tag_Prefix     kube.var.log.containers.
         Merge_Log           On
-        Merge_Log_Key       log_processed
+        Keep_Log            On
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Labels              On
@@ -164,7 +167,7 @@ data:
         Format      json
         Time_Key    time
         Time_Format %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep   On
+        Time_Keep   Off
 
     [PARSER]
         Name        logfmt
