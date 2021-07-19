@@ -65,6 +65,9 @@ spec:
           value:  {{ .Values.elasticsearch.user }}
         - name: FLUENT_ELASTICSEARCH_PASSWORD
           value:  {{ .Values.elasticsearch.password }}
+        {{- if .Values.fluentd.extraEnvs }}
+          {{- toYaml .Values.fluentd.extraEnvs | nindent 8 }}
+        {{- end }}
         livenessProbe:        
           httpGet:
             path: /metrics
