@@ -11,14 +11,14 @@ Finally this helm chart provides index templates management in opensearch and in
 
 Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples) for local development and testing based on [minikube](https://minikube.sigs.k8s.io)
 
-[Single node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples/k8s-logging-minikube-values.yaml)
+[Single node setup example](https://github.com/nickytd/kubernetes-logging-helm/blob/b816650603e1eb970b4352698a89cf5671ba8969/examples/single-node-setup.yaml)
 
 Provisioned components:
  1. Single opensearch type node
  1. Fluent-Bit instance per kubernetes node
  1. (optional elastic-exporter)
 
-[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples/k8s-logging-scaled-minikube-values.yaml). This example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
+[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/blob/b816650603e1eb970b4352698a89cf5671ba8969/examples/multi-node-ha-setup.yaml). This example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
 
 Provisioned components:
  1. 2 Opensearch coordination nodes
