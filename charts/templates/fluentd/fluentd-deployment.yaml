@@ -52,14 +52,14 @@ spec:
         - "-c"
         - "/fluentd/entrypoint.sh"
         env:
-        - name: FLUENT_ELASTICSEARCH_HOST
-          value: "{{ include "es_host" . }}"
-        - name: FLUENT_ELASTICSEARCH_PORT
-          value: "{{ include "es_port" . }}"
-        - name: FLUENT_ELASTICSEARCH_USER
-          value:  {{ .Values.elasticsearch.user }}
-        - name: FLUENT_ELASTICSEARCH_PASSWORD
-          value:  {{ .Values.elasticsearch.password }}
+        - name: FLUENT_OPENSEARCH_HOST
+          value: "{{ include "os_host" . }}"
+        - name: FLUENT_OPENSEARCH_PORT
+          value: "{{ include "os_port" . }}"
+        - name: FLUENT_OPENSEARCH_USER
+          value:  {{ .Values.opensearch.user }}
+        - name: FLUENT_OPENSEARCH_PASSWORD
+          value:  {{ .Values.opensearch.password }}
         {{- if .Values.fluentd.extraEnvs }}
           {{- toYaml .Values.fluentd.extraEnvs | nindent 8 }}
         {{- end }}
