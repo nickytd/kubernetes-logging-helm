@@ -2,8 +2,8 @@ _meta:
   type: "roles"
   config_version: 2
 
-# Restrict users so they can only view visualization and dashboard on kibana
-kibana_read_only:
+# Restrict users so they can only view visualization and dashboard on opensearch-dashboards
+opensearch-dashboards_read_only:
   reserved: true
 
 admin:
@@ -35,7 +35,7 @@ admin:
       allowed_actions:    
         - "*"
 
-kibana_viewer:
+opensearch-dashboards_viewer:
   reserved: false
   cluster_permissions:
     - "cluster_composite_ops_ro"
@@ -43,7 +43,7 @@ kibana_viewer:
     - index_patterns:  
         - "*"
       allowed_actions:
-        - "read"
+        - "read"        
         - "search"
         - "get"
         - "manage"
@@ -58,32 +58,35 @@ kibana_viewer:
     allowed_actions:
       - "kibana_all_read"    
 
-kibana_developer:
+opensearch-dashboards_developer:
   reserved: false
   cluster_permissions:
     - "cluster_composite_ops_ro"
-    - "cluster:admin/opendistro/reports/*"    
+    - "cluster:admin/opendistro/reports/*"     
   index_permissions:
-    - index_patterns:  
+    - index_patterns:
         - "*"
       allowed_actions:
-        - "read"
-        - "search"
         - "get"
-        - "manage"
-        - "suggest"
+        - "read"
+        - "write"
+        - "delete"
+        - "crud"
+        - "search"
+        - "suggest"        
+        - "indices:admin/resolve/index"
   tenant_permissions:
   - tenant_patterns:
-      - "Global*"
+      - "Global"
     allowed_actions:
       - "kibana_all_read"  
   - tenant_patterns:
       - "Developer"
     allowed_actions:
       - "kibana_all_read"
-      - "kibana_all_write"       
+      - "kibana_all_write"      
 
-kibana_admin:
+opensearch-dashboards_admin:
   reserved: true
   cluster_permissions:
     - "unlimited"

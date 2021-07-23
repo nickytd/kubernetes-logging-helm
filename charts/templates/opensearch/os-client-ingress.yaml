@@ -1,0 +1,29 @@
+{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.client.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-os
+  labels: {{ include "logging.labels" . | indent 4 }}
+  {{- with .Values.client.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.client.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.client.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.client.ingress.path }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name}}-client
+            port:
+              number: 9200
+{{- end -}}
+{{- end }}

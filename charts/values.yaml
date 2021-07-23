@@ -9,7 +9,7 @@ storage_class: "standard"
 #A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
 #with the concrete configurations of the nodes that follow.
 #In case "in_cluster" is set to false, logs are pushed to an external ES.
-elasticsearch:
+opensearch:
   single_node: false
   in_cluster: true
   snapshot:
@@ -20,13 +20,13 @@ elasticsearch:
   additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
   url: ""
   port: 9200
-  user: "esadmin"
-  password: "esadmin"
+  user: "osadmin"
+  password: "osadmin"
 
 #Opendistro configuration 
 opendistro:
-  image: "amazon/opendistro-for-elasticsearch"
-  imageTag: 1.13.2
+  image: "opensearchproject/opensearch"
+  imageTag: 1.0.0
   saml:
     enabled: false
     idp: {}
@@ -39,10 +39,10 @@ opendistro:
     viewer_role: ""
     tenant_role: ""
 
-#ES Curator job configuration
-es_curator:
-  image: "nickytd/es-curator"
-  imageTag: "5.8"
+#Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
+os_curator:
+  image: "nickytd/os-curator"
+  imageTag: "5.8.4"
 
 #Init container configuration. Used for multiple application startup checks
 init_container:
@@ -57,9 +57,9 @@ master:
   heap_size: "256m"
   resources:
     requests:
-      memory: "600Mi"
+      memory: "700Mi"
     limits:
-      memory: "600Mi"
+      memory: "700Mi"
   storage_class: ""
   priority_class: ""
   tolerations: []
@@ -105,17 +105,17 @@ data:
   tolerations: []
   affinity: {} 
 
-#when in_cluster is set to false it determines an external kibana instance. 
-#In this case only jobs creating index templates and kibana objects are executed.
-kibana:
+#when in_cluster is set to false it determines an external opensearch-dashboards instance. 
+#In this case only jobs creating index templates and opensearch-dashboards objects are executed.
+opensearch_dashboards:
   in_cluster: true
   url: ""  
   replicas: 1
   extraEnvs:
   - name: "NODE_OPTIONS"
     value: "--max-old-space-size=350"
-  user: "kibana"
-  password: "kibana"
+  user: "opensearch"
+  password: "opensearch"
   readonly:
     user: "viewer"
     password: "view"
@@ -162,8 +162,8 @@ fluentbit:
 
 fluentd:
   replicas: 1
-  image: "fluent/fluentd-kubernetes-daemonset"
-  imageTag: "v1.12-debian-kafka-1"
+  image: "nickytd/fluentd"
+  imageTag: "v1.13"
   resources:
     requests:
       memory: "100Mi"

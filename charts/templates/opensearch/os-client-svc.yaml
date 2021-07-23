@@ -1,0 +1,19 @@
+{{- if .Values.opensearch.in_cluster }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-client
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  ports:
+  - name: http
+    port: 9200
+    targetPort: http
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
+    {{- if .Values.opensearch.single_node }}
+    type: single
+    {{- else }}
+    type: client
+    {{- end }}
+  type: ClusterIP
+{{- end }}

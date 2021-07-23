@@ -21,31 +21,38 @@ admin:
   description: "Maps external es user to admin role"
 
 
-kibana_admin:
+opensearch-dashboards_admin:
   reserved: false
   users:
-  - {{ .Values.kibana.user }} 
+  - {{ .Values.opensearch_dashboards.user }} 
   description: "Maps external es user to admin role"
 
 
-kibana_viewer:
+opensearch-dashboards_viewer:
   reserved: false
   backend_roles:
     - "Viewer"
   description: "Maps viewer backend role"
 
-kibana_developer:
+opensearch-dashboards_developer:
   reserved: false
   users:
-    - {{ .Values.kibana.user }}
-    - {{ .Values.kibana.developer.user }}
+    - {{ .Values.opensearch_dashboards.user }}
+    - {{ .Values.opensearch_dashboards.developer.user }}
   and_backend_roles:
     - "Developer"
   description: "Maps developer backend role"  
 
-kibana_user:
+opensearch-dashboards_user:
   reserved: false
   backend_roles:
     - "Viewer"
     - "Developer"
-  description: "Maps viewer and developer backend roles to kibana user"  
+  description: "Maps viewer and developer backend roles to opensearch-dashboards_user role"  
+
+
+kibana_user:
+  reserved: false
+  backend_roles:
+    - "Developer"
+  description: "Maps developer backend roles to kibana_user role"      

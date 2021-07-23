@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-index-templates
+data:
+{{- range $path, $bytes := .Files.Glob "index-templates/*.json" }}
+{{- $name := base (dir $path) }}  
+{{ base $path | indent 2}}: |-
+{{ (tpl ($.Files.Get $path) $)| indent 4 }}
+{{- end }}
+  templates.sh: |-
+    #!/bin/bash
+
+    set -e     
+
+    echo "seting up index templates"
+    if [ -z ${os_url+x} ]; then
+      echo "opensearch url env variable (os_url) is expected but not found";
+      exit -1
+    elif [ -z ${os_user+x} ]; then
+      echo "opensearch user env variable (os_user) is expected but not found";
+      exit -1
+    elif [ -z ${os_pass+x} ]; then
+      echo "opensearch password env variable (os_pass) is expected but not found";
+      exit -1
+    fi
+
+
+    for file in /templates/*.json ; do
+      template=$(echo $file| cut -d'_' -f 1| cut -d'/' -f 3)
+      echo "uploading template $template"
+
+      result=`curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
+        -u$os_user:$os_pass $os_url/_template/$template -d @$file`
+
+      echo "$result"
+    done
+
+
+

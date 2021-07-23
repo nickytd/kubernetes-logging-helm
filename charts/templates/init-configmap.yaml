@@ -43,27 +43,27 @@ data:
 
      echo "initialized"
 
-  check_es.sh: |-
+  check_os.sh: |-
     #!/bin/bash
     set -e
 
-    if [ -z ${es_url+x} ]; then
-      echo "elasticsearch url env variable (es_url) is expected but not found";
+    if [ -z ${os_url+x} ]; then
+      echo "opensearch url env variable (os_url) is expected but not found";
       exit -1
-    elif [ -z ${es_user+x} ]; then
-      echo "elasticsearch user env variable (es_user) is expected but not found";
+    elif [ -z ${os_user+x} ]; then
+      echo "opensearch user env variable (os_user) is expected but not found";
       exit -1
-    elif [ -z ${es_pass+x} ]; then
-      echo "elasticsearch password env variable (es_pass) is expected but not found";
+    elif [ -z ${os_pass+x} ]; then
+      echo "opensearch password env variable (os_pass) is expected but not found";
       exit -1
     fi
 
-    echo "checking elasticsearch $es_url"
+    echo "checking opensearch $os_url"
     
-    check="curl -sk -w "%{http_code}" -u$es_user:$es_pass $es_url -o /dev/null"
+    check="curl -sk -w "%{http_code}" -u$os_user:$os_pass $os_url -o /dev/null"
 
     until [[ $($check) == "200" ]]; do
-      echo "retrying $es_url"
+      echo "retrying $os_url"
       sleep 5
     done
     

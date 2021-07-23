@@ -56,35 +56,35 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- printf "%s:%s" $image $imageTag -}}
 {{- end -}}
 
-{{- define "es_url" -}}
-{{- if .Values.elasticsearch.in_cluster -}}
+{{- define "os_url" -}}
+{{- if .Values.opensearch.in_cluster -}}
 {{ printf "https://%s-client.%s.%s:9200" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
-{{- printf "%s" .Values.elasticsearch.url -}}
+{{- printf "%s" .Values.opensearch.url -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "es_host" -}}
-{{- if .Values.elasticsearch.in_cluster -}}
+{{- define "os_host" -}}
+{{- if .Values.opensearch.in_cluster -}}
 {{ printf "%s-client.%s.%s" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
-{{- printf "%s" .Values.elasticsearch.url -}}
+{{- printf "%s" .Values.opensearch.url -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "es_port" -}}
-{{- if .Values.elasticsearch.in_cluster -}}
+{{- define "os_port" -}}
+{{- if .Values.opensearch.in_cluster -}}
 {{ printf "%d" 9200 }}
 {{- else -}}
-{{- printf "%d" .Values.elasticsearch.port -}}
+{{- printf "%d" .Values.opensearch.port -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "kibana_url" -}}
-{{- if $.Values.kibana.in_cluster -}}
-{{ printf "http://%s-kibana.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
+{{- define "opensearch-dashboards_url" -}}
+{{- if $.Values.opensearch_dashboards.in_cluster -}}
+{{ printf "http://%s-opensearch-dashboards.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
 {{- else -}}
-{{- printf "%s" .Values.kibana.url -}}
+{{- printf "%s" .Values.opensearch_dashboards.url -}}
 {{- end -}}
 {{- end -}}	
 

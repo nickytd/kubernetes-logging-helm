@@ -1,0 +1,84 @@
+{{- if .Values.opensearch_dashboards.in_cluster }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-opensearch-dashboards
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.opensearch_dashboards.replicas }}
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+      type: opensearch-dashboards
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/opensearch-dashboards/opensearch-dashboards-configmap.yaml") . | sha256sum }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        type: opensearch-dashboards
+    spec:
+      priorityClassName: {{ default .Values.priority_class .Values.opensearch_dashboards.priority_class }}
+      {{- with .Values.opensearch_dashboards.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.opensearch_dashboards.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init/check_os.sh"]
+        env:
+          - name: os_url
+            value: {{ include "os_url" . }}
+          - name: os_user
+            value: {{ .Values.opensearch.user }}
+          - name: os_pass
+            value: {{ .Values.opensearch.password }}          
+        volumeMounts:
+        - mountPath: "/init"
+          name: init
+      containers: 
+      - name: main
+        image: {{ .Values.opendistro.image }}-dashboards:{{ .Values.opendistro.imageTag }}
+        resources: {{- toYaml .Values.opensearch_dashboards.resources | nindent 10 }}
+        env:
+        {{- if .Values.opensearch_dashboards.server_base_path }}
+        - name: SERVER_BASEPATH
+          value: {{ .Values.opensearch_dashboards.server_base_path }}  
+        {{- end }}   
+        {{- if .Values.opensearch_dashboards.extraEnvs }}
+          {{- toYaml .Values.opensearch_dashboards.extraEnvs | nindent 8 }}
+        {{- end }}
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+        volumeMounts:
+        - mountPath: "/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml"
+          subPath: opensearch_dashboards.yml
+          name: config
+        - name: certificates
+          mountPath: /opt/opensearch-dashboards/config/root-ca.pem
+          subPath: root-ca.pem  
+        - name: certificates
+          mountPath: /opt/opensearch-dashboards/config/admin.pem
+          subPath: admin.pem  
+        - name: certificates
+          mountPath: /opt/opensearch-dashboards/config/admin-key.pem
+          subPath: admin-key.pem         
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Release.Name }}-opensearch-dashboards
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates        
+{{- end }}

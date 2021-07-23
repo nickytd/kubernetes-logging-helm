@@ -1,0 +1,26 @@
+{{- if and .Values.opensearch_dashboards.ingress.enabled .Values.opensearch_dashboards.in_cluster }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-opensearch-dashboards
+  labels: {{ include "logging.labels" . | indent 4 }}
+  {{- with .Values.opensearch_dashboards.ingress.annotations }}
+  annotations: {{ toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.opensearch_dashboards.ingress.tls }}
+  tls:
+    {{- toYaml . | nindent 4}}
+  {{- end }}
+  rules:
+  - host: {{ .Values.opensearch_dashboards.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.opensearch_dashboards.ingress.path }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Release.Name }}-opensearch-dashboards
+            port:
+              number: 5601
+{{- end }}

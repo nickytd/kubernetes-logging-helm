@@ -7,7 +7,7 @@ metadata:
 data:
   fluent.conf: |-
      <system>
-       log_level debug
+       log_level info
      </system>
 
      @include 01-sources.conf
@@ -15,16 +15,17 @@ data:
      @include 03-filter.conf
      @include 04-rewrite-tags.conf
      @include 05-output.conf
+     #@include 06-debug.conf
      
   01-sources.conf: |-
     <source>
       @type kafka_group
       consumer_group fluentd
+      message_key log
       brokers  {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
       format json
       topics containers
-      add_headers false
-      time_source record      
+      max_bytes 2000000000   
     </source>
 
   02-prometheus.conf: |-
@@ -63,85 +64,117 @@ data:
           pattern /^(.+)$/
           tag all
         </rule>   
-    </match>  
+    </match>
+
+  06-debug.conf: |-
+      <match **>
+        @type stdout
+        tag stdout
+      </match>    
   
   05-output.conf: |-
       <match nginx**>
         @type elasticsearch
-        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
-        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
-        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
-        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        host "#{ENV['FLUENT_opensearch_HOST']}"
+        port "#{ENV['FLUENT_opensearch_PORT']}"
+        user "#{ENV['FLUENT_opensearch_USER']}"
+        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix nginx
         ca_file "/fluentd/ssl/root-ca.pem"
         time_key @timestamp
-        reconnect_on_error true        
+        reconnect_on_error true 
+        request_timeout 30s                
         <buffer>
           @type file
-          flush_interval 10s
+          flush_interval 5s
           retry_type exponential_backoff
           chunk_limit_size 10m
           flush_thread_count 8
           flush_at_shutdown true
-          queue_limit_length 16
-          retry_max_interval 30
+          queue_limit_length 100          
           retry_forever true
           path /fluentd/buffer/nginx
         </buffer>
+        templates { 
+          "containers": "/fluentd/templates/containers_template.json", 
+          "systemd": "/fluentd/templates/systemd_template.json",
+          "nginx": "/fluentd/templates/nginx_template.json"
+        }
+        suppress_type_name true
+        type_name _doc
+        tag nginx
       </match> 
 
       <match systemd**>
         @type elasticsearch
-        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
-        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
-        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
-        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        host "#{ENV['FLUENT_opensearch_HOST']}"
+        port "#{ENV['FLUENT_opensearch_PORT']}"
+        user "#{ENV['FLUENT_opensearch_USER']}"
+        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix systemd
         ca_file "/fluentd/ssl/root-ca.pem"
         time_key @timestamp
-        reconnect_on_error true        
+        reconnect_on_error true
+        request_timeout 30s                  
         <buffer>
           @type file
-          flush_interval 10s
+          flush_interval 5s
           retry_type exponential_backoff
           chunk_limit_size 10m
           flush_thread_count 8
           flush_at_shutdown true
-          queue_limit_length 16
-          retry_max_interval 30
+          queue_limit_length 100          
           retry_forever true
           path /fluentd/buffer/systemd
         </buffer>
+        templates { 
+          "containers": "/fluentd/templates/containers_template.json", 
+          "systemd": "/fluentd/templates/systemd_template.json",
+          "nginx": "/fluentd/templates/nginx_template.json"
+        }
+        suppress_type_name true
+        type_name _doc
+        tag systemd
       </match>   
 
       <match all**>
         @type elasticsearch
-        host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
-        port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
-        user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
-        password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+        host "#{ENV['FLUENT_opensearch_HOST']}"
+        port "#{ENV['FLUENT_opensearch_PORT']}"
+        user "#{ENV['FLUENT_opensearch_USER']}"
+        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix containers
         ca_file "/fluentd/ssl/root-ca.pem"
         time_key @timestamp
-        reconnect_on_error true        
+        reconnect_on_error true
+        request_timeout 30s          
         <buffer>
           @type file
-          flush_interval 10s
+          flush_interval 5s
           retry_type exponential_backoff
           chunk_limit_size 10m
           flush_thread_count 8
           flush_at_shutdown true
-          queue_limit_length 16
-          retry_max_interval 30
+          queue_limit_length 100 
           retry_forever true
           path /fluentd/buffer/containers
         </buffer>
+        templates { 
+          "containers": "/fluentd/templates/containers_template.json", 
+          "systemd": "/fluentd/templates/systemd_template.json",
+          "nginx": "/fluentd/templates/nginx_template.json"
+        }
+        suppress_type_name true
+        type_name _doc
+        tag containers
       </match> 
+
+
 
 {{ end }}    

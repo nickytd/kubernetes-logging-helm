@@ -11,8 +11,8 @@ config:
     do_not_fail_on_forbidden: true
     kibana:
       multitenancy_enabled: true
-      server_username: {{ .Values.kibana.user }}
-      #index: '.kibana'
+      server_username: {{ .Values.opensearch_dashboards.user }}
+      #index: '.opensearch-dashboards'
     http:
       anonymous_auth_enabled: false
       xff:
@@ -50,7 +50,7 @@ config:
               entity_id: {{ .Values.opendistro.saml.idp.entity_id }}
             sp:
               entity_id: {{ .Values.opendistro.saml.sp.entity_id }} 
-            kibana_url: https://{{ .Values.kibana.ingress.host }}
+            opensearch-dashboards_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
             roles_key: groups 
             exchange_key: {{ .Values.opendistro.saml.exchange_key }}
         authentication_backend:

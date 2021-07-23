@@ -3,32 +3,32 @@ Kubernetes Logging stack helm chart parameters
 # Global values
   Parameter | Description  | Default  |
 |---|---|---|
-|  cluster_name | Elasticsearch cluster name  | "logging"  |
+|  cluster_name | opensearch cluster name  | "logging"  |
 |  imagePullSecrets | Array of secrets for private docker repositories | [] |
 |  storage_class | Default storage class for the persistent volumes. Each workload can overwrite the default value| "standard" |
 |  priority_class | Default workloads priority class. Each workload can overwrite the default value | "logging" |
 
-# Elasticsearch nodes parameters
+# opensearch nodes parameters
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  elasticsearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
-|  elasticsearch.in_cluster |  Set to true to provision an elasticsearch cluster. When false, an ES url is required  | true  |
-|  elasticsearch.url | External ES url. Required when "in_cluster" is set to false | "" |
-|  elasticsearch.retention_days | Elasticsearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
-|  elasticsearch.port | Default elasticsearch port | 9200 |
-|  elasticsearch.user | Default elasticsearch user with administrative privileges   | "esadmin" |
-|  elasticsearch.password | Password for the default elasticsearch user   | "esadmin" |
-|  elasticsearch.additional_jvm_params | Additional JVM parameters | "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system" |
-|  elasticsearch.snapshot.enabled | Seto to true to enable elasticsearch snapshots | false |
-|  elasticsearch.snapshot.storage_class | The storage class for the snapshot volume. It needs to be a NFS share in a multi node setup. All nodes require access to the same share to be able to generate a snapshot | false |
-|  elasticsearch.snapshot.size | Snapshot volume size | "5Gi" |
+|  opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
+|  opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an ES url is required  | true  |
+|  opensearch.url | External ES url. Required when "in_cluster" is set to false | "" |
+|  opensearch.retention_days | opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
+|  opensearch.port | Default opensearch port | 9200 |
+|  opensearch.user | Default opensearch user with administrative privileges   | "esadmin" |
+|  opensearch.password | Password for the default opensearch user   | "esadmin" |
+|  opensearch.additional_jvm_params | Additional JVM parameters | "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system" |
+|  opensearch.snapshot.enabled | Seto to true to enable opensearch snapshots | false |
+|  opensearch.snapshot.storage_class | The storage class for the snapshot volume. It needs to be a NFS share in a multi node setup. All nodes require access to the same share to be able to generate a snapshot | false |
+|  opensearch.snapshot.size | Snapshot volume size | "5Gi" |
 
 
 # Opendistro configuration
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  opendistro.image | Opendistro image registry | "amazon/opendistro-for-elasticsearch" |
+|  opendistro.image | Opendistro image registry | "amazon/opendistro-for-opensearch" |
 |  opendistro.imageTag | Opendistro image tag | "1.13.2" |
 |  opendistro.saml.enabled | Set to true to enable SAML for opendistro | false |
 |  opendistro.saml.idp.metadata_url | SAML metadata URL | "" |
@@ -40,14 +40,14 @@ Kubernetes Logging stack helm chart parameters
 |  opendistro.saml.tenant_role | SAML role mapped to an elastic tenant role | "" |
 
 
-# ES Curator job configuration. 
+# Opensearch Curator job configuration. 
 
 Used for daily cron job operations. For example maintaining the index retention.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  es_curator.image | Elasticsearch curator image registry | "nickytd/es-curator" |
-|  es_curator.imageTag | Elasticsearch curator image tag | "5.8" |
+|  os_curator.image | opensearch curator image registry | "nickytd/os-curator" |
+|  os_curator.imageTag | opensearch curator image tag | "5.8.4" |
 
 # Init container configuration. 
 
@@ -63,68 +63,68 @@ Used for multiple application startup checks.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| master.replicas | Number of elasticsearch master nodes | 1 |
-| master.heap_size | JVM Heap size of an elasticsearch master node. The parameter value is set with jvm -Xmx setting. When pod resource limit is also defined, allow it to reflect the multiple pool sizes of the jvm. | "256m" |
-| master.affinity | Pod affinity definition for the elasticsearch master nodes. Proposal: use pod anti-affinity configuration to spread master nodes on different cluster nodes | {} |
-| master.priority_class | Priority class of the elasticsearch master node pods | "" |
-| master.storage | Size of the persistent volume of an elasticsearch master node | "1Gi" |
-| master.storage_class | Storage class of the elasticsearch master node persistence | "" |
-| master.resources | Pod resource definition for the elasticsearch master nodes | {}  |
-| master.tolerarions | Elasticsearch master nodes pod affinity definition. Proposal: use pod anti-affinity configuration to spread master nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | [] |
+| master.replicas | Number of opensearch master nodes | 1 |
+| master.heap_size | JVM Heap size of an opensearch master node. The parameter value is set with jvm -Xmx setting. When pod resource limit is also defined, allow it to reflect the multiple pool sizes of the jvm. | "256m" |
+| master.affinity | Pod affinity definition for the opensearch master nodes. Proposal: use pod anti-affinity configuration to spread master nodes on different cluster nodes | {} |
+| master.priority_class | Priority class of the opensearch master node pods | "" |
+| master.storage | Size of the persistent volume of an opensearch master node | "1Gi" |
+| master.storage_class | Storage class of the opensearch master node persistence | "" |
+| master.resources | Pod resource definition for the opensearch master nodes | {}  |
+| master.tolerarions | opensearch master nodes pod affinity definition. Proposal: use pod anti-affinity configuration to spread master nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | [] |
 
 # ES coordination node configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| client.replicas | Number of elasticsearch coordination nodes | 1 |
-| client.heap_size | JVM Heap size of an elasticsearch coordination node | "512m" |
-| client.ingress.enabled | Set to true to exposes elasticsearch http(s) endpoint as an ingress | false |
+| client.replicas | Number of opensearch coordination nodes | 1 |
+| client.heap_size | JVM Heap size of an opensearch coordination node | "512m" |
+| client.ingress.enabled | Set to true to exposes opensearch http(s) endpoint as an ingress | false |
 | client.ingress.path | Default context path for the ingress | "/" |
 | client.ingress.annotations | Any additional ingress controller specific annotations | {} |
 | client.ingress.tls | TLS ingress configuration | {} |
-| client.affinity | Pod affinity definition for the elasticsearch coordination nodes  | {} |
-| client.priority_class | Priority class of the elasticsearch coordination node pods | "" |
-| client.resources | Pod resource definition for the elasticsearch coordination nodes | {} |
-| client.tolerarions | Pod tolerations definition for the elasticsearch coordination nodes | [] |
-| client.topologySpreadConstraints | Elasticsearch coordination nodes scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
+| client.affinity | Pod affinity definition for the opensearch coordination nodes  | {} |
+| client.priority_class | Priority class of the opensearch coordination node pods | "" |
+| client.resources | Pod resource definition for the opensearch coordination nodes | {} |
+| client.tolerarions | Pod tolerations definition for the opensearch coordination nodes | [] |
+| client.topologySpreadConstraints | opensearch coordination nodes scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
 
 # ES Data node configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| data.replicas | Number of elasticsearch data nodes | 1 |
-| data.heap_size | JVM Heap size of an elasticsearch data node | "512m" |
-| data.affinity | Elasticsearch data nodes pod affinity definition. Proposal: use pod anti-affinity configuration to spread data nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | {} |
-| data.priority_class | Priority class of the elasticsearch data node pods | "" |
-| data.resources | Pod resource definition for the elasticsearch data nodes | {} |
-| data.storage | Size of the persistent volume of an elasticsearch data node | "1Gi" |
-| data.storage_class | Storage class of the elasticsearch data node persistence | "" |
-| data.tolerarions | Pod tolerations definition for the elasticsearch data nodes | [] |
+| data.replicas | Number of opensearch data nodes | 1 |
+| data.heap_size | JVM Heap size of an opensearch data node | "512m" |
+| data.affinity | opensearch data nodes pod affinity definition. Proposal: use pod anti-affinity configuration to spread data nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | {} |
+| data.priority_class | Priority class of the opensearch data node pods | "" |
+| data.resources | Pod resource definition for the opensearch data nodes | {} |
+| data.storage | Size of the persistent volume of an opensearch data node | "1Gi" |
+| data.storage_class | Storage class of the opensearch data node persistence | "" |
+| data.tolerarions | Pod tolerations definition for the opensearch data nodes | [] |
 
-# Kibana configuration
+# opensearch-dashboards configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| kibana.in_cluster | Set to true to provision a kibana instance | true |
-| kibana.url | Specifies external kibana URL when "in_cluster" is false | "" |
-| kibana.replicas | Number of kibana instances | 1 |
-| kibana.extraEnvs | Additional configuration for kibana | - name: "NODE_OPTIONS"<br />  value: "--max-old-space-size=350" |
-| kibana.user | Default Kibana user with administrative privileges | "kibana" |
-| kibana.password | Password for the default kibana user | "kibana" |
-| kibana.developer.user | User for the development tenant in kibana. The developer tenant can create searched and visualizations in the respective tenant space | "developer" |
-| kibana.developer.password | Password for the developer user | "developer" |
-| kibana.readonly.user | Readonly user in Kibana | "viewer" |
-| kibana.readonly.password | Password for the readonly user | "viewer" |
-| kibana.ingress.enabled | When enabled exposes kibana endpoint as an ingress | false |
-| kibana.ingress.path | Default context path for the ingress | "/" |
-| kibana.ingress.annotations | Any additional ingress controller specific annotations | {} |
-| kibana.ingress.tls | TLS ingress configuration | {} |
-| kibana.index_patterns | Default set of kibana index patterns | ["containers", "systemd", "nginx"] |
-| kibana.tenants | Preconfigured kibana tenants | ["Global", "Developer"] |
-| kibana.affinity | Kibana pod affinity definition | {} |
-| kibana.priority_class | Kibana pod priority class | "" |
-| kibana.resources | Kibana pod resource definition | {} |
-| kibana.tolerarions | Kibana pod tolerations definition | [] |
+| opensearch-dashboards.in_cluster | Set to true to provision a opensearch-dashboards instance | true |
+| opensearch-dashboards.url | Specifies external opensearch-dashboards URL when "in_cluster" is false | "" |
+| opensearch-dashboards.replicas | Number of opensearch-dashboards instances | 1 |
+| opensearch-dashboards.extraEnvs | Additional configuration for opensearch-dashboards | - name: "NODE_OPTIONS"<br />  value: "--max-old-space-size=350" |
+| opensearch-dashboards.user | Default opensearch-dashboards user with administrative privileges | "opensearch-dashboards" |
+| opensearch-dashboards.password | Password for the default opensearch-dashboards user | "opensearch-dashboards" |
+| opensearch-dashboards.developer.user | User for the development tenant in opensearch-dashboards. The developer tenant can create searched and visualizations in the respective tenant space | "developer" |
+| opensearch-dashboards.developer.password | Password for the developer user | "developer" |
+| opensearch-dashboards.readonly.user | Readonly user in opensearch-dashboards | "viewer" |
+| opensearch-dashboards.readonly.password | Password for the readonly user | "viewer" |
+| opensearch-dashboards.ingress.enabled | When enabled exposes opensearch-dashboards endpoint as an ingress | false |
+| opensearch-dashboards.ingress.path | Default context path for the ingress | "/" |
+| opensearch-dashboards.ingress.annotations | Any additional ingress controller specific annotations | {} |
+| opensearch-dashboards.ingress.tls | TLS ingress configuration | {} |
+| opensearch-dashboards.index_patterns | Default set of opensearch-dashboards index patterns | ["containers", "systemd", "nginx"] |
+| opensearch-dashboards.tenants | Preconfigured opensearch-dashboards tenants | ["Global", "Developer"] |
+| opensearch-dashboards.affinity | opensearch-dashboards pod affinity definition | {} |
+| opensearch-dashboards.priority_class | opensearch-dashboards pod priority class | "" |
+| opensearch-dashboards.resources | opensearch-dashboards pod resource definition | {} |
+| opensearch-dashboards.tolerarions | opensearch-dashboards pod tolerations definition | [] |
 
 
 # Fluent-bit configuration
@@ -192,5 +192,5 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 | zookeeper.tolerarions | Zookeeper pod tolerations definition | [] |
 
 Example configuration:
- 1. [single node setup](https://github.com/nickytd/kubernetes-logging-helm/blob/747b8ba3e1504b34615bda85448bbb8e3e6c57d7/examples/single-node-setup.yaml)
- 2. [multi node ha setup](https://github.com/nickytd/kubernetes-logging-helm/blob/747b8ba3e1504b34615bda85448bbb8e3e6c57d7/examples/multi-node-ha-setup.yaml)
+ 1. [single node setup](https://github.com/nickytd/kubernetes-logging-helm/blob/ddc174e6fef71e375f1e27fa3ce5188a2831aeb5/examples/single-node-setup.yaml)
+ 2. [multi node ha setup](https://github.com/nickytd/kubernetes-logging-helm/blob/ddc174e6fef71e375f1e27fa3ce5188a2831aeb5/examples/multi-node-ha-setup.yaml)

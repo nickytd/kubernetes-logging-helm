@@ -24,7 +24,7 @@ kubectl create namespace logging \
 
 if [ -d "$sourcedir/ssl" ]; then
   echo "setting up tls secrtes"
-  certs=("kibana" "es")
+  certs=("opensearch-dashboards" "os")
   for c in ${certs[@]}; do
     kubectl create secret tls "$c-tls" -n logging \
       --cert=$sourcedir/ssl/wildcard.crt \
@@ -58,14 +58,14 @@ do
     fi
     
     if [[ "$var" = "--with-exporter" ]]; then
-      echo " installing elasticsearch prometheus exporter"
+      echo " installing opensearch prometheus exporter"
 
-      kubectl create secret generic elastic-certs -n logging \
+      kubectl create secret generic opensearch-certs -n logging \
         --from-file=ca.pem=$sourcedir/../charts/certificates/ca/root-ca/root-ca.pem \
         --dry-run=client -o yaml | kubectl apply -f -
 
       helm upgrade efk-exporter \
-        -n logging --create-namespace  -f "$sourcedir/elasticsearch-exporter.yaml" \
+        -n logging --create-namespace  -f "$sourcedir/opensearch-exporter.yaml" \
         prometheus-community/prometheus-elasticsearch-exporter \
         --install
     fi

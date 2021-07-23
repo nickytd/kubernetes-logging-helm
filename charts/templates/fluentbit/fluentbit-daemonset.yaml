@@ -27,17 +27,17 @@ spec:
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         image: {{ include "init_container.image" . }}
         {{- if .Values.kafka.enabled }}
-        command: ["sh","-c",'/init/check_es.sh && /init/check_host_port.sh $kafka 9092']
+        command: ["sh","-c",'/init/check_os.sh && /init/check_host_port.sh $kafka 9092']
         {{ else }}
-        command: ["sh","-c",'/init/check_es.sh']
+        command: ["sh","-c",'/init/check_os.sh']
         {{- end }}
         env:
-          - name: es_url
-            value: {{ include "es_url" . }}
-          - name: es_user
-            value: {{ .Values.elasticsearch.user }}
-          - name: es_pass
-            value: {{ .Values.elasticsearch.password }}
+          - name: os_url
+            value: {{ include "os_url" . }}
+          - name: os_user
+            value: {{ .Values.opensearch.user }}
+          - name: os_pass
+            value: {{ .Values.opensearch.password }}
           - name: kafka
             value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}  
         volumeMounts:
@@ -52,14 +52,14 @@ spec:
           - name: http
             containerPort: 2020
         env:
-        - name: FLUENT_ELASTICSEARCH_HOST
-          value: "{{ include "es_host" . }}"
-        - name: FLUENT_ELASTICSEARCH_PORT
-          value: "{{ include "es_port" . }}"
-        - name: FLUENT_ELASTICSEARCH_USER
-          value:  {{ .Values.elasticsearch.user }}
-        - name: FLUENT_ELASTICSEARCH_PASSWORD
-          value:  {{ .Values.elasticsearch.password }}
+        - name: FLUENT_opensearch_HOST
+          value: "{{ include "os_host" . }}"
+        - name: FLUENT_opensearch_PORT
+          value: "{{ include "os_port" . }}"
+        - name: FLUENT_opensearch_USER
+          value:  {{ .Values.opensearch.user }}
+        - name: FLUENT_opensearch_PASSWORD
+          value:  {{ .Values.opensearch.password }}
         livenessProbe:
           httpGet:
             path: /api/v1/health

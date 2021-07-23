@@ -1,0 +1,18 @@
+{{- if .Values.opensearch.snapshot.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-snapshot-pvc
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.opensearch.snapshot.size }}
+  {{- if .Values.opensearch.snapshot.storage_class }}
+  storageClassName: {{ .Values.opensearch.snapshot.storage_class | quote }}
+  {{ else }}
+  storageClassName: {{ .Values.storage_class | quote }}
+  {{- end }}
+{{- end}}

@@ -24,7 +24,7 @@ data:
     {{- if .Values.kafka.enabled }}
     @INCLUDE output-kafka.conf
     {{- else }}
-    @INCLUDE output-elasticsearch-*.conf
+    @INCLUDE output-opensearch-*.conf
     {{- end }}
         
   input-kubernetes.conf: |-
@@ -84,59 +84,68 @@ data:
         Match         kube.*
         Rule          $kubernetes['labels']['app.kubernetes.io/name'] "^(ingress-nginx)$" nginx false  
 
-  output-elasticsearch-nginx.conf: |-
+  output-opensearch-nginx.conf: |-
     [OUTPUT]
-        Name            es
-        Match           nginx
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
-        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
-        Logstash_Format On
-        Logstash_Prefix nginx
-        Replace_Dots    On
-        Retry_Limit     False
-        tls             On
-        tls.Verify      On
-        tls.ca_file     /fluent-bit/ssl/root-ca.pem
-        tls.crt_file    /fluent-bit/ssl/admin.pem
-        tls.key_file    /fluent-bit/ssl/admin-key.pem                             
+        Name                es
+        Match               nginx
+        Host                ${FLUENT_opensearch_HOST}
+        Port                ${FLUENT_opensearch_PORT}
+        HTTP_User           ${FLUENT_opensearch_USER}
+        HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
+        Logstash_Format     On
+        Logstash_Prefix     nginx
+        Replace_Dots        On
+        Retry_Limit         False
+        Trace_Error         On
+        Suppress_Type_Name  On
+        Include_Tag_Key     On
+        tls                 On
+        tls.Verify          On
+        tls.ca_file         /fluent-bit/ssl/root-ca.pem
+        tls.crt_file        /fluent-bit/ssl/admin.pem
+        tls.key_file        /fluent-bit/ssl/admin-key.pem                             
 
-  output-elasticsearch-journals.conf: |-
+  output-opensearch-journals.conf: |-
     [OUTPUT]
-        Name            es
-        Match           systemd.*
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
-        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
-        Logstash_Format On
-        Logstash_Prefix systemd
-        Replace_Dots    On
-        Retry_Limit     False
-        tls             On
-        tls.Verify      On
-        tls.ca_file     /fluent-bit/ssl/root-ca.pem
-        tls.crt_file    /fluent-bit/ssl/admin.pem
-        tls.key_file    /fluent-bit/ssl/admin-key.pem
+        Name                es
+        Match               systemd.*
+        Host                ${FLUENT_opensearch_HOST}
+        Port                ${FLUENT_opensearch_PORT}
+        HTTP_User           ${FLUENT_opensearch_USER}
+        HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
+        Logstash_Format     On
+        Logstash_Prefix     systemd
+        Replace_Dots        On
+        Retry_Limit         False
+        Trace_Error         On
+        Suppress_Type_Name  On
+        Include_Tag_Key     On
+        tls                 On
+        tls.Verify          On
+        tls.ca_file         /fluent-bit/ssl/root-ca.pem
+        tls.crt_file        /fluent-bit/ssl/admin.pem
+        tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-elasticsearch-containers.conf: |-
+  output-opensearch-containers.conf: |-
     [OUTPUT]
-        Name            es
-        Match           kube.*
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        HTTP_User       ${FLUENT_ELASTICSEARCH_USER}
-        HTTP_Passwd     ${FLUENT_ELASTICSEARCH_PASSWORD}
-        Logstash_Format On
-        Logstash_Prefix containers
-        Replace_Dots    On
-        Retry_Limit     False
-        tls             On
-        tls.Verify      On
-        tls.ca_file     /fluent-bit/ssl/root-ca.pem
-        tls.crt_file    /fluent-bit/ssl/admin.pem
-        tls.key_file    /fluent-bit/ssl/admin-key.pem
+        Name                es
+        Match               kube.*
+        Host                ${FLUENT_opensearch_HOST}
+        Port                ${FLUENT_opensearch_PORT}
+        HTTP_User           ${FLUENT_opensearch_USER}
+        HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
+        Logstash_Format     On
+        Logstash_Prefix     containers
+        Replace_Dots        On
+        Retry_Limit         False
+        Trace_Error         On
+        Suppress_Type_Name  On     
+        Include_Tag_Key     On
+        tls                 On
+        tls.Verify          On
+        tls.ca_file         /fluent-bit/ssl/root-ca.pem
+        tls.crt_file        /fluent-bit/ssl/admin.pem
+        tls.key_file        /fluent-bit/ssl/admin-key.pem
 
   output-kafka.conf: |-
     [OUTPUT]

@@ -1,0 +1,15 @@
+{{- if .Values.opensearch_dashboards.in_cluster }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-opensearch-dashboards
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: ui
+    port: 5601
+    targetPort: ui
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
+    type: opensearch-dashboards  
+{{- end }}

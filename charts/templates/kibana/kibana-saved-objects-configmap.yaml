@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ .Release.Name }}-kibana-saved-objects
-  labels: {{ include "logging.labels" . | indent 4 }}
-data:
-{{- (.Files.Glob "kibana-saved-objects/*.ndjson").AsConfig | nindent 2 }}

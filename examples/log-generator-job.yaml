@@ -5,7 +5,7 @@ metadata:
     app: logger
   name: logger
 spec:
-  parallelism: 6
+  parallelism: 2
   template:
     metadata:      
       labels:
@@ -26,7 +26,7 @@ spec:
           - -wait 
           - "-1"
           - -count 
-          - "1000000"
+          - "100000"
         resources:
           requests:
             cpu: 100m

@@ -1,0 +1,55 @@
+{{- if .Values.opensearch.in_cluster }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-securityadmin
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  setup.sh: |-
+    #!/bin/bash
+
+    set -e     
+
+    echo "seting up users"
+    echo "node $os_node"
+
+    export JAVA_HOME=/usr/share/opensearch/jdk
+    export PATH=$PATH:$JAVA_HOME/bin
+    
+    chmod +x /usr/share/opensearch/plugins/opensearch-security/tools/hash.sh
+
+    os_pass_hash=`/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -env os_pass`
+    ki_pass_hash=`/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -env ki_pass`
+    ki_ro_pass_hash=`/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -env ki_ro_pass`
+    ki_dev_pass_hash=`/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -env ki_dev_pass`
+
+    cp /usr/share/opensearch/plugins/opensearch-security/securityconfig/internal_users.yml /tmp/internal_users.yml
+    
+    chmod +w /tmp/internal_users.yml
+
+    sed -i -e "s|\$\$opensearch-PASSWORD_HASH|$os_pass_hash|" /tmp/internal_users.yml
+    sed -i -e "s|\$\$opensearch-dashboards_PASSWORD_HASH|$ki_pass_hash|" /tmp/internal_users.yml
+    sed -i -e "s|\$\$opensearch-dashboards_READONLY_PASSWORD_HASH|$ki_ro_pass_hash|" /tmp/internal_users.yml
+    sed -i -e "s|\$\$opensearch-dashboards_DEVELOPER_PASSWORD_HASH|$ki_dev_pass_hash|" /tmp/internal_users.yml
+
+    echo "##### internal_users.yml #####"
+    
+    echo "##### setting up security configuration #####"
+    chmod +x /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh
+    /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
+      -cacert /usr/share/opensearch/config/root-ca.pem \
+      -cert /usr/share/opensearch/config/admin.pem \
+      -key /usr/share/opensearch/config/admin-key.pem \
+      -cd /usr/share/opensearch/plugins/opensearch-security/securityconfig/ \
+      -h $os_node -sniff -nhnv -icl 
+
+    echo "##### setting up users configuration #####"
+    chmod +x /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh
+    /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
+      -cacert /usr/share/opensearch/config/root-ca.pem \
+      -cert /usr/share/opensearch/config/admin.pem \
+      -key /usr/share/opensearch/config/admin-key.pem \
+      -f /tmp/internal_users.yml \
+      -h $os_node -sniff -nhnv -icl
+
+{{- end }}      

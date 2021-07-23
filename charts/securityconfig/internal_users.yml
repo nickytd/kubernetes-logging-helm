@@ -8,32 +8,32 @@ _meta:
 
 # Define your internal users here
 
-{{ .Values.elasticsearch.user }}:
-  hash: "$$ELASTICSEARCH_PASSWORD_HASH"
+{{ .Values.opensearch.user }}:
+  hash: "$$opensearch-PASSWORD_HASH"
   reserved: true
   backend_roles:
   - "administrator"
-  description: "{{ .Values.elasticsearch.user }} user for ES"
+  description: "{{ .Values.opensearch.user }} user for ES"
 
-{{ .Values.kibana.user }}:
-  hash: "$$KIBANA_PASSWORD_HASH"
+{{ .Values.opensearch_dashboards.user }}:
+  hash: "$$opensearch-dashboards_PASSWORD_HASH"
   reserved: true
   backend_roles:
   - "administrator"
   - "Developer"
-  description: "{{ .Values.kibana.user }} user for Kibana"
+  description: "{{ .Values.opensearch_dashboards.user }} user for opensearch-dashboards"
 
 
-{{ .Values.kibana.readonly.user }}:
-  hash: "$$KIBANA_READONLY_PASSWORD_HASH"
+{{ .Values.opensearch_dashboards.readonly.user }}:
+  hash: "$$opensearch-dashboards_READONLY_PASSWORD_HASH"
   reserved: true
   backend_roles:
   - "Viewer"
-  description: "{{ .Values.kibana.readonly.user }} read only user for Kibana"  
+  description: "{{ .Values.opensearch_dashboards.readonly.user }} read only user for opensearch-dashboards"  
 
-{{ .Values.kibana.developer.user }}:
-  hash: "$$KIBANA_DEVELOPER_PASSWORD_HASH"
+{{ .Values.opensearch_dashboards.developer.user }}:
+  hash: "$$opensearch-dashboards_DEVELOPER_PASSWORD_HASH"
   reserved: true
   backend_roles:
   - "Developer"
-  description: "{{ .Values.kibana.developer.user }} developer user for Kibana"    
+  description: "{{ .Values.opensearch_dashboards.developer.user }} developer user for opensearch-dashboards"    

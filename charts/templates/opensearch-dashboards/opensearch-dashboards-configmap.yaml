@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-opensearch-dashboards
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  opensearch_dashboards.yml: |-
+    server.name: opensearch-dashboards
+    server.host: "0"
+
+    logging.quiet: false
+    logging.verbose: false
+    logging.json: false
+
+    opensearch.logQueries: true
+    opensearch.hosts: ["{{ include "os_url" . }}"]
+    opensearch.ssl.verificationMode: none
+    opensearch.username: {{ .Values.opensearch_dashboards.user }}
+    opensearch.password: {{ .Values.opensearch_dashboards.password }}
+    opensearch.requestHeadersWhitelist: ["securitytenant","authorization"]
+    
+    # Optional setting that enables you to specify a path to the PEM file for the certificate
+    # authority for your opensearch instance.
+    opensearch.ssl.certificateAuthorities:
+    - /opt/opensearch-dashboards/config/root-ca.pem    
+
+    opensearch_security.readonly_mode.roles: ["opensearch-dashboards_read_only"]
+
+{{ if .Values.opendistro.saml.enabled }}    
+    server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
+    opensearch_security.auth.type: "saml"
+{{ end }}    
+
+    opensearch_security.multitenancy.enabled: true
+    opensearch_security.multitenancy.tenants.enable_global: true
+    opensearch_security.multitenancy.tenants.enable_private: true
+    opensearch_security.multitenancy.tenants.preferred: ["Developer","Global","Private"]
+    opensearch_security.cookie.secure: false

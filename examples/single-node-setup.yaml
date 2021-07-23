@@ -1,15 +1,15 @@
-# Elasticsearch general configuration
-# Single type node deploys only one ALL type elasticsearch node
+# opensearch general configuration
+# Single type node deploys only one ALL type opensearch node
 # Otherwise it deploys coordination, data and master nodes
 # The recommended configuration in scaled out setups is to disable single_node and enable kafka
-elasticsearch:
+opensearch:
   single_node: true
 
-# Elasticsearch coordination node configuration
+# opensearch coordination node configuration
 client:
   ingress:
     enabled: true
-    host: es.local.dev
+    host: os.local.dev
     annotations:
       nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/rewrite-target: "/"
@@ -19,21 +19,21 @@ client:
       #haproxy.org/ssl-redirect: "true" 
     tls:
       - hosts:
-          - es.local.dev
-        secretName: es-tls  
+          - os.local.dev
+        secretName: os-tls  
              
 # Kibana configuration
-kibana:
+opensearch_dashboards:
   ingress:
     enabled: true 
-    host: kibana.local.dev
+    host: opensearch-dashboards.local.dev
     annotations:
       nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     tls:
       - hosts:
-          - kibana.local.dev
-        secretName: kibana-tls  
+          - opensearch-dashboards.local.dev
+        secretName: opensearch-dashboards-tls  
   index_patterns:
     - containers
     - systemd

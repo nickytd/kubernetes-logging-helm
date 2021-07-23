@@ -5,4 +5,4 @@ _meta:
 
 Developer:
   reserved: true
-  description: "Kibana tenant for developers"
+  description: "opensearch-dashboards tenant for developers"
