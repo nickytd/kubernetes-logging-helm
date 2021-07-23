@@ -39,9 +39,9 @@ helm repo update
 Following dashboards in Opensearch-Dashboards are also provisioned for illustration purposes
 
 Logs Stream Dashboard 
-![Logs Stream Dashboard](images/containers-logs-dashboard.png)
+![Logs Stream Dashboard](images/containers-dashboard.png)
 
 Systemd logs Dashboard
-![Systemd logs Dashboard](images/systemd-logs-dashboard.png)
+![Systemd logs Dashboard](images/systemd-dashboard.png)
 
 Multi tenant layout is also supported in Opensearch-Dashboards. This helm chart sets up a Developer tenant with the corresponding role having read/write permission in the corresponding tenant space.
