@@ -9,16 +9,16 @@ Finally this helm chart provides index templates management in elasticsearch and
 
 ![Kubernetes Logging Stack](images/k8s-logging-stack.jpg)
 
-Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples) for local development and testing based on [minikube](https://minikube.sigs.k8s.io)
+Here is a [setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples) for local development and testing based on [minikube](https://minikube.sigs.k8s.io)
 
-[Single node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-minikube-values.yaml)
+[Single node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples/k8s-logging-minikube-values.yaml)
 
 Provisioned components:
  1. Single Elasticsearch type node
  1. Fluent-Bit instance per kubernetes node
  1. (optional elastic-exporter)
 
-[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/master/examples/k8s-logging-scaled-minikube-values.yaml). This example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
+[Scaled multi node setup example](https://github.com/nickytd/kubernetes-logging-helm/tree/main/examples/k8s-logging-scaled-minikube-values.yaml). This example requires a kubernetes cluster with at least two nodes, demonstrating pod anti affinity configuration for the statefulsets and pod schedule spread configurations for the deployments
 
 Provisioned components:
  1. 2 Elastic coordination nodes
