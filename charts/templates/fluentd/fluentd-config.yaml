@@ -75,10 +75,10 @@ data:
   05-output.conf: |-
       <match nginx**>
         @type elasticsearch
-        host "#{ENV['FLUENT_opensearch_HOST']}"
-        port "#{ENV['FLUENT_opensearch_PORT']}"
-        user "#{ENV['FLUENT_opensearch_USER']}"
-        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
+        host "#{ENV['FLUENT_OPENSEARCH_HOST']}"
+        port "#{ENV['FLUENT_OPENSEARCH_PORT']}"
+        user "#{ENV['FLUENT_OPENSEARCH_USER']}"
+        password "#{ENV['FLUENT_OPENSEARCH_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix nginx
@@ -109,10 +109,10 @@ data:
 
       <match systemd**>
         @type elasticsearch
-        host "#{ENV['FLUENT_opensearch_HOST']}"
-        port "#{ENV['FLUENT_opensearch_PORT']}"
-        user "#{ENV['FLUENT_opensearch_USER']}"
-        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
+        host "#{ENV['FLUENT_OPENSEARCH_HOST']}"
+        port "#{ENV['FLUENT_OPENSEARCH_PORT']}"
+        user "#{ENV['FLUENT_OPENSEARCH_USER']}"
+        password "#{ENV['FLUENT_OPENSEARCH_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix systemd
@@ -143,10 +143,10 @@ data:
 
       <match all**>
         @type elasticsearch
-        host "#{ENV['FLUENT_opensearch_HOST']}"
-        port "#{ENV['FLUENT_opensearch_PORT']}"
-        user "#{ENV['FLUENT_opensearch_USER']}"
-        password "#{ENV['FLUENT_opensearch_PASSWORD']}"
+        host "#{ENV['FLUENT_OPENSEARCH_HOST']}"
+        port "#{ENV['FLUENT_OPENSEARCH_PORT']}"
+        user "#{ENV['FLUENT_OPENSEARCH_USER']}"
+        password "#{ENV['FLUENT_OPENSEARCH_PASSWORD']}"
         scheme "https"
         logstash_format true
         logstash_prefix containers
@@ -174,7 +174,4 @@ data:
         type_name _doc
         tag containers
       </match> 
-
-
-
 {{ end }}    
