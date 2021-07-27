@@ -26,7 +26,7 @@ data:
 
     opensearch_security.readonly_mode.roles: ["opensearch-dashboards_read_only"]
 
-{{ if .Values.opendistro.saml.enabled }}    
+{{ if .Values.opensearch.saml.enabled }}    
     server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
     opensearch_security.auth.type: "saml"
 {{ end }}    

@@ -10,6 +10,9 @@ storage_class: "standard"
 #with the concrete configurations of the nodes that follow.
 #In case "in_cluster" is set to false, logs are pushed to an external ES.
 opensearch:
+  image: "opensearchproject/opensearch"
+  imageTag: 1.0.0
+  imagePullPolicy: IfNotPresent  
   single_node: false
   in_cluster: true
   snapshot:
@@ -22,11 +25,6 @@ opensearch:
   port: 9200
   user: "osadmin"
   password: "osadmin"
-
-#Opendistro configuration 
-opendistro:
-  image: "opensearchproject/opensearch"
-  imageTag: 1.0.0
   saml:
     enabled: false
     idp: {}
@@ -43,6 +41,7 @@ opendistro:
 os_curator:
   image: "nickytd/os-curator"
   imageTag: "5.8.4"
+  imagePullPolicy: IfNotPresent
 
 #Init container configuration. Used for multiple application startup checks
 init_container:
@@ -146,6 +145,7 @@ opensearch_dashboards:
 fluentbit:
   image: "fluent/fluent-bit"
   imageTag: "1.8.1"
+  imagePullPolicy: IfNotPresent
   host_path: /var/log
   resources:
     requests:
@@ -164,6 +164,7 @@ fluentd:
   replicas: 1
   image: "nickytd/fluentd"
   imageTag: "v1.13"
+  imagePullPolicy: IfNotPresent
   resources:
     requests:
       memory: "100Mi"

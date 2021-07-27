@@ -35,7 +35,7 @@ config:
           challenge: true
         authentication_backend:
           type: intern
-{{- if .Values.opendistro.saml.enabled }}                  
+{{- if .Values.opensearch.saml.enabled }}                  
       saml_auth_domain:
         http_enabled: true
         transport_enabled: false
@@ -46,13 +46,13 @@ config:
           config:
             idp:
               enable_ssl: true      
-              metadata_url: {{ .Values.opendistro.saml.idp.metadata_url }}
-              entity_id: {{ .Values.opendistro.saml.idp.entity_id }}
+              metadata_url: {{ .Values.opensearch.saml.idp.metadata_url }}
+              entity_id: {{ .Values.opensearch.saml.idp.entity_id }}
             sp:
-              entity_id: {{ .Values.opendistro.saml.sp.entity_id }} 
+              entity_id: {{ .Values.opensearch.saml.sp.entity_id }} 
             opensearch-dashboards_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
             roles_key: groups 
-            exchange_key: {{ .Values.opendistro.saml.exchange_key }}
+            exchange_key: {{ .Values.opensearch.saml.exchange_key }}
         authentication_backend:
           type: noop   
 {{- end }}
