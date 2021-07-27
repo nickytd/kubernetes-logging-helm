@@ -39,6 +39,7 @@ spec:
       containers:
       - name: kafka
         image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
+        imagePullPolicy: {{ .Values.kafka.imagePullPolicy }}
         ports:
         - containerPort: 9092
           name: kafka

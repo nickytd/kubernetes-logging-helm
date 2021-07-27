@@ -36,6 +36,7 @@ spec:
           containers:
           - name: es-curator
             image: {{ .Values.os_curator.image }}:{{ .Values.os_curator.imageTag }}
+            imagePullPolicy: {{ .Values.os_curator.imagePullPolicy }}
             env:
             - name: os_host
               value: {{ include "os_url" . }}

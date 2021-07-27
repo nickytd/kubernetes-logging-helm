@@ -42,6 +42,7 @@ spec:
       containers:
       - name: zk
         image: {{ .Values.zookeeper.image }}:{{ .Values.zookeeper.imageTag }}
+        imagePullPolicy: {{ .Values.zookeeper.imagePullPolicy }}
         ports:
         - containerPort: 2181
           name: client

@@ -44,7 +44,7 @@ spec:
           name: init      
       containers:
       - name: fluentd
-        imagePullPolicy: Always      
+        imagePullPolicy: {{ .Values.fluentd.imagePullPolicy }}      
         image: {{ .Values.fluentd.image }}:{{ .Values.fluentd.imageTag }}       
         resources: {{ toYaml .Values.fluentd.resources | nindent 10 }}
         command:

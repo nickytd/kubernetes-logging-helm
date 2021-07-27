@@ -36,7 +36,8 @@ spec:
       {{- end }}
       containers:
       - name: main
-        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
+        image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
+        imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
         resources: {{ toYaml .Values.master.resources | nindent 10 }}
         livenessProbe:
           tcpSocket:

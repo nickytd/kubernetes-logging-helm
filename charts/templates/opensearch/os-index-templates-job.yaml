@@ -36,7 +36,8 @@ spec:
           mountPath: "/init"          
       containers:
       - name: main
-        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
         command: ["sh", "-c", "/templates/templates.sh"]
         env:
           - name: os_url

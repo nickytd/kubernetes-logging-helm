@@ -39,7 +39,7 @@ Create default labels section
 app.kubernetes.io/version: {{ .Chart.Version | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/openDistro: {{ .Values.opendistro.imageTag }}
+app.kubernetes.io/openDistro: {{ .Values.opensearch.imageTag }}
 {{- end }}
 
 {{/*

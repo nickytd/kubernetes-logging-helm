@@ -3,41 +3,37 @@ Kubernetes Logging stack helm chart parameters
 # Global values
   Parameter | Description  | Default  |
 |---|---|---|
-|  cluster_name | opensearch cluster name  | "logging"  |
-|  imagePullSecrets | Array of secrets for private docker repositories | [] |
-|  storage_class | Default storage class for the persistent volumes. Each workload can overwrite the default value| "standard" |
-|  priority_class | Default workloads priority class. Each workload can overwrite the default value | "logging" |
+| cluster_name | opensearch cluster name  | "logging"  |
+| imagePullSecrets | Array of secrets for private docker repositories | [] |
+| storage_class | Default storage class for the persistent volumes. Each workload can overwrite the default value| "standard" |
+| priority_class | Default workloads priority class. Each workload can overwrite the default value | "logging" |
 
 # opensearch nodes parameters
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
-|  opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an ES url is required  | true  |
-|  opensearch.url | External ES url. Required when "in_cluster" is set to false | "" |
-|  opensearch.retention_days | opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
-|  opensearch.port | Default opensearch port | 9200 |
-|  opensearch.user | Default opensearch user with administrative privileges   | "esadmin" |
-|  opensearch.password | Password for the default opensearch user   | "esadmin" |
-|  opensearch.additional_jvm_params | Additional JVM parameters | "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system" |
-|  opensearch.snapshot.enabled | Seto to true to enable opensearch snapshots | false |
-|  opensearch.snapshot.storage_class | The storage class for the snapshot volume. It needs to be a NFS share in a multi node setup. All nodes require access to the same share to be able to generate a snapshot | false |
-|  opensearch.snapshot.size | Snapshot volume size | "5Gi" |
-
-
-# Opendistro configuration
-|  Parameter | Description  | Default  |
-|---|---|---|
-|  opendistro.image | Opendistro image registry | "amazon/opendistro-for-opensearch" |
-|  opendistro.imageTag | Opendistro image tag | "1.13.2" |
-|  opendistro.saml.enabled | Set to true to enable SAML for opendistro | false |
-|  opendistro.saml.idp.metadata_url | SAML metadata URL | "" |
-|  opendistro.saml.idp.entity_id | SAML Identity Providfer entity id | "" |
-|  opendistro.saml.sp.entity_id | SAML Service Provider entity id | "" |
-|  opendistro.saml.exchange_key | SAML exchange key | "" |
-|  opendistro.saml.admin_role | SAML role mapped to an elastic administrator role| "" |
-|  opendistro.saml.viewer_role | SAML role mapped to an elastic viewer role | "" |
-|  opendistro.saml.tenant_role | SAML role mapped to an elastic tenant role | "" |
+| opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
+| opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an ES url is required  | true  |
+| opensearch.image | Opendistro image registry | "amazon/opendistro-for-opensearch" |
+| opensearch.imageTag | Opendistro image tag | "1.13.2" |
+| opensearch.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
+| opensearch.saml.enabled | Set to true to enable SAML for opendistro | false |
+| opensearch.saml.idp.metadata_url | SAML metadata URL | "" |
+| opensearch.saml.idp.entity_id | SAML Identity Providfer entity id | "" |
+| opensearch.saml.sp.entity_id | SAML Service Provider entity id | "" |
+| opensearch.saml.exchange_key | SAML exchange key | "" |
+| opensearch.saml.admin_role | SAML role mapped to an elastic administrator role| "" |
+| opensearch.saml.viewer_role | SAML role mapped to an elastic viewer role | "" |
+| opensearch.saml.tenant_role | SAML role mapped to an elastic tenant role | "" |
+| opensearch.url | External ES url. Required when "in_cluster" is set to false | "" |
+| opensearch.retention_days | opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
+| opensearch.port | Default opensearch port | 9200 |
+| opensearch.user | Default opensearch user with administrative privileges   | "esadmin" |
+| opensearch.password | Password for the default opensearch user   | "esadmin" |
+| opensearch.additional_jvm_params | Additional JVM parameters | "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system" |
+| opensearch.snapshot.enabled | Seto to true to enable opensearch snapshots | false |
+| opensearch.snapshot.storage_class | The storage class for the snapshot volume. It needs to be a NFS share in a multi node setup. All nodes require access to the same share to be able to generate a snapshot | false |
+| opensearch.snapshot.size | Snapshot volume size | "5Gi" |
 
 
 # Opensearch Curator job configuration. 
@@ -46,8 +42,9 @@ Used for daily cron job operations. For example maintaining the index retention.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  os_curator.image | opensearch curator image registry | "nickytd/os-curator" |
-|  os_curator.imageTag | opensearch curator image tag | "5.8.4" |
+| os_curator.image | opensearch curator image registry | "nickytd/os-curator" |
+| os_curator.imageTag | opensearch curator image tag | "5.8.4" |
+| os_curator.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 
 # Init container configuration. 
 
@@ -55,11 +52,11 @@ Used for multiple application startup checks.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-|  init_container.image | Init container image registry | "nickytd/init-container" |
-|  init_container.imageTag |  Init container image tag | "0.1.0" |
-|  init_container.imagePullPolicy |  Init container pull policy | "IfNotPresent" |
+| init_container.image | Init container image registry | "nickytd/init-container" |
+| init_container.imageTag |  Init container image tag | "0.1.0" |
+| init_container.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 
-# ES Master node configuration
+# Opensearch Master node configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
@@ -72,7 +69,7 @@ Used for multiple application startup checks.
 | master.resources | Pod resource definition for the opensearch master nodes | {}  |
 | master.tolerarions | opensearch master nodes pod affinity definition. Proposal: use pod anti-affinity configuration to spread master nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | [] |
 
-# ES coordination node configuration
+# Opensearch coordination node configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
@@ -88,7 +85,7 @@ Used for multiple application startup checks.
 | client.tolerarions | Pod tolerations definition for the opensearch coordination nodes | [] |
 | client.topologySpreadConstraints | opensearch coordination nodes scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
 
-# ES Data node configuration
+# Opensearch Data node configuration
 
 |  Parameter | Description  | Default  |
 |---|---|---|
@@ -133,6 +130,7 @@ Used for multiple application startup checks.
 |---|---|---|
 | fluentbit.image | Fluentbit image registry | "fluent/fluent-bit" |
 | fluentbit.imageTag | Fluentbit image tag  | "1.7.9" |
+| fluentbit.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | fluentbit.host_path | Path location of the containers logs on the cluster nodes | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |
 | fluentbit.priority_class | Fluentbit pod priority class | "" |
@@ -147,8 +145,9 @@ Fluentd is supplied only when kafka.enabled is set to true.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| fluentd.image | Fluentd image registry | "fluent/fluentd-kubernetes-daemonset" |
-| fluentd.imageTag | Fluentd image tag | "v1.12-debian-kafka-1" |
+| fluentd.image | Fluentd image registry | "nickytd/fluentd" |
+| fluentd.imageTag | Fluentd image tag | "v1.13" |
+| fluentd.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | fluentd.replicas | Number of fluentd instances | 1 |
 | fluentd.affinity | Fluentd pod affinity definition | {} |
 | fluentd.extraEnvs | Additional configuration for fluentd | "" |
@@ -165,6 +164,7 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 | kafka.enabled | Set to true to enable kafka message broker and fluentd on the cluster log stream path | false |
 | kafka.image | Kafka image registry| "wurstmeister/kafka" |
 | kafka.imageTag | Kafka image tag | "2.13-2.7.0" |
+| kafka.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | kafka.replicas | Number of kafka brokers | 1 |
 | kafka.heap_size | JVM Heap size of a kafka broker | "256m" |
 | kafka.topics | Kafka broker topic configuration | config:<br /> "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"<br /> name: ["containers"] |
@@ -182,6 +182,7 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 |---|---|---|
 | zookeeper.image | Image repository of the zookeeper container image | "zookeeper" |
 | zookeeper.imageTag | Image tag of zookeeper container image | "3.7.0" |
+| zookeeper.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | zookeeper.replicas | Replicas of zookeeper statefulset | 1 |
 | zookeeper.heap_size | JVM Heap size of a zookeeper node | "128m" |
 | zookeeper.affinity | Zookeeper pod affinity definition. Proposal: use pod anti-affinity configuration to spread the zookeeper nodes on different cluster nodes. Cluster nodes count has to be equal or more than the replicas number | {} |

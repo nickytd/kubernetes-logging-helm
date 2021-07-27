@@ -32,7 +32,8 @@ spec:
           name: init
       containers:
       - name: main
-        image: {{ .Values.opendistro.image }}:{{ .Values.opendistro.imageTag }}
+        image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
+        imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
         command: ["sh", "-c", "/setup.sh"]
         env:
           - name: os_url

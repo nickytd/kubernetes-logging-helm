@@ -46,7 +46,7 @@ spec:
       containers:
       - name: fluentbit
         image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.imageTag }}
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.fluentbit.imagePullPolicy }}
         resources: {{ toYaml .Values.fluentbit.resources | nindent 10 }}
         ports:
           - name: http

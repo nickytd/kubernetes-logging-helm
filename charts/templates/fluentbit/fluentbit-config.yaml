@@ -54,7 +54,7 @@ data:
         Read_From_Tail      Off    
         Path                /run/log/journal
         Strip_Underscores   On
-
+  
   filter-kubernetes.conf: |-
     [FILTER]
         Name                kubernetes
