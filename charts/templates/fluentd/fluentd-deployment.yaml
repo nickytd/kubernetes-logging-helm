@@ -63,14 +63,12 @@ spec:
         {{- if .Values.fluentd.extraEnvs }}
           {{- toYaml .Values.fluentd.extraEnvs | nindent 8 }}
         {{- end }}
-        livenessProbe:        
+        startupProbe:        
           httpGet:
             path: /metrics
             port: metrics
-        readinessProbe:
-          httpGet:
-            path: /metrics
-            port: metrics
+          initialDelaySeconds: 60
+          periodSeconds: 60          
         ports:
         - name: metrics
           containerPort: 24231
