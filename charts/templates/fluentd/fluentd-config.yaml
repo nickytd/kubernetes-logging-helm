@@ -19,13 +19,16 @@ data:
      
   01-sources.conf: |-
     <source>
-      @type kafka_group
-      consumer_group fluentd
-      message_key log
-      brokers  {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+      @type rdkafka_group      
       format json
       topics containers
-      max_bytes 2000000000   
+      # kafka consumer options
+      max_wait_time_ms 500
+      max_batch_size 10000
+      kafka_configs {
+        "bootstrap.servers": "brokers  {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}",
+        "group.id": "fluentd"
+      }
     </source>
 
   02-prometheus.conf: |-
