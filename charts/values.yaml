@@ -3,7 +3,7 @@
 cluster_name: "logging"
 imagePullSecrets: []
 priority_class: "logging"
-storage_class: "standard"
+storage_class: "default"
 
 #ES configuration
 #A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
