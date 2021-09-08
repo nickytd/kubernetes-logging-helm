@@ -20,9 +20,7 @@ _meta:
   reserved: true
   backend_roles:
   - "administrator"
-  - "Developer"
   description: "{{ .Values.opensearch_dashboards.user }} user for opensearch-dashboards"
-
 
 {{ .Values.opensearch_dashboards.readonly.user }}:
   hash: "$$opensearch-dashboards_READONLY_PASSWORD_HASH"
