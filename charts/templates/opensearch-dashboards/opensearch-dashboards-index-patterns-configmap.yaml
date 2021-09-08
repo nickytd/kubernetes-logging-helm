@@ -15,7 +15,7 @@ data:
         $opensearch_dashboards_URL/api/status | jq '.status.overall.state'`
       echo "opensearch_dashboards overall state $state"
       sleep 2
-    done  
+    done
 
     echo "opensearch-dashboards is up"
       
@@ -101,7 +101,7 @@ data:
 
       echo "setting default index pattern: $default" 
 
-      result=`curl -v -s -w "%{http_code}" -X PUT -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
+      result=`curl -v -s -w "%{http_code}" -X POST -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
           $opensearch_dashboards_URL/api/saved_objects/config/${version} \
           -H "securitytenant: ${tenant}" -H "osd-xsrf: true" -H "Content-Type: application/json" \
           -d "{\"attributes\": {\"defaultIndex\": \"${default}\"}}"` 
