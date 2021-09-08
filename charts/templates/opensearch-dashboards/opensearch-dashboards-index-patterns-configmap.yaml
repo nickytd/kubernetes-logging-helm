@@ -49,6 +49,8 @@ data:
 
     for tenant in "${TENANTS[@]}"; do
 
+      echo "setting up opensearch-dashboards ${tenant} tenant"
+
       if [ $tenant == "Developer" ]; then
         opensearch_dashboards_USER_=$opensearch_dashboards_DEVELOPER_USER
         opensearch_dashboards_PASSWORD_=$opensearch_dashboards_DEVELOPER_PASSWORD
@@ -109,9 +111,7 @@ data:
       else 
         echo "setting default index pattern ${tenant}/${default} failed ${result}"  
       fi    
-        
-    
-        
+                    
     echo "Importing saved objects for ${tenant} tenant"
     for f in /saved_objects/* ; do
       result=`curl -s -w "%{http_code}" -X POST -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
@@ -124,4 +124,5 @@ data:
         echo "importing ${f} failed ${result}"  
       fi  
     done
+
     done

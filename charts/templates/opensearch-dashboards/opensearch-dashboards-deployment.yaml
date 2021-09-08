@@ -69,7 +69,12 @@ spec:
           subPath: admin.pem  
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/admin-key.pem
-          subPath: admin-key.pem         
+          subPath: admin-key.pem 
+        {{- if .Values.opensearch.oidc.cacerts }}
+        - name: oidc
+          mountPath: /opt/opensearch-dashboards/config/openid-ca.pem
+          subPath: ca.pem
+        {{- end }}          
       volumes:
       - name: config
         configMap:
@@ -80,5 +85,10 @@ spec:
           defaultMode: 0755
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates        
+          secretName: {{ .Release.Name }}-certificates
+      {{- if .Values.opensearch.oidc.cacerts }}
+      - name: oidc
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-dashboards-oidc
+      {{- end }}            
 {{- end }}

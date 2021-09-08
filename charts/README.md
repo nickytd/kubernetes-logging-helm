@@ -5,7 +5,7 @@ Kubernetes Logging stack helm chart parameters
 |---|---|---|
 | cluster_name | opensearch cluster name  | "logging"  |
 | imagePullSecrets | Array of secrets for private docker repositories | [] |
-| storage_class | Default storage class for the persistent volumes. Each workload can overwrite the default value| "standard" |
+| storage_class | Default storage class for the persistent volumes. Each workload can overwrite the default value| "default" |
 | priority_class | Default workloads priority class. Each workload can overwrite the default value | "logging" |
 
 # opensearch nodes parameters
@@ -13,23 +13,33 @@ Kubernetes Logging stack helm chart parameters
 |  Parameter | Description  | Default  |
 |---|---|---|
 | opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
-| opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an ES url is required  | true  |
-| opensearch.image | Opendistro image registry | "amazon/opendistro-for-opensearch" |
-| opensearch.imageTag | Opendistro image tag | "1.13.2" |
+| opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an Opensearch url is required  | true  |
+| opensearch.image | Opensearch image registry | "opensearchproject/opensearch" |
+| opensearch.imageTag | Opensearch image tag | "1.0.1" |
 | opensearch.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | opensearch.saml.enabled | Set to true to enable SAML for opendistro | false |
 | opensearch.saml.idp.metadata_url | SAML metadata URL | "" |
 | opensearch.saml.idp.entity_id | SAML Identity Providfer entity id | "" |
+| opensearch.saml.idp.cacerts | SAML Identity Providfer CA certificate | "" |
 | opensearch.saml.sp.entity_id | SAML Service Provider entity id | "" |
 | opensearch.saml.exchange_key | SAML exchange key | "" |
-| opensearch.saml.admin_role | SAML role mapped to an elastic administrator role| "" |
-| opensearch.saml.viewer_role | SAML role mapped to an elastic viewer role | "" |
-| opensearch.saml.tenant_role | SAML role mapped to an elastic tenant role | "" |
-| opensearch.url | External ES url. Required when "in_cluster" is set to false | "" |
-| opensearch.retention_days | opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
+| opensearch.saml.admin_role | SAML role mapped to an opensearch administrator role| "" |
+| opensearch.saml.viewer_role | SAML role mapped to an opensearch viewer role | "" |
+| opensearch.saml.developer_role | SAML role mapped to an opensearch developer role | "" |
+| opensearch.oidc.enabled | Set to true to enable OpenID for opendistro | false |
+| opensearch.oidc.discovery_url | OpenID discovery URL | "" |
+| opensearch.oidc.admin_role | OpenID role mapped to an opensearch administrator role| "" |
+| opensearch.oidc.viewer_role | OpenID role mapped to an opensearch viewer role | "" |
+| opensearch.oidc.developer_role | OpenID role mapped to an opensearch developer role | "" |
+| opensearch.oidc.connect_url | OpenID connect URL | "" |
+| opensearch.oidc.cacerts | OpenID Identity Providfer CA certificate | "" |
+| opensearch.oidc.client_id | OpenID Identity Providfer Client ID | "" |
+| opensearch.oidc.client_secret | OpenID Identity Providfer Client secret | "" |
+| opensearch.url | External Opensearch url. Required when "in_cluster" is set to false | "" |
+| opensearch.retention_days | Opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
 | opensearch.port | Default opensearch port | 9200 |
-| opensearch.user | Default opensearch user with administrative privileges   | "esadmin" |
-| opensearch.password | Password for the default opensearch user   | "esadmin" |
+| opensearch.user | Default opensearch user with administrative privileges   | "osadmin" |
+| opensearch.password | Password for the default opensearch user   | "osadmin" |
 | opensearch.additional_jvm_params | Additional JVM parameters | "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system" |
 | opensearch.snapshot.enabled | Seto to true to enable opensearch snapshots | false |
 | opensearch.snapshot.storage_class | The storage class for the snapshot volume. It needs to be a NFS share in a multi node setup. All nodes require access to the same share to be able to generate a snapshot | false |
@@ -129,7 +139,7 @@ Used for multiple application startup checks.
 |  Parameter | Description  | Default  |
 |---|---|---|
 | fluentbit.image | Fluentbit image registry | "fluent/fluent-bit" |
-| fluentbit.imageTag | Fluentbit image tag  | "1.7.9" |
+| fluentbit.imageTag | Fluentbit image tag  | "1.8.1" |
 | fluentbit.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | fluentbit.host_path | Path location of the containers logs on the cluster nodes | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |

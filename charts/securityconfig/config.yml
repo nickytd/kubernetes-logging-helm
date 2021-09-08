@@ -1,3 +1,4 @@
+---
 _meta:
   type: "config"
   config_version: 2
@@ -7,24 +8,87 @@ config:
     # Set filtered_alias_mode to 'disallow' to forbid more than 2 filtered aliases per index
     # Set filtered_alias_mode to 'warn' to allow more than 2 filtered aliases per index but warns about it (default)
     # Set filtered_alias_mode to 'nowarn' to allow more than 2 filtered aliases per index silently
-    filtered_alias_mode: warn
+    #filtered_alias_mode: warn
     do_not_fail_on_forbidden: true
     kibana:
+    # opensearch-dashboards multitenancy
       multitenancy_enabled: true
       server_username: {{ .Values.opensearch_dashboards.user }}
-      #index: '.opensearch-dashboards'
+      #index: '.kibana'
     http:
       anonymous_auth_enabled: false
       xff:
         enabled: false
-        internalProxies: '192\.168\.0\.10|192\.168\.0\.11' # regex pattern
-        #internalProxies: '.*' # trust all internal proxies, regex pattern
-        #remoteIpHeader:  'x-forwarded-for'
+        #internalProxies: '192\.168\.0\.10|192\.168\.0\.11' # regex pattern
+        internalProxies: '.*' # trust all internal proxies, regex pattern
+        remoteIpHeader:  'x-forwarded-for'
         ###### see https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html for regex help
         ###### more information about XFF https://en.wikipedia.org/wiki/X-Forwarded-For
         ###### and here https://tools.ietf.org/html/rfc7239
         ###### and https://tomcat.apache.org/tomcat-8.0-doc/config/valve.html#Remote_IP_Valve
     authc:
+{{- if .Values.opensearch.saml.enabled }}
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: intern
+      saml_auth_domain:
+        http_enabled: true
+        transport_enabled: false
+        order: 1
+        http_authenticator:
+          type: saml
+          challenge: true
+          config:
+            idp:
+              enable_ssl: true
+              metadata_url: {{ .Values.opensearch.saml.idp.metadata_url }}
+              entity_id: {{ .Values.opensearch.saml.idp.entity_id }}
+              {{- with .Values.opensearch.saml.idp.cacerts }}
+              pemtrustedcas_content: |- {{ . | nindent 16 }}
+              {{- end }}
+            sp:
+              entity_id: {{ .Values.opensearch.saml.sp.entity_id }}
+            opensearch-dashboards_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
+            roles_key: groups
+            exchange_key: {{ .Values.opensearch.saml.exchange_key }}
+        authentication_backend:
+          type: noop
+{{- else if .Values.opensearch.oidc.enabled }}
+      openid_auth_domain:
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: openid
+          challenge: false
+          config:
+            enable_ssl: true
+            subject_key: email
+            roles_key: groups
+            openid_connect_url: {{ .Values.opensearch.oidc.discovery_url }}
+            {{- with .Values.opensearch.oidc.cacerts }}
+            pemtrustedcas_content: |- {{ . | nindent 16 }}
+            {{- end }}
+        authentication_backend:
+          type: noop
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 1
+        http_authenticator:
+          type: basic
+          challenge: true
+        authentication_backend:
+          type: intern
+{{- else }}
       basic_internal_auth_domain:
         description: "Authenticate via HTTP Basic against internal users database"
         http_enabled: true
@@ -35,24 +99,5 @@ config:
           challenge: true
         authentication_backend:
           type: intern
-{{- if .Values.opensearch.saml.enabled }}                  
-      saml_auth_domain:
-        http_enabled: true
-        transport_enabled: false
-        order: 1
-        http_authenticator:
-          type: saml
-          challenge: true 
-          config:
-            idp:
-              enable_ssl: true      
-              metadata_url: {{ .Values.opensearch.saml.idp.metadata_url }}
-              entity_id: {{ .Values.opensearch.saml.idp.entity_id }}
-            sp:
-              entity_id: {{ .Values.opensearch.saml.sp.entity_id }} 
-            opensearch-dashboards_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
-            roles_key: groups 
-            exchange_key: {{ .Values.opensearch.saml.exchange_key }}
-        authentication_backend:
-          type: noop   
+
 {{- end }}

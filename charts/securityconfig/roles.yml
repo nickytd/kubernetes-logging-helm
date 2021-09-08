@@ -6,29 +6,15 @@ _meta:
 opensearch-dashboards_read_only:
   reserved: true
 
-admin:
+administrator:
   reserved: false
   cluster_permissions:
-    - "cluster_all"
-    - "cluster_monitor"
-    - "cluster_composite_ops"
-    - "manage_snapshots"    
+    - "*"    
   index_permissions:
     - index_patterns:
-      - "*"
+        - "*"
       allowed_actions:      
-        - "indices_all"
-        - "get"
-        - "read"
-        - "write"
-        - "delete"
-        - "crud"
-        - "search"
-        - "suggest"
-        - "create_index"
-        - "indices_monitor"
-        - "manage_aliases"
-        - "manage"
+        - "*"
   tenant_permissions:    
     - tenant_patterns:
         - "*"    
@@ -41,60 +27,55 @@ opensearch-dashboards_viewer:
     - "cluster_composite_ops_ro"
   index_permissions:
     - index_patterns:  
-        - "*"
+        - "containers-*"
+        - "systemd-*"
+        - "nginx-*"
       allowed_actions:
         - "read"        
         - "search"
-        - "get"
-        - "manage"
-        - "suggest" 
+        - "get"        
   tenant_permissions:
   - tenant_patterns:
-      - "Global*"
+      - "global_tenant"
     allowed_actions:
-      - "kibana_all_read"
-  - tenant_patterns:
-      - "Developer"
-    allowed_actions:
-      - "kibana_all_read"    
+      - "kibana_all_read"   
 
 opensearch-dashboards_developer:
   reserved: false
   cluster_permissions:
     - "cluster_composite_ops_ro"
-    - "cluster:admin/opendistro/reports/*"     
+    - "cluster:admin/opensearch/reports/*"     
   index_permissions:
     - index_patterns:
-        - "*"
+        - "containers-*"
+        - "systemd-*"
+        - "nginx-*"
       allowed_actions:
         - "get"
-        - "read"
-        - "write"
-        - "delete"
-        - "crud"
+        - "read"       
         - "search"
         - "suggest"        
         - "indices:admin/resolve/index"
+    - index_patterns:
+        - ".kibana_*_developer_*"
+      allowed_actions:
+        - "data_access"
+        - "get"  
+        - "read"  
+        - "write"  
+        - "manage"
+        - "search"
+        - "delete"
   tenant_permissions:
   - tenant_patterns:
-      - "Global"
+      - "global_tenant"
     allowed_actions:
       - "kibana_all_read"  
   - tenant_patterns:
-      - "Developer"
+      - "Developer"      
     allowed_actions:
       - "kibana_all_read"
-      - "kibana_all_write"      
-
-opensearch-dashboards_admin:
-  reserved: true
-  cluster_permissions:
-    - "unlimited"
-  index_permissions:
-    - index_patterns:
-        - "*"
-      allowed_actions:
-        - unlimited
+      - "kibana_all_write"
   
 # The security REST API access role is used to assign specific users access to change the security settings through the REST API.
 security_rest_api_access:
@@ -105,7 +86,7 @@ alerting_view_alerts:
   reserved: true
   index_permissions:
     - index_patterns:
-      - ".opendistro-alerting-alert*"
+      - ".opensearch-alerting-alert*"
       allowed_actions:
         - read 
 
@@ -114,7 +95,7 @@ alerting_crud_alerts:
   reserved: true
   index_permissions:
     - index_patterns:
-      - ".opendistro-alerting-alert*"
+      - ".opensearch-alerting-alert*"
       allowed_actions:
        - crud 
 
@@ -123,7 +104,7 @@ alerting_full_access:
   reserved: true
   index_permissions:
     - index_patterns:
-      - ".opendistro-alerting-config"
-      - ".opendistro-alerting-alert*"
+      - ".opensearch-alerting-config"
+      - ".opensearch-alerting-alert*"
       allowed_actions:
         - crud    

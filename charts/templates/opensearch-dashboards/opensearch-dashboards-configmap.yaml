@@ -29,7 +29,17 @@ data:
 {{ if .Values.opensearch.saml.enabled }}    
     server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
     opensearch_security.auth.type: "saml"
-{{ end }}    
+{{- else if .Values.opensearch.oidc.enabled }}
+    opensearch_security.auth.type: "openid"
+    opensearch_security.openid.connect_url: {{ .Values.opendsearch.oidc.discovery_url }}
+    {{- if .Values.opendsearch.oidc.cacerts }}
+    opensearch_security.openid.root_ca: /opt/opensearch-dashboards/config/openid-ca.pem
+    {{- end }}
+    opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.client_id }}
+    opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.client_secret }}
+    opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
+    opensearch_security.openid.scope: openid
+{{- end }}   
 
     opensearch_security.multitenancy.enabled: true
     opensearch_security.multitenancy.tenants.enable_global: true
