@@ -25,11 +25,26 @@ data:
     logger.discovery.name = org.opensearch.discovery
     logger.discovery.level = info
 
-    logger.discovery.name = org.opensearch.bootsrap
-    logger.discovery.level = info
+    logger.bootsrap.name = org.opensearch.bootsrap
+    logger.bootsrap.level = info
 
-    logger.discovery.name = org.opensearch.cluster.coordination
-    logger.discovery.level = info
+    logger.security.name = org.opensearch.security
+    logger.security.level = info
+
+    logger.coordination.name = org.opensearch.cluster.coordination
+    logger.coordination.level = info
+
+    logger.jwt.name = com.amazon.dlic.auth.http.jwt
+    logger.jwt.level = info
+
+    logger.oidc.name = com.amazon.dlic.auth.http.jwt.oidc.json
+    logger.oidc.level = info
+
+    logger.keybyoidc.name = com.amazon.dlic.auth.http.jwt.keybyoidc
+    logger.keybyoidc.level = info
+    
+    logger.saml.name = com.amazon.dlic.auth.http.saml
+    logger.saml.level = info
 
   opensearch.yml: |-
     cluster.name: {{ .Values.cluster_name | quote }}

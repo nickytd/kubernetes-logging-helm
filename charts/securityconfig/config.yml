@@ -70,11 +70,14 @@ config:
           challenge: false
           config:
             enable_ssl: true
-            subject_key: email
-            roles_key: groups
+            subject_key: {{ .Values.opensearch.oidc.subject_key }}
+            roles_key: {{ .Values.opensearch.oidc.roles_key }}
             openid_connect_url: {{ .Values.opensearch.oidc.discovery_url }}
             {{- with .Values.opensearch.oidc.cacerts }}
-            pemtrustedcas_content: |- {{ . | nindent 16 }}
+            openid_connect_idp:
+              enable_ssl: true
+              verify_hostnames: true
+              pemtrustedcas_content: |- {{ . | nindent 16 }}
             {{- end }}
         authentication_backend:
           type: noop

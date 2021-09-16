@@ -31,8 +31,8 @@ data:
     opensearch_security.auth.type: "saml"
 {{- else if .Values.opensearch.oidc.enabled }}
     opensearch_security.auth.type: "openid"
-    opensearch_security.openid.connect_url: {{ .Values.opendsearch.oidc.discovery_url }}
-    {{- if .Values.opendsearch.oidc.cacerts }}
+    opensearch_security.openid.connect_url: {{ .Values.opensearch.oidc.discovery_url }}
+    {{- if .Values.opensearch.oidc.cacerts }}
     opensearch_security.openid.root_ca: /opt/opensearch-dashboards/config/openid-ca.pem
     {{- end }}
     opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.client_id }}

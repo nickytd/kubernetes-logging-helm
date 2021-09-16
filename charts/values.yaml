@@ -40,7 +40,8 @@ opensearch:
   oidc:
     enabled: false
     discovery_url: ""
-    connect_url: ""
+    subject_key: "email"
+    roles_key: "roles"
     admin_role: ""
     viewer_role: ""
     developer_role: ""

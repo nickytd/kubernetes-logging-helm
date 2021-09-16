@@ -27,11 +27,12 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.saml.viewer_role | SAML role mapped to an opensearch viewer role | "" |
 | opensearch.saml.developer_role | SAML role mapped to an opensearch developer role | "" |
 | opensearch.oidc.enabled | Set to true to enable OpenID for opendistro | false |
-| opensearch.oidc.discovery_url | OpenID discovery URL | "" |
+| opensearch.oidc.discovery_url | OpenID well known configuration URL | "" |
+| opensearch.oidc.subject_key | OpenID subject key | "email" |
+| opensearch.oidc.roles_key | OpenID roles key | "roles" |
 | opensearch.oidc.admin_role | OpenID role mapped to an opensearch administrator role| "" |
 | opensearch.oidc.viewer_role | OpenID role mapped to an opensearch viewer role | "" |
 | opensearch.oidc.developer_role | OpenID role mapped to an opensearch developer role | "" |
-| opensearch.oidc.connect_url | OpenID connect URL | "" |
 | opensearch.oidc.cacerts | OpenID Identity Providfer CA certificate | "" |
 | opensearch.oidc.client_id | OpenID Identity Providfer Client ID | "" |
 | opensearch.oidc.client_secret | OpenID Identity Providfer Client secret | "" |
