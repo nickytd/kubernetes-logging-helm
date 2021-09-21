@@ -30,6 +30,7 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.oidc.discovery_url | OpenID well known configuration URL | "" |
 | opensearch.oidc.subject_key | OpenID subject key | "email" |
 | opensearch.oidc.roles_key | OpenID roles key | "roles" |
+| opensearch.oidc.scope | OpenID scope | "openid" |
 | opensearch.oidc.admin_role | OpenID role mapped to an opensearch administrator role| "" |
 | opensearch.oidc.viewer_role | OpenID role mapped to an opensearch viewer role | "" |
 | opensearch.oidc.developer_role | OpenID role mapped to an opensearch developer role | "" |

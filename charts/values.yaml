@@ -48,6 +48,7 @@ opensearch:
     cacerts: {}
     client_id: ""
     client_secret: ""
+    scope: "openid"
 
 
 #Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 

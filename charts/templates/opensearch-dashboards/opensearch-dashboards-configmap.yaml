@@ -38,7 +38,7 @@ data:
     opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.client_id }}
     opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.client_secret }}
     opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
-    opensearch_security.openid.scope: openid
+    opensearch_security.openid.scope: {{ .Values.opensearch.oidc.scope }}
 {{- end }}   
 
     opensearch_security.multitenancy.enabled: true
