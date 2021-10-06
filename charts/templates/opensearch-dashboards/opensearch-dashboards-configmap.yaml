@@ -38,6 +38,7 @@ data:
     opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.client_id }}
     opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.client_secret }}
     opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
+    opensearch_security.openid.logout_url: {{ .Values.opensearch.oidc.logout_url }}
     opensearch_security.openid.scope: {{ .Values.opensearch.oidc.scope }}
 {{- end }}   
 
