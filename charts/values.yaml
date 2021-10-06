@@ -11,7 +11,7 @@ storage_class: "default"
 #In case "in_cluster" is set to false, logs are pushed to an external ES.
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 1.0.1
+  imageTag: 1.1.0
   imagePullPolicy: IfNotPresent  
   single_node: false
   in_cluster: true
@@ -49,7 +49,8 @@ opensearch:
     client_id: ""
     client_secret: ""
     scope: "openid"
-
+    verify_hostnames: true
+    logout_url: ""
 
 #Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
 os_curator:
@@ -88,6 +89,7 @@ client:
     limits:
       memory: "2000Mi"
   ingress:
+    host: ""
     path: "/"
     enabled: false
     annotations: {}      
@@ -136,6 +138,7 @@ opensearch_dashboards:
     user: "developer"
     password: "develop"   
   ingress:
+    host: ""
     path: "/"
     enabled: false
     annotations: {}

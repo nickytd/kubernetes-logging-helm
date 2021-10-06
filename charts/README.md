@@ -28,15 +28,17 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.saml.developer_role | SAML role mapped to an opensearch developer role | "" |
 | opensearch.oidc.enabled | Set to true to enable OpenID for opendistro | false |
 | opensearch.oidc.discovery_url | OpenID well known configuration URL | "" |
+| opensearch.oidc.logout_url | OpenID logout URL | "" |
 | opensearch.oidc.subject_key | OpenID subject key | "email" |
 | opensearch.oidc.roles_key | OpenID roles key | "roles" |
 | opensearch.oidc.scope | OpenID scope | "openid" |
 | opensearch.oidc.admin_role | OpenID role mapped to an opensearch administrator role| "" |
 | opensearch.oidc.viewer_role | OpenID role mapped to an opensearch viewer role | "" |
 | opensearch.oidc.developer_role | OpenID role mapped to an opensearch developer role | "" |
-| opensearch.oidc.cacerts | OpenID Identity Providfer CA certificate | "" |
-| opensearch.oidc.client_id | OpenID Identity Providfer Client ID | "" |
-| opensearch.oidc.client_secret | OpenID Identity Providfer Client secret | "" |
+| opensearch.oidc.cacerts | OpenID Identity Provider CA certificate | "" |
+| opensearch.oidc.client_id | OpenID Identity Provider Client ID | "" |
+| opensearch.oidc.client_secret | OpenID Identity Provider Client secret | "" |
+| opensearch.oidc.verify_hostnames | OpenID Identity Provider hostname verification | true |
 | opensearch.url | External Opensearch url. Required when "in_cluster" is set to false | "" |
 | opensearch.retention_days | Opensearch index retention days. Older than the defined retention days indices are removed on a daily basis.  | 7 |
 | opensearch.port | Default opensearch port | 9200 |
