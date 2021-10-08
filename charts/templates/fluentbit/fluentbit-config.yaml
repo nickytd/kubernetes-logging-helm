@@ -52,7 +52,7 @@ data:
         Systemd_Filter      _SYSTEMD_UNIT=docker.service        
         Systemd_Filter_Type Or
         Read_From_Tail      On    
-        Path                /run/log/journal
+        Path                {{ .Values.fluentbit.journal_host_path }}
         Strip_Underscores   On
   
   filter-kubernetes.conf: |-
