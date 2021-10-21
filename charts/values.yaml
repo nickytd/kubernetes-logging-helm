@@ -203,8 +203,8 @@ fluentd:
 kafka:
   enabled: true
   replicas: 1
-  image: "wurstmeister/kafka"
-  imageTag: "2.13-2.7.0"
+  image: "bitnami/kafka"
+  imageTag: "2.8.1"
   heap_size: "256m"
   storage: "1Gi"
   topics:

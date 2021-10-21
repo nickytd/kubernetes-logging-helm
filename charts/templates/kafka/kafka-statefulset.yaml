@@ -61,10 +61,12 @@ spec:
           value: PLAINTEXT://:9092
         - name: KAFKA_HEAP_OPTS
           value: "-Xmx{{ .Values.kafka.heap_size }} -Xms{{ .Values.kafka.heap_size }}"
+        - name: ALLOW_PLAINTEXT_LISTENER
+          value: "yes"  
         lifecycle:
           preStop:
             exec:
-              command: ["/opt/kafka/bin/kafka-server-stop.sh"]
+              command: ["/opt/bitnami/kafka/bin/kafka-server-stop.sh"]
         readinessProbe:
           tcpSocket:
             port: kafka
