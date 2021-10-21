@@ -26,13 +26,13 @@ client:
 opensearch_dashboards:
   ingress:
     enabled: true 
-    host: opensearch-dashboards.local.dev
+    host: opensearch.local.dev
     annotations:
       nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     tls:
       - hosts:
-          - opensearch-dashboards.local.dev
+          - opensearch.local.dev
         secretName: opensearch-dashboards-tls  
   index_patterns:
     - containers

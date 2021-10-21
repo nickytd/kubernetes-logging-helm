@@ -62,13 +62,13 @@ client:
 opensearch_dashboards:
   ingress:
     enabled: true 
-    host: opensearch-dashboards.local.dev
+    host: opensearch.local.dev
     annotations:
       nginx.ingress.kubernetes.io/enable-access-log: "true"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     tls:
       - hosts:
-          - kopensearch-dashboards.local.dev
+          - opensearch.local.dev
         secretName: opensearch-dashboards-tls   
 
 # Kafka should be enabled in scaled out configuration

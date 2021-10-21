@@ -41,7 +41,7 @@ do
     fi
 done    
 
-helm upgrade efk \
+helm upgrade ofd \
     -n logging --create-namespace \
     -f "$sourcedir/$values" $sourcedir/../charts \
     --install --wait-for-jobs --timeout=30m
@@ -52,7 +52,7 @@ do
     if [[ "$var" = "--with-templates" ]]; then
       echo " generating helm templates"
       
-      helm template efk -n logging \
+      helm template ofd -n logging \
         -f "$sourcedir/$values" $sourcedir/../charts \
         > $sourcedir/templates.yaml 
     fi
@@ -64,7 +64,7 @@ do
         --from-file=ca.pem=$sourcedir/../charts/certificates/ca/root-ca/root-ca.pem \
         --dry-run=client -o yaml | kubectl apply -f -
 
-      helm upgrade efk-exporter \
+      helm upgrade ofd-exporter \
         -n logging --create-namespace  -f "$sourcedir/opensearch-exporter.yaml" \
         prometheus-community/prometheus-elasticsearch-exporter \
         --install
