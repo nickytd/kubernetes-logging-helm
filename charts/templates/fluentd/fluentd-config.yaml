@@ -8,6 +8,10 @@ data:
   fluent.conf: |-
      <system>
        log_level info
+        ignore_same_log_interval 10s
+       <log>
+         format json
+       </log>  
      </system>
 
      @include 01-sources.conf
