@@ -3,7 +3,7 @@
 cluster_name: "logging"
 imagePullSecrets: []
 priority_class: "logging"
-storage_class: "default"
+storage_class: {}
 
 #ES configuration
 #A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
@@ -25,32 +25,32 @@ opensearch:
   port: 9200
   user: "osadmin"
   password: "osadmin"
-  saml:
-    enabled: false
-    idp: {}
-      #metadata_url:
-      #entity_id:
-      #cacerts:
-    sp: {}
-      #entity_id:
-    exchange_key: ""
-    admin_role: ""
-    viewer_role: ""
-    developer_role: ""
-  oidc:
-    enabled: false
-    discovery_url: ""
-    subject_key: "email"
-    roles_key: "roles"
-    admin_role: ""
-    viewer_role: ""
-    developer_role: ""
-    cacerts: {}
-    client_id: ""
-    client_secret: ""
-    scope: "openid"
-    verify_hostnames: true
-    logout_url: ""
+  saml: {}
+  #  enabled: false
+  #  idp: 
+  #    metadata_url:
+  #    entity_id:
+  #    cacerts:
+  #  sp: 
+  #    entity_id:
+  #  exchange_key: ""
+  #  admin_role: ""
+  #  viewer_role: ""
+  #  developer_role: ""
+  oidc: {}
+  #  enabled: false
+  #  discovery_url: ""
+  #  subject_key: "email"
+  #  roles_key: "roles"
+  #  admin_role: ""
+  #  viewer_role: ""
+  #  developer_role: ""
+  #  cacerts: {}
+  #  client_id: ""
+  #  client_secret: ""
+  #  scope: "openid"
+  #  verify_hostnames: true
+  #  logout_url: 
 
 #Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
 os_curator:
