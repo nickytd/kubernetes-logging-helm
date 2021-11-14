@@ -30,7 +30,7 @@ data:
       max_wait_time_ms 500
       max_batch_size 10000
       kafka_configs {
-        "bootstrap.servers": "brokers  {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}",
+        "bootstrap.servers": "{{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}",
         "group.id": "fluentd"
       }
     </source>
