@@ -75,7 +75,9 @@ spec:
   - metadata:
       name: zk-data
     spec:
+      {{- if or .Values.storage_class .Values.zookeeper.storage_class }}
       storageClassName: {{ default .Values.storage_class .Values.zookeeper.storage_class | quote }}
+      {{- end }}      
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
