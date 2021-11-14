@@ -146,6 +146,7 @@ Used for multiple application startup checks.
 | fluentbit.imageTag | Fluentbit image tag  | "1.8.1" |
 | fluentbit.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | fluentbit.host_path | Path location of the containers logs on the cluster nodes | "/var/log" |
+| fluentbit.journal_host_path | Path location of the systemd logs on the cluster nodes. On minikube change to "/run/log" | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |
 | fluentbit.priority_class | Fluentbit pod priority class | "" |
 | fluentbit.resources | Fluentbit pod resource definition | {} |

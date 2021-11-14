@@ -164,6 +164,7 @@ fluentbit:
   imageTag: "1.8.1"
   imagePullPolicy: IfNotPresent
   host_path: /var/log
+  journal_host_path: /var/log
   resources:
     requests:
       memory: "50Mi"
