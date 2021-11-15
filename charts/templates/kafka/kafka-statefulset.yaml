@@ -6,7 +6,7 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   selector:
-    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}     
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       type: kafka
   serviceName: kafka
   replicas: {{ .Values.kafka.replicas }}
@@ -16,7 +16,7 @@ spec:
         type: kafka
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.kafka.priority_class }}
-      {{ with .Values.kafka.affinity -}}     
+      {{ with .Values.kafka.affinity -}}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end -}}
       {{ with .Values.kafka.tolerations }}
@@ -95,4 +95,4 @@ spec:
       resources:
         requests:
           storage: {{ .Values.kafka.storage }}
-{{- end }}          
+{{- end }}

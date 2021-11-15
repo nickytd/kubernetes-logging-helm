@@ -5,14 +5,15 @@ imagePullSecrets: []
 priority_class: "logging"
 storage_class: {}
 
-#ES configuration
-#A complete ES setup is provisioned when "in_cluster" is set to true. It can be scaled accordingly to the environment needs
-#with the concrete configurations of the nodes that follow.
-#In case "in_cluster" is set to false, logs are pushed to an external ES.
+# OFD configuration
+# A complete OFD setup is provisioned when "in_cluster" is set to true. It can
+# be scaled accordingly to the environment needs with the concrete
+# configurations of the nodes that follow. In case "in_cluster" is set to false,
+# logs are pushed to an external OS.
 opensearch:
   image: "opensearchproject/opensearch"
   imageTag: 1.1.0
-  imagePullPolicy: IfNotPresent  
+  imagePullPolicy: IfNotPresent
   single_node: false
   in_cluster: true
   snapshot:
@@ -64,8 +65,8 @@ init_container:
   imageTag: "0.1.0"
   imagePullPolicy: IfNotPresent
 
-#Configuration of ES master node if "in_cluster" is true
-master:  
+# Configuration of OS master node if "in_cluster" is true
+master:
   replicas: 1
   storage: "1Gi"
   heap_size: "256m"
@@ -77,9 +78,9 @@ master:
   storage_class: ""
   priority_class: ""
   tolerations: []
-  affinity: {}    
+  affinity: {}
 
-#Configuration of ES coordination node if "in_cluster" is true
+# Configuration of OS coordination node if "in_cluster" is true
 client:
   replicas: 1
   heap_size: "512m"
@@ -92,8 +93,8 @@ client:
     host: ""
     path: "/"
     enabled: false
-    annotations: {}      
-    tls: {}  
+    annotations: {}
+    tls: {}
   tolerations: []
   affinity: {}
   topologySpreadConstraints: {}
@@ -105,7 +106,7 @@ client:
   #      type: client
   priority_class: ""
 
-#Configuration of ES data node if "in_cluster" is true
+# Configuration of OS data node if "in_cluster" is true
 data:
   replicas: 1
   heap_size: "512m"
@@ -116,15 +117,16 @@ data:
     limits:
       memory: "2000Mi"
   storage_class: ""
-  priority_class: ""    
+  priority_class: ""
   tolerations: []
-  affinity: {} 
+  affinity: {}
 
-#when in_cluster is set to false it determines an external opensearch-dashboards instance. 
-#In this case only jobs creating index templates and opensearch-dashboards objects are executed.
+# When in_cluster is set to false it determines an external
+# opensearch-dashboards instance. In this case only jobs creating index
+# templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
   in_cluster: true
-  url: ""  
+  url: ""
   replicas: 1
   extraEnvs:
   - name: "NODE_OPTIONS"
@@ -136,17 +138,17 @@ opensearch_dashboards:
     password: "view"
   developer:
     user: "developer"
-    password: "develop"   
+    password: "develop"
   ingress:
     host: ""
     path: "/"
     enabled: false
     annotations: {}
-    tls: {}  
+    tls: {}
   index_patterns:
     - containers
     - systemd
-    - nginx    
+    - nginx
   tenants:
     - Global
     - Developer
@@ -157,7 +159,7 @@ opensearch_dashboards:
       memory: "500Mi"
   tolerations: []
   affinity: {}
-  priority_class: "" 
+  priority_class: ""
 
 fluentbit:
   image: "fluent/fluent-bit"
@@ -187,7 +189,7 @@ fluentd:
     requests:
       memory: "100Mi"
     limits:
-      memory: "500Mi"  
+      memory: "500Mi"
   priority_class: ""
   tolerations: []
   affinity: {}
@@ -199,8 +201,8 @@ fluentd:
   #    matchLabels:
   #      k8s-app: fluentd
 
-
-#In scaled out setup kafka queues are used as ingestion points to accommodate spiked in the logging stream volumes
+# In scaled out setup kafka queues are used as ingestion points to accommodate
+# spiked in the logging stream volumes.
 kafka:
   enabled: true
   replicas: 1
@@ -210,7 +212,7 @@ kafka:
   storage: "1Gi"
   topics:
     config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
-    name: ["containers"]    
+    name: ["containers"]
   resources:
     requests:
       memory: "600Mi"
@@ -219,9 +221,9 @@ kafka:
   storage_class: ""
   priority_class: ""
   tolerations: []
-  affinity: {}   
+  affinity: {}
 
-#Zookeeper is a dependency of kafka
+# Zookeeper is a dependency of kafka
 zookeeper:
   replicas: 1
   image: "zookeeper"
