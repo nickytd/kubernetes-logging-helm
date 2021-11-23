@@ -161,6 +161,27 @@ opensearch_dashboards:
   affinity: {}
   priority_class: ""
 
+data_prepper:
+  enabled: false
+  image: opensearchproject/data-prepper
+  imageTag: 1.1.0
+  replicas: 1
+  resources:
+    requests:
+      memory: "500Mi"
+    limits:
+      memory: "500Mi"
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: {}
+  #- maxSkew: 1
+  #  topologyKey: kubernetes.io/hostname
+  #  whenUnsatisfiable: ScheduleAnyway
+  #  labelSelector:
+  #    matchLabels:
+  #      type: data-prepper
+  priority_class: ""  
+
 fluentbit:
   image: "fluent/fluent-bit"
   imageTag: "1.8.9"

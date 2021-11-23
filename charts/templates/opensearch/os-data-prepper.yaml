@@ -1,0 +1,88 @@
+{{- if and (.Values.data_prepper) ( .Values.data_prepper.enabled) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-data-prepper
+  labels: {{ include "logging.labels" . | indent 4 }}    
+spec:
+  replicas: {{ .Values.data_prepper.replicas }}
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+      type: data-prepper      
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-data-prepper-configmap.yaml") . | sha256sum }}        
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        type: data-prepper        
+    spec:
+      priorityClassName: {{ default .Values.priority_class .Values.data_prepper.priority_class }}
+      {{- with .Values.data_prepper.affinity }}     
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.data_prepper.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}      
+      {{- end }}
+      {{- with .Values.data_prepper.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }} 
+      {{- end }}
+      containers:
+      - name: main
+        image: {{ .Values.data_prepper.image }}:{{ .Values.data_prepper.imageTag }}    
+        imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
+        resources: {{ toYaml .Values.data_prepper.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: otlp
+          initialDelaySeconds: 60
+          periodSeconds: 60
+        ports:
+        - containerPort: 21890
+          name: otlp        
+        volumeMounts:
+        - name: data-prepper
+          mountPath: /usr/share/data-prepper/pipelines.yaml
+          subPath: pipelines.yaml
+        - name: data-prepper
+          mountPath: /usr/share/data-prepper/data-prepper-config.yaml
+          subPath: data-prepper-config.yaml        
+        - name: certificates
+          mountPath: /usr/share/data-prepper/root-ca.pem
+          subPath: root-ca.pem        
+        env:
+        - name: os_url
+          value: {{ include "os_url" . }}
+        - name: os_user
+          value: {{ .Values.opensearch.user }}
+        - name: os_pass
+          value: {{ .Values.opensearch.password }}        
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh","-c",'/init/check_os.sh']
+        env:
+          - name: os_url
+            value: {{ include "os_url" . }}
+          - name: os_user
+            value: {{ .Values.opensearch.user }}
+          - name: os_pass
+            value: {{ .Values.opensearch.password }}         
+        volumeMounts:
+        - name: init
+          mountPath: "/init"         
+      volumes:
+      - name: data-prepper
+        configMap:
+          name: {{ .Release.Name }}-data-prepper          
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-certificates      
+{{- end }}

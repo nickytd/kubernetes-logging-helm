@@ -1,0 +1,15 @@
+{{- if and (.Values.data_prepper) ( .Values.data_prepper.enabled) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name}}-data-prepper
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  ports:
+  - name: otlp
+    port: 21890
+    targetPort: otlp
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}    
+    type: data-prepper
+  type: ClusterIP
+{{- end }}
