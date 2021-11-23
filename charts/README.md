@@ -116,7 +116,7 @@ Used for multiple application startup checks.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| data_prepper.enabled | Set to true to enable Opensearch (Data Prepper)[https://opensearch.org/docs/latest/monitoring-plugins/trace/data-prepper/] | false |
+| data_prepper.enabled | Set to true to enable Opensearch [Data Prepper](https://opensearch.org/docs/latest/monitoring-plugins/trace/data-prepper/) | false |
 | data_prepper.image | Opensearch Data prepper image registry | "opensearchproject/data-prepper" |
 | data_prepper.imageTag | Opensearch Data prepper image tag  | "1.1.0" |
 | data_prepper.replicas | Number of opensearch data prepper pods | 1 |
