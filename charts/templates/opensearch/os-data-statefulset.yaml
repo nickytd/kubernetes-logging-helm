@@ -90,11 +90,11 @@ spec:
           mountPath: /usr/share/opensearch/config/root-ca.pem
           subPath: root-ca.pem
         - name: certificates
-          mountPath: /usr/share/opensearch/config/efk-rest.pem
-          subPath: efk-rest.pem
+          mountPath: /usr/share/opensearch/config/ofd-rest.pem
+          subPath: ofd-rest.pem
         - name: certificates
-          mountPath: /usr/share/opensearch/config/efk-rest-key.pem
-          subPath: efk-rest-key.pem
+          mountPath: /usr/share/opensearch/config/ofd-rest-key.pem
+          subPath: ofd-rest-key.pem
         - name: certificates
           mountPath: /usr/share/opensearch/config/opensearch.truststore
           subPath: opensearch.truststore

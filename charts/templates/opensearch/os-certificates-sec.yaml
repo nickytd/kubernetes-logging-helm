@@ -10,5 +10,5 @@ data:
 {{ (.Files.Glob "certificates/ca/*").AsSecrets | indent 2 }}
 {{ (.Files.Glob "certificates/ca/root-ca/*").AsSecrets | indent 2 }}
 {{ (.Files.Glob "certificates/admin/*").AsSecrets | indent 2 }}
-{{ (.Files.Glob "certificates/efk-rest/*").AsSecrets | indent 2 }}
+{{ (.Files.Glob "certificates/ofd-rest/*").AsSecrets | indent 2 }}
 {{- end }}
