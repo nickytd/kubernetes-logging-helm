@@ -15,7 +15,7 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
 | opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an Opensearch url is required  | true  |
 | opensearch.image | Opensearch image registry | "opensearchproject/opensearch" |
-| opensearch.imageTag | Opensearch image tag | "1.0.1" |
+| opensearch.imageTag | Opensearch image tag | "1.1.0" |
 | opensearch.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | opensearch.saml.enabled | Set to true to enable SAML for opendistro | false |
 | opensearch.saml.idp.metadata_url | SAML metadata URL | "" |
@@ -111,6 +111,20 @@ Used for multiple application startup checks.
 | data.storage | Size of the persistent volume of an opensearch data node | "1Gi" |
 | data.storage_class | Storage class of the opensearch data node persistence | "" |
 | data.tolerarions | Pod tolerations definition for the opensearch data nodes | [] |
+
+# Opensearch Data Prepper configuration
+
+|  Parameter | Description  | Default  |
+|---|---|---|
+| data_prepper.enabled | Set to true to enable Opensearch (Data Prepper)[https://opensearch.org/docs/latest/monitoring-plugins/trace/data-prepper/] | false |
+| data_prepper.image | Opensearch Data prepper image registry | "opensearchproject/data-prepper" |
+| data_prepper.imageTag | Opensearch Data prepper image tag  | "1.1.0" |
+| data_prepper.replicas | Number of opensearch data prepper pods | 1 |
+| data_prepper.affinity | opensearch data prepper pods affinity definition | {} |
+| data_prepper.priority_class | Priority class of the opensearch data prepper pods | "" |
+| data_prepper.resources | Pod resource definition for the opensearch data prepper pods | {} |
+| data_prepper.tolerarions | Pod tolerations definition for the opensearch data prepper pods | [] |
+| data_prepper.topologySpreadConstraints | opensearch data prepper pods scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
 
 # opensearch-dashboards configuration
 
