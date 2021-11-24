@@ -58,7 +58,10 @@ spec:
         - name: os_user
           value: {{ .Values.opensearch.user }}
         - name: os_pass
-          value: {{ .Values.opensearch.password }}        
+          value: {{ .Values.opensearch.password }}
+        - name: JAVA_OPTS
+          value: "-Xms{{ .Values.data_prepper.heap_size }} -Xmx{{ .Values.data_prepper.heap_size }} \
+                  {{ .Values.opensearch.additional_jvm_params }}" 
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}

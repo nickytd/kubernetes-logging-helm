@@ -166,6 +166,7 @@ data_prepper:
   image: opensearchproject/data-prepper
   imageTag: 1.1.0
   replicas: 1
+  heap_size: "256M"
   resources:
     requests:
       memory: "500Mi"
