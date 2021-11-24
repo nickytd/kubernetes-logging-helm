@@ -187,8 +187,10 @@ fluentbit:
   image: "fluent/fluent-bit"
   imageTag: "1.8.9"
   imagePullPolicy: IfNotPresent
-  host_path: /var/log
-  journal_host_path: /var/log
+  containersLogsHostPath: /var/log/pods
+  journalsLogsHostPath: /run/log
+  #define container runtime: docker or containerd
+  containersRuntime: docker
   resources:
     requests:
       memory: "50Mi"

@@ -67,13 +67,15 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
         volumeMounts:
-        - name: varlog
-          mountPath: /var/log
+        - name: containerslog
+          mountPath: /var/log/pods
+          readOnly: true
+        {{- if .Values.fluentbit.containersRuntime }}    
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
-          readOnly: true  
+        {{- end }}     
         - name: journallog
-          mountPath: /run/log
+          mountPath: /run/log/journal
           readOnly: true
         - name: fluent-bit-config        
           mountPath: /fluent-bit/etc          
@@ -94,13 +96,15 @@ spec:
           defaultMode: 0755  
       - name: journallog
         hostPath:
-          path: {{ .Values.fluentbit.journal_host_path }}
-      - name: varlog
+          path: {{ .Values.fluentbit.journalsLogsHostPath }}
+      - name: containerslog
         hostPath:
-          path: /var/log
+          path: {{ .Values.fluentbit.containersLogsHostPath }}
+      {{- if .Values.fluentbit.containersRuntime }}    
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
+      {{- end }}    
       - name: fluent-bit-config
         configMap:
           name: {{ .Release.Name}}-fluent-bit

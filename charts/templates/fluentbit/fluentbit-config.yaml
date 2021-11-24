@@ -30,8 +30,9 @@ data:
   input-kubernetes.conf: |-
     [INPUT]
         Name              tail
-        Tag               kube.*
-        Path              /var/log/containers/*.log
+        Tag               kube.<pod_id>.<namespace_name>.<pod_name>.<container_name>
+        Tag_Regex         /var/log/pods/(?<namespace_name>[^_/]+)_(?<pod_name>[^_/]+)_(?<pod_id>[^_/]+)/(?<container_name>[^/]+)/.*
+        Path              /var/log/pods/*/*/*.log
         DB                /var/log/flb_kube.db
         Mem_Buf_Limit     10MB
         Buffer_Max_Size   5MB
@@ -39,17 +40,20 @@ data:
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Read_from_Head    False
-        Docker_Mode       On
+        {{- if eq .Values.fluentbit.containersRuntime "containerd" }}
+        Parser            cri
+        {{- else }}
         Parser            docker
+        {{- end }}
         Log_Level         info
-        #multiline.parser docker, cri        
+        multiline.parser docker, cri        
 
   input-systemd.conf: |-
     [INPUT]
         Name                systemd
         Tag                 systemd.*
         Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
-        Systemd_Filter      _SYSTEMD_UNIT=docker.service        
+        Systemd_Filter      _SYSTEMD_UNIT={{.Values.fluentbit.containersRuntime}}.service        
         Systemd_Filter_Type Or
         Read_From_Tail      On    
         Path                /run/log/journal
@@ -59,16 +63,18 @@ data:
     [FILTER]
         Name                kubernetes
         Match               kube.*
+        Kube_Tag_Prefix     kube.
+        Regex_Parser        kube-tag
         Kube_URL            https://kubernetes.default.svc:443
         Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
-        Kube_Tag_Prefix     kube.var.log.containers.
+        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token        
         Merge_Log           On
         Keep_Log            On
         K8S-Logging.Parser  On
-        K8S-Logging.Exclude Off
+        K8S-Logging.Exclude On
         Labels              On
-        Kube_Meta_Cache_TTL 60s 
+        Kube_Meta_Cache_TTL 60s
+        Annotations         Off         
   
   filter-parser.conf: |-
     [FILTER]
@@ -170,6 +176,20 @@ data:
         Format json
         Time_Key time
         Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        # https://github.com/microsoft/fluentbit-containerd-cri-o-json-log/blob/main/config.yaml#L83
+        Name        cri
+        Format      regex
+        Regex       ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
+        Time_Key    time
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+        
+    [PARSER]
+        # https://github.com/Yolean/fluent-bit-kubernetes-logging/blob/kustomize-base/base/parser-cri.conf#L9
+        Name        kube-tag
+        Format      regex
+        Regex       ^(?<pod_id>[^.]+)\.(?<namespace_name>[^.]+)\.(?<pod_name>[^.]+)\.(?<container_name>[^.]+)$    
 
     [PARSER]
         Name        docker
