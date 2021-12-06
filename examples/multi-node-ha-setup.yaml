@@ -95,7 +95,11 @@ zookeeper:
   replicas: 2    
 
 fluentbit:
-  journal_host_path: /run/log
+  containersLogsHostPath: /var/log/pods
+  #adjust host path if needed
+  journalsLogsHostPath: /run/log
+  #change to containerd if needed
+  containersRuntime: docker
   metrics:
     enabled: true
 

@@ -15,7 +15,7 @@ spec:
       {{- if .Values.opensearch.single_node }}
       type: single
       {{- else }}
-      type: data      
+      type: data
       {{- end }}
   template:
     metadata:
@@ -31,7 +31,7 @@ spec:
         {{- end }}
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.data.priority_class }}
-      {{- with .Values.data.affinity }}     
+      {{- with .Values.data.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.data.tolerations }}
@@ -51,35 +51,35 @@ spec:
         - containerPort: 9200
           name: http
         - containerPort: 9300
-          name: transport  
-        {{- else}}  
-        ports:  
+          name: transport
+        {{- else}}
+        ports:
         - containerPort: 9300
           name: transport
-        {{- end }} 
+        {{- end }}
         livenessProbe:
           tcpSocket:
             port: transport
           initialDelaySeconds: 60
-          periodSeconds: 60        
+          periodSeconds: 60
         volumeMounts:
         - name: os-data
           mountPath: /data
         {{- if .Values.opensearch.snapshot.enabled }}
         - name: os-snapshot
           mountPath: /snapshot
-        {{- end }}          
+        {{- end }}
         {{- if .Values.opensearch.single_node }}
         - name: opensearch
           mountPath: /livenessProbe.sh
           subPath: livenessProbe.sh
-        {{- end }}  
-        - name: opensearch
+        {{- end }}
+        - name: opensearchsecret
           mountPath: /usr/share/opensearch/config/opensearch.yml
           subPath: opensearch.yml
         - name: opensearch
           mountPath: /usr/share/opensearch/config/log4j2.properties
-          subPath: log4j2.properties  
+          subPath: log4j2.properties
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
           subPath: node.pem
@@ -99,15 +99,21 @@ spec:
           mountPath: /usr/share/opensearch/config/opensearch.truststore
           subPath: opensearch.truststore
         - name: certificates
-          mountPath: /usr/share/opensearch/config/http.truststore 
-          subPath: http.truststore        
+          mountPath: /usr/share/opensearch/config/http.truststore
+          subPath: http.truststore
         env:
         - name: os_url
           value: https://localhost:9200
         - name: os_user
-          value: {{ .Values.opensearch.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
         - name: os_pass
-          value: {{ .Values.opensearch.password }}        
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         - name: "NAMESPACE"
           valueFrom:
             fieldRef:
@@ -116,28 +122,32 @@ spec:
           value: "-Xms{{ .Values.data.heap_size }} -Xmx{{ .Values.data.heap_size }} {{ .Values.opensearch.additional_jvm_params }}"
         {{- if not .Values.opensearch.single_node }}
         - name: NODE_MASTER
-          value: "false"  
+          value: "false"
         {{- end }}
         - name: NODE_DATA
-          value: "true"        
+          value: "true"
       volumes:
       - name: opensearch
         configMap:
           name: {{ .Release.Name }}
           defaultMode: 0755
+      - name: opensearchsecret
+        secret:
+          secretName: {{ .Release.Name }}
+          defaultMode: 0644
 {{- if .Values.opensearch.snapshot.enabled }}
       - name: os-snapshot
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-snapshot-pvc
-{{- end }}  
+{{- end }}
       - name: certificates
         secret:
-          defaultMode: 0755
+          defaultMode: 0644
           secretName: {{ .Release.Name }}-certificates
       - name: securityconfig
         secret:
-          defaultMode: 0755        
-          secretName: {{ .Release.Name }}-securityconfig    
+          defaultMode: 0644
+          secretName: {{ .Release.Name }}-securityconfig
       # opensearch requires vm.max_map_count to be at least 262144.
       # If your OS already sets up this number to a higher value, feel free
       # to remove this init container.
@@ -152,10 +162,10 @@ spec:
         {{- if .Values.opensearch.snapshot.enabled }}
         - name: os-snapshot
           mountPath: /snapshot
-        {{- end }}           
+        {{- end }}
         securityContext:
           runAsUser: 0
-          privileged: true    
+          privileged: true
   volumeClaimTemplates:
   - metadata:
       name: os-data

@@ -15,7 +15,7 @@ spec:
       annotations:
         "sidecar.istio.io/inject": "false"
     spec:
-      restartPolicy: OnFailure 
+      restartPolicy: OnFailure
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
@@ -28,12 +28,18 @@ spec:
           - name: os_url
             value: {{ include "os_url" . }}
           - name: os_user
-            value: {{ .Values.opensearch.user }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: username
           - name: os_pass
-            value: {{ .Values.opensearch.password }}         
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: password
         volumeMounts:
         - name: init
-          mountPath: "/init"          
+          mountPath: "/init"
       containers:
       - name: main
         image: {{ include "init_container.image" . }}
@@ -43,12 +49,18 @@ spec:
           - name: os_url
             value: {{ include "os_url" . }}
           - name: os_user
-            value: {{ .Values.opensearch.user }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: username
           - name: os_pass
-            value: {{ .Values.opensearch.password }}          
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: password
         volumeMounts:
         - name: templates
-          mountPath: /templates        
+          mountPath: /templates
       volumes:
       - name: init
         configMap:
@@ -57,5 +69,5 @@ spec:
       - name: templates
         configMap:
           name: {{ .Release.Name}}-index-templates
-          defaultMode: 0755              
-{{- end }}          
+          defaultMode: 0755
+{{- end }}

@@ -25,41 +25,59 @@ spec:
         command: ["sh", "-c", "/init/check_os.sh && /config/check_opensearch-dashboards.sh"]
         env:
         - name: opensearch_dashboards_URL
-          value: {{ include "opensearch-dashboards_url" . }} 
+          value: {{ include "opensearch-dashboards_url" . }}
         - name: os_url
           value: {{ include "os_url" . }}
         - name: os_user
-          value: {{ .Values.opensearch.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
         - name: os_pass
-          value: {{ .Values.opensearch.password }}  
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         volumeMounts:
         - name: config
           mountPath: "/config"
-        - name: init    
+        - name: init
           mountPath: "/init"
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
-        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}        
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["/config/create_index_pattern.sh"]
         env:
-          - name: opensearch_dashboards_URL
-            value: {{ include "opensearch-dashboards_url" . }}
-          - name: opensearch_dashboards_USER
-            value: {{ .Values.opensearch_dashboards.user }}
-          - name: opensearch_dashboards_PASSWORD
-            value: {{ .Values.opensearch_dashboards.password }} 
-          - name: opensearch_dashboards_DEVELOPER_USER
-            value: {{ .Values.opensearch_dashboards.developer.user }}
-          - name: opensearch_dashboards_DEVELOPER_PASSWORD
-            value: {{ .Values.opensearch_dashboards.developer.password }}    
-          - name: INDEX_PATTERNS  
-            value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.index_patterns }}
-          - name: TENANTS
-            value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.tenants }}
+        - name: opensearch_dashboards_URL
+          value: {{ include "opensearch-dashboards_url" . }}
+        - name: opensearch_dashboards_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
+              key: username
+        - name: opensearch_dashboards_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
+              key: password
+        - name: opensearch_dashboards_DEVELOPER_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-developer
+              key: username
+        - name: opensearch_dashboards_DEVELOPER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-developer
+              key: password
+        - name: INDEX_PATTERNS
+          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.index_patterns }}
+        - name: TENANTS
+          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.tenants }}
         volumeMounts:
         - name: config
-          mountPath: "/config"          
+          mountPath: "/config"
         - name: saved-objects
           mountPath: "/saved_objects"
       volumes:
@@ -68,9 +86,9 @@ spec:
           name: {{ .Release.Name }}-opensearch-dashboards-index-pattern
           defaultMode: 0755
       - name: saved-objects
-        configMap:    
+        configMap:
           name: {{ .Release.Name }}-opensearch-dashboards-saved-objects
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755     
+          defaultMode: 0755

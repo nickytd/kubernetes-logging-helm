@@ -3,35 +3,36 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-data-prepper
-  labels: {{ include "logging.labels" . | indent 4 }}    
+  labels: {{ include "logging.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.data_prepper.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      type: data-prepper      
+      type: data-prepper
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-data-prepper-configmap.yaml") . | sha256sum }}        
+        checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-data-prepper-configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/opensearch/os-data-prepper-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        type: data-prepper        
+        type: data-prepper
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.data_prepper.priority_class }}
-      {{- with .Values.data_prepper.affinity }}     
+      {{- with .Values.data_prepper.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.data_prepper.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{- toYaml . | nindent 8 }}      
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.data_prepper.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- toYaml . | nindent 8 }} 
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main
-        image: {{ .Values.data_prepper.image }}:{{ .Values.data_prepper.imageTag }}    
+        image: {{ .Values.data_prepper.image }}:{{ .Values.data_prepper.imageTag }}
         imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
         resources: {{ toYaml .Values.data_prepper.resources | nindent 10 }}
         livenessProbe:
@@ -41,51 +42,66 @@ spec:
           periodSeconds: 60
         ports:
         - containerPort: 21890
-          name: otlp        
+          name: otlp
         volumeMounts:
-        - name: data-prepper
+        - name: data-prepper-pipelines
           mountPath: /usr/share/data-prepper/pipelines.yaml
           subPath: pipelines.yaml
-        - name: data-prepper
+        - name: data-prepper-config
           mountPath: /usr/share/data-prepper/data-prepper-config.yaml
-          subPath: data-prepper-config.yaml        
+          subPath: data-prepper-config.yaml
         - name: certificates
           mountPath: /usr/share/data-prepper/root-ca.pem
-          subPath: root-ca.pem        
+          subPath: root-ca.pem
         env:
         - name: os_url
           value: {{ include "os_url" . }}
         - name: os_user
-          value: {{ .Values.opensearch.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
         - name: os_pass
-          value: {{ .Values.opensearch.password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         - name: JAVA_OPTS
           value: "-Xms{{ .Values.data_prepper.heap_size }} -Xmx{{ .Values.data_prepper.heap_size }} \
-                  {{ .Values.opensearch.additional_jvm_params }}" 
+                  {{ .Values.opensearch.additional_jvm_params }}"
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh","-c",'/init/check_os.sh']
         env:
-          - name: os_url
-            value: {{ include "os_url" . }}
-          - name: os_user
-            value: {{ .Values.opensearch.user }}
-          - name: os_pass
-            value: {{ .Values.opensearch.password }}         
+        - name: os_url
+          value: {{ include "os_url" . }}
+        - name: os_user
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
+        - name: os_pass
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         volumeMounts:
         - name: init
-          mountPath: "/init"         
+          mountPath: "/init"
       volumes:
-      - name: data-prepper
+      - name: data-prepper-config
         configMap:
-          name: {{ .Release.Name }}-data-prepper          
+          name: {{ .Release.Name }}-data-prepper
+      - name: data-prepper-pipelines
+        secret:
+          secretName: {{ .Release.Name }}-data-prepper
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
           defaultMode: 0755
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates      
+          secretName: {{ .Release.Name }}-certificates
 {{- end }}

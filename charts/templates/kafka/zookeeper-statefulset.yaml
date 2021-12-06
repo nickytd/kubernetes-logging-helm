@@ -17,7 +17,7 @@ spec:
         type: zk
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.zookeeper.priority_class }}
-      {{- with .Values.zookeeper.affinity }}     
+      {{- with .Values.zookeeper.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.zookeeper.tolerations }}
@@ -51,12 +51,12 @@ spec:
         - containerPort: 3888
           name: leader
         - containerPort: 8080
-          name: admin  
+          name: admin
         env:
         - name: JVMFLAGS
-          value: -Xmx{{ .Values.zookeeper.heap_size }}  
+          value: -Xmx{{ .Values.zookeeper.heap_size }}
         - name: ZOO_CFG_EXTRA
-          value: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7070"    
+          value: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7070"
         - name: ZOO_SERVERS
           value: {{ include "zooServers" .| quote }}
         - name: ZOO_DATA_DIR
@@ -67,7 +67,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        resources: {{ toYaml .Values.zookeeper.resources | nindent 10 }}        
+        resources: {{ toYaml .Values.zookeeper.resources | nindent 10 }}
         volumeMounts:
         - mountPath: "/volumes"
           name: zk-data
@@ -77,9 +77,9 @@ spec:
     spec:
       {{- if or .Values.storage_class .Values.zookeeper.storage_class }}
       storageClassName: {{ default .Values.storage_class .Values.zookeeper.storage_class | quote }}
-      {{- end }}      
+      {{- end }}
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
           storage: {{ .Values.zookeeper.storage }}
-{{- end }}          
+{{- end }}

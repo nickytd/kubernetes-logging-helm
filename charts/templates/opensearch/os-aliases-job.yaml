@@ -14,7 +14,7 @@ spec:
     metadata:
       annotations:
         "sidecar.istio.io/inject": "false"
-      labels: {{ include "logging.selectorLabels" . | indent 8 }}            
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: es-aliases
     spec:
       restartPolicy: OnFailure
@@ -27,16 +27,22 @@ spec:
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         command: ["sh", "-c", "/init/check_os.sh"]
         env:
-          - name: os_url
-            value: {{ include "os_url" . }}
-          - name: os_user
-            value: {{ .Values.opensearch.user }}
-          - name: os_pass
-            value: {{ .Values.opensearch.password }}
+        - name: os_url
+          value: {{ include "os_url" . }}
+        - name: os_user
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
+        - name: os_pass
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         volumeMounts:
         - mountPath: "/init"
           name: init
-      containers: 
+      containers:
       - name: os-curator
         image: {{ .Values.os_curator.image }}:{{ .Values.os_curator.imageTag }}
         imagePullPolicy: {{ .Values.os_curator.imagePullPolicy }}
@@ -45,8 +51,12 @@ spec:
           value: {{ include "os_url" . }}
         command: ["/curator/curator", "--config", "/config/curator.yml", "/config/actions.yml"]
         volumeMounts:
+        - name: actions
+          mountPath: "/config/actions.yml"
+          subPath: actions.yml
         - name: curator
-          mountPath: "/config"
+          mountPath: "/config/curator.yml"
+          subPath: curator.yml
         - name: certificates
           mountPath: /etc/root-ca.pem
           subPath: root-ca.pem
@@ -54,11 +64,14 @@ spec:
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755  
-      - name: curator
+          defaultMode: 0755
+      - name: actions
         configMap:
           name: {{ .Release.Name }}-curator
+      - name: curator
+        secret:
+          secretName: {{ .Release.Name }}-curator
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates     
+          secretName: {{ .Release.Name }}-certificates
 {{- end }}

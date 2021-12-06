@@ -16,12 +16,13 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/opensearch/os-certificates-sec.yaml") . | sha256sum }}
+        checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: client
         node: os
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.client.priority_class }}
-      {{- with .Values.client.affinity }}     
+      {{- with .Values.client.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.client.tolerations }}
@@ -29,14 +30,14 @@ spec:
       {{- end }}
       serviceAccountName: {{ .Release.Name }}-priv
       {{- with .Values.imagePullSecrets }}
-      imagePullSecrets: {{- toYaml . | nindent 8 }}      
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.client.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- toYaml . | nindent 8 }} 
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: main
-        image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}    
+        image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
         imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
         resources: {{ toYaml .Values.client.resources | nindent 10 }}
         livenessProbe:
@@ -52,8 +53,8 @@ spec:
         volumeMounts:
         - name: opensearch
           mountPath: /livenessProbe.sh
-          subPath: livenessProbe.sh   
-        - name: opensearch
+          subPath: livenessProbe.sh
+        - name: opensearchsecret
           mountPath: /usr/share/opensearch/config/opensearch.yml
           subPath: opensearch.yml
         - name: opensearch
@@ -81,18 +82,24 @@ spec:
           subPath: opensearch.truststore
         - name: certificates
           mountPath: /usr/share/opensearch/config/http.truststore
-          subPath: http.truststore         
+          subPath: http.truststore
         {{- if .Values.opensearch.snapshot.enabled }}
         - name: os-snapshot
           mountPath: /snapshot
-        {{- end }}          
+        {{- end }}
         env:
         - name: os_url
           value: https://localhost:9200
         - name: os_user
-          value: {{ .Values.opensearch.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
         - name: os_pass
-          value: {{ .Values.opensearch.password }}  
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         - name: OPENSEARCH_JAVA_OPTS
           value: "-Xms{{ .Values.client.heap_size }} -Xmx{{ .Values.client.heap_size }} \
                   {{ .Values.opensearch.additional_jvm_params }} \
@@ -106,7 +113,7 @@ spec:
         - name: NODE_DATA
           value: "false"
         - name: NODE_INGEST
-          value: "false"        
+          value: "false"
       # opensearch requires vm.max_map_count to be at least 262144.
       # If your OS already sets up this number to a higher value, feel free
       # to remove this init container.
@@ -126,26 +133,30 @@ spec:
         {{- if .Values.opensearch.snapshot.enabled }}
         - name: os-snapshot
           mountPath: /snapshot
-        {{- end }} 
-        - mountPath: "/init"          
-          name: init          
+        {{- end }}
+        - mountPath: "/init"
+          name: init
         securityContext:
           runAsUser: 0
-          privileged: true  
+          privileged: true
       volumes:
       - name: opensearch
         configMap:
           name: {{ .Release.Name }}
           defaultMode: 0755
+      - name: opensearchsecret
+        secret:
+          secretName: {{ .Release.Name }}
+          defaultMode: 0644
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755    
+          defaultMode: 0755
       {{- if .Values.opensearch.snapshot.enabled }}
       - name: os-snapshot
         persistentVolumeClaim:
           claimName: {{ .Release.Name }}-snapshot-pvc
-      {{- end }}          
+      {{- end }}
       - name: os-data
         emptyDir: {}
       - name: certificates
@@ -153,5 +164,5 @@ spec:
           secretName: {{ .Release.Name }}-certificates
       - name: securityconfig
         secret:
-          secretName: {{ .Release.Name }}-securityconfig    
+          secretName: {{ .Release.Name }}-securityconfig
 {{- end }}

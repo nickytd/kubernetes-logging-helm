@@ -12,7 +12,7 @@ spec:
         metadata:
           annotations:
             "sidecar.istio.io/inject": "false"
-          labels: {{ include "logging.labels" . | indent 12 }}            
+          labels: {{ include "logging.labels" . | indent 12 }}
             type: es-curator
         spec:
           {{- with .Values.imagePullSecrets }}
@@ -27,9 +27,15 @@ spec:
             - name: os_url
               value: {{ include "os_url" . }}
             - name: os_user
-              value: {{ .Values.opensearch.user }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-opensearch-credentials-admin
+                  key: username
             - name: os_pass
-              value: {{ .Values.opensearch.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-opensearch-credentials-admin
+                  key: password
             volumeMounts:
             - mountPath: "/init"
               name: init
@@ -42,21 +48,28 @@ spec:
               value: {{ include "os_url" . }}
             command: ["/curator/curator", "--config", "/config/curator.yml", "/config/actions.yml"]
             volumeMounts:
+            - name: actions
+              mountPath: "/config/actions.yml"
+              subPath: actions.yml
             - name: curator
-              mountPath: "/config"
+              mountPath: "/config/curator.yml"
+              subPath: curator.yml
             - name: certificates
               mountPath: /etc/root-ca.pem
-              subPath: root-ca.pem  
+              subPath: root-ca.pem
           restartPolicy: OnFailure
           volumes:
           - name: init
             configMap:
               name: {{ .Release.Name}}-init
-              defaultMode: 0755 
-          - name: curator
+              defaultMode: 0755
+          - name: actions
             configMap:
               name: {{ .Release.Name }}-curator
+          - name: curator
+            secret:
+              secretName: {{ .Release.Name }}-curator
           - name: certificates
             secret:
               secretName: {{ .Release.Name }}-certificates
-{{- end }}              
+{{- end }}

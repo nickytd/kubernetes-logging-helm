@@ -1,0 +1,84 @@
+{{- if .Values.opensearch.in_cluster }}
+{{ $root := . }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}
+  labels: {{ include "logging.labels" . | indent 4 }}
+stringData:
+  opensearch.yml: |-
+    cluster.name: {{ .Values.cluster_name | quote }}
+    path.data: /data
+
+    {{- if .Values.opensearch.snapshot.enabled }}
+    path.repo: /snapshot
+    {{- end }}
+
+    network.host: 0.0.0.0
+
+    discovery.seed_hosts:
+    {{- if .Values.opensearch.single_node }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }}
+    {{- else }}
+    {{- range $k := (int .Values.master.replicas | until ) }}
+      - {{ $root.Release.Name }}-master-{{$k}}
+    {{- end }}
+    {{- end }}
+
+    cluster.initial_master_nodes:
+    {{- if .Values.opensearch.single_node }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }}
+    {{- else }}
+    {{- range $k := (int .Values.master.replicas | until ) }}
+      - {{ $root.Release.Name }}-master-{{$k}}
+    {{- end }}
+    {{- end }}
+
+    node.master: ${NODE_MASTER:true}
+    node.data: ${NODE_DATA:true}
+    node.ingest: ${NODE_INGEST:true}
+
+    node.name: ${HOSTNAME}
+
+    thread_pool.write.queue_size: 1000
+    thread_pool.search.queue_size: 1000
+    thread_pool.get.queue_size: 1000
+    thread_pool.analyze.queue_size: 1000
+    thread_pool.listener.queue_size: 1000
+
+    plugins.security.allow_unsafe_democertificates: true
+    # plugins.security.allow_default_init_securityindex: true
+    # plugins.security.audit.type: internal_opensearch
+    # plugins.security.enable_snapshot_restore_privilege: true
+    # plugins.security.check_snapshot_restore_write_privileges: true
+    # cluster.routing.allocation.disk.threshold_enabled: false
+    # plugins.security.audit.config.disabled_rest_categories: NONE
+    # plugins.security.audit.config.disabled_transport_categories: NONE
+
+    # TLS Configuration Transport Layer
+    plugins.security.nodes_dn:
+      - 'CN=*.logging.svc.cluster.local,OU=logging,O=K8S,C=DE'
+    plugins.security.authcz.admin_dn:
+      - 'CN=admin,OU=logging,O=K8S,C=DE'
+    plugins.security.ssl.transport.pemcert_filepath: node.pem
+    plugins.security.ssl.transport.pemkey_filepath: node-key.pem
+    plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.ssl.transport.enforce_hostname_verification: false
+    plugins.security.ssl.transport.truststore_filepath: opensearch.truststore
+    # TODO: regenerate this password when removing certificates folder from helm chart
+    #       and put it here via helm templating from .Values...
+    plugins.security.ssl.transport.truststore_password: 92cdf688aac64d17b230
+
+
+    # TLS Configuration REST Layer
+    plugins.security.ssl.http.enabled: true
+    plugins.security.ssl.http.pemcert_filepath: ofd-rest.pem
+    plugins.security.ssl.http.pemkey_filepath: ofd-rest-key.pem
+    plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.restapi.roles_enabled: ["all_access", "admin"]
+
+{{- end }}

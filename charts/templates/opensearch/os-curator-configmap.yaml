@@ -35,7 +35,7 @@ data:
         - filtertype: pattern
           kind: prefix
           value: .tasks
-          exclude: True  
+          exclude: True
       2:
         action: alias
         description: >-
@@ -51,7 +51,7 @@ data:
             kind: prefix
             value: containers-
             exclude:
-        
+
       3:
         action: alias
         description: >-
@@ -82,7 +82,7 @@ data:
           - filtertype: pattern
             kind: prefix
             value: beats-
-            exclude: 
+            exclude:
 
       5:
         action: alias
@@ -98,8 +98,8 @@ data:
           - filtertype: pattern
             kind: prefix
             value: metrics-
-            exclude:           
-        
+            exclude:
+
       6:
         action: alias
         description: >-
@@ -114,28 +114,4 @@ data:
           - filtertype: pattern
             kind: timestring
             value: '%Y.%m.%d'
-            
-  curator.yml: |+
-    ---
-    # Remember, leave a key empty if there is no value.  None will be a string,
-    # not a Python "NoneType"
-    client:
-      hosts:
-        - ${os_host}
-      url_prefix:
-      use_ssl: true
-      certificate: /etc/root-ca.pem
-      client_cert:
-      client_key:
-      ssl_no_validate: false
-      username: {{ .Values.opensearch.user }}
-      password: {{ .Values.opensearch.password }}
-      timeout: 300
-      master_only: false
-      
-    logging:
-      loglevel: ERROR
-      logfile:
-      logformat: json
-      blacklist: ['urllib3']
-{{- end }}      
+{{- end }}

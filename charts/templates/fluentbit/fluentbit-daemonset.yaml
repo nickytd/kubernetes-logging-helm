@@ -13,12 +13,12 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        k8s-app: fluentbit      
+        k8s-app: fluentbit
     spec:
       priorityClassName: {{ default .Values.priority_class .Values.fluentbit.priority_class }}
       securityContext:
         runAsUser: 0
-      serviceAccountName: {{ .Release.Name}}-fluentbit      
+      serviceAccountName: {{ .Release.Name}}-fluentbit
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
@@ -35,14 +35,20 @@ spec:
           - name: os_url
             value: {{ include "os_url" . }}
           - name: os_user
-            value: {{ .Values.opensearch.user }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: username
           - name: os_pass
-            value: {{ .Values.opensearch.password }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-opensearch-credentials-admin
+                key: password
           - name: kafka
-            value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}  
+            value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}
         volumeMounts:
         - mountPath: "/init"
-          name: init      
+          name: init
       containers:
       - name: fluentbit
         image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.imageTag }}
@@ -57,9 +63,15 @@ spec:
         - name: FLUENT_opensearch_PORT
           value: "{{ include "os_port" . }}"
         - name: FLUENT_opensearch_USER
-          value:  {{ .Values.opensearch.user }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
         - name: FLUENT_opensearch_PASSWORD
-          value:  {{ .Values.opensearch.password }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
         livenessProbe:
           httpGet:
             path: /api/v1/health
@@ -70,48 +82,48 @@ spec:
         - name: containerslog
           mountPath: /var/log/pods
           readOnly: true
-        {{- if .Values.fluentbit.containersRuntime }}    
+        {{- if .Values.fluentbit.containersRuntime }}
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
-        {{- end }}     
+        {{- end }}
         - name: journallog
-          mountPath: /run/log/journal
+          mountPath: /run/log
           readOnly: true
-        - name: fluent-bit-config        
-          mountPath: /fluent-bit/etc          
+        - name: fluent-bit-config
+          mountPath: /fluent-bit/etc
         - name: certificates
           mountPath: /fluent-bit/ssl/root-ca.pem
           subPath: root-ca.pem
         - name: certificates
           mountPath: /fluent-bit/ssl/admin.pem
-          subPath: admin.pem  
+          subPath: admin.pem
         - name: certificates
           mountPath: /fluent-bit/ssl/admin-key.pem
-          subPath: admin-key.pem          
+          subPath: admin-key.pem
       terminationGracePeriodSeconds: 10
       volumes:
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755  
+          defaultMode: 0755
       - name: journallog
         hostPath:
           path: {{ .Values.fluentbit.journalsLogsHostPath }}
       - name: containerslog
         hostPath:
           path: {{ .Values.fluentbit.containersLogsHostPath }}
-      {{- if .Values.fluentbit.containersRuntime }}    
+      {{- if .Values.fluentbit.containersRuntime }}
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-      {{- end }}    
+      {{- end }}
       - name: fluent-bit-config
         configMap:
           name: {{ .Release.Name}}-fluent-bit
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates    
-      {{- with .Values.fluentbit.affinity }}     
+          secretName: {{ .Release.Name }}-certificates
+      {{- with .Values.fluentbit.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.fluentbit.tolerations }}

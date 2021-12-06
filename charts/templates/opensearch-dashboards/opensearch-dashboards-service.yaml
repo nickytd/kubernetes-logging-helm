@@ -11,5 +11,5 @@ spec:
     port: 5601
     targetPort: ui
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
-    type: opensearch-dashboards  
+    type: opensearch-dashboards
 {{- end }}

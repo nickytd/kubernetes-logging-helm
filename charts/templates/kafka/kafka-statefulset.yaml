@@ -82,15 +82,15 @@ spec:
       volumes:
       - name: init
         configMap:
-          name: {{ .Release.Name}}-init
-          defaultMode: 0755    
+          name: {{ .Release.Name }}-init
+          defaultMode: 0755
   volumeClaimTemplates:
   - metadata:
       name: kafka-data
     spec:
       {{- if or .Values.storage_class .Values.kafka.storage_class }}
       storageClassName: {{ default .Values.storage_class .Values.kafka.storage_class | quote }}
-      {{- end }}      
+      {{- end }}
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:

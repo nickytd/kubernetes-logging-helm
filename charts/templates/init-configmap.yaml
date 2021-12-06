@@ -6,7 +6,7 @@ metadata:
 data:
   check_host_port.sh: |-
     #!/bin/bash
-    set -e    
+    set -e
 
     if [[ $1 == http* ]]; then
       # extract the protocol
@@ -17,7 +17,7 @@ data:
       user="$(echo $url | grep @ | cut -d@ -f1)"
       # extract the host and port
       hostport="$(echo ${url/$user@/} | cut -d/ -f1)"
-      # by request host without port    
+      # by request host without port
       host="$(echo $hostport | sed -e 's,:.*,,g')"
       # by request - try to extract the port
       port=`echo $hostport | grep : | cut -d: -f2`
@@ -25,21 +25,21 @@ data:
         if [[ $proto = http:// ]]; then
           port=80
         fi
-        if [[ $proto == https:// ]]; then 
-          port=443 
+        if [[ $proto == https:// ]]; then
+          port=443
         fi
-     fi 
+     fi
      else
        host=$1
        port=$2
-     fi  
-     
+     fi
+
      echo "checking $host:$port"
-       
-     until $(nc -z -w 5 $host $port); do 
+
+     until $(nc -z -w 5 $host $port); do
        echo "retrying $host:$port"
        sleep 5
-     done  
+     done
 
      echo "initialized"
 
@@ -59,11 +59,10 @@ data:
     fi
 
     echo "checking opensearch $os_url"
-    
+
     check="curl -sk -w "%{http_code}" -u$os_user:$os_pass $os_url -o /dev/null"
 
     until [[ $($check) == "200" ]]; do
       echo "retrying $os_url"
       sleep 5
     done
-    

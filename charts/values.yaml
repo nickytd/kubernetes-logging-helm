@@ -188,7 +188,7 @@ fluentbit:
   imageTag: "1.8.9"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
-  journalsLogsHostPath: /run/log
+  journalsLogsHostPath: /var/log
   #define container runtime: docker or containerd
   containersRuntime: docker
   resources:

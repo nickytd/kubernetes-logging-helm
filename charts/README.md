@@ -15,7 +15,7 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.single_node | Set to true to use single all purpose elastic node. Coordination, data and maser node(s) are provisioned when "single_node" is set to false | false  |
 | opensearch.in_cluster |  Set to true to provision an opensearch cluster. When false, an Opensearch url is required  | true  |
 | opensearch.image | Opensearch image registry | "opensearchproject/opensearch" |
-| opensearch.imageTag | Opensearch image tag | "1.1.0" |
+| opensearch.imageTag | Opensearch image tag | "1.2.0" |
 | opensearch.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 | opensearch.saml.enabled | Set to true to enable SAML for opendistro | false |
 | opensearch.saml.idp.metadata_url | SAML metadata URL | "" |
@@ -157,10 +157,10 @@ Used for multiple application startup checks.
 |  Parameter | Description  | Default  |
 |---|---|---|
 | fluentbit.image | Fluentbit image registry | "fluent/fluent-bit" |
-| fluentbit.imageTag | Fluentbit image tag  | "1.8.1" |
+| fluentbit.imageTag | Fluentbit image tag  | "1.8.9" |
 | fluentbit.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
-| fluentbit.host_path | Path location of the containers logs on the cluster nodes | "/var/log" |
-| fluentbit.journal_host_path | Path location of the systemd logs on the cluster nodes. On minikube change to "/run/log" | "/var/log" |
+| fluentbit.containersLogsHostPath | Path location of the containers logs on the cluster nodes | "/var/log" |
+| fluentbit.journalsLogsHostPath | Path location of the systemd logs on the cluster nodes. On minikube change to "/run/log" | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |
 | fluentbit.priority_class | Fluentbit pod priority class | "" |
 | fluentbit.resources | Fluentbit pod resource definition | {} |

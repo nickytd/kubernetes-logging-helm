@@ -1,5 +1,5 @@
 {{- if .Values.kafka.enabled }}
-{{ range $zkId := until (.Values.zookeeper.replicas | int) }}    
+{{ range $zkId := until (.Values.zookeeper.replicas | int) }}
 ---
 apiVersion: v1
 kind: Service
@@ -15,9 +15,9 @@ spec:
     - port: 3888
       name: leader
     - port: 8080
-      name: admin  
+      name: admin
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-zk-{{ $zkId }}
-    type: zk    
+    type: zk
 {{- end }}
 {{- end }}    

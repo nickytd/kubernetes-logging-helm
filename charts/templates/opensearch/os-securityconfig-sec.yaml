@@ -7,7 +7,7 @@ metadata:
 type: Opaque
 data:
 {{- range $path, $bytes := .Files.Glob "securityconfig/*" }}
-{{- $name := base (dir $path) }}  
+{{- $name := base (dir $path) }}
 {{ base $path | indent 2}}: |-
 {{ (tpl ($.Files.Get $path) $)| b64enc | indent 4 }}
 {{ end }}

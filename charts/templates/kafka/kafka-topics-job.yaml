@@ -44,14 +44,14 @@ spec:
         {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-configs.sh \
           --bootstrap-server $kafka  --alter \
           --entity-type topics --entity-name {{ . }} \
-          --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]        
+          --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]
         env:
         - name: kafka
-          value: {{$.Release.Name}}-kafka-0:9092 
+          value: {{$.Release.Name}}-kafka-0:9092
       restartPolicy: Never
       volumes:
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
-          defaultMode: 0755  
-{{- end }}           
+          defaultMode: 0755
+{{- end }}
