@@ -26,12 +26,12 @@ _meta:
   hash: "$$opensearch-dashboards_READONLY_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "Viewer"
+  - "viewer"
   description: "{{ .Values.opensearch_dashboards.readonly.user }} read only user for opensearch-dashboards"  
 
 {{ .Values.opensearch_dashboards.developer.user }}:
   hash: "$$opensearch-dashboards_DEVELOPER_PASSWORD_HASH"
   reserved: true
   backend_roles:
-  - "Developer"
+  - "developer"
   description: "{{ .Values.opensearch_dashboards.developer.user }} developer user for opensearch-dashboards"    
