@@ -7,7 +7,7 @@ opensearch-dashboards_read_only:
   reserved: true
 
 administrator:
-  reserved: false
+  reserved: true
   cluster_permissions:
     - "*"    
   index_permissions:
@@ -22,7 +22,7 @@ administrator:
         - "*"
 
 opensearch-dashboards_viewer:
-  reserved: false
+  reserved: true
   cluster_permissions:
     - "cluster_composite_ops_ro"
   index_permissions:
@@ -41,7 +41,7 @@ opensearch-dashboards_viewer:
       - "kibana_all_read"   
 
 opensearch-dashboards_developer:
-  reserved: false
+  reserved: true
   cluster_permissions:
     - "cluster_composite_ops_ro"
     - "cluster:admin/opensearch/reports/*"     
