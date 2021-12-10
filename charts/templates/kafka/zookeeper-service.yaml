@@ -20,4 +20,4 @@ spec:
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-zk-{{ $zkId }}
     type: zk
 {{- end }}
-{{- end }}    
+{{- end }}

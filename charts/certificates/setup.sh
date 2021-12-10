@@ -5,28 +5,28 @@ BASEDIR=$(dirname "$0")
 set -e
 
 # Root CA
-openssl genrsa -out $BASEDIR/ca/root-ca/root-ca-key.pem 2048 
+openssl genrsa -out $BASEDIR/ca/root-ca/root-ca-key.pem 2048
 openssl req -days 3650 -new -x509 -sha256 -key $BASEDIR/ca/root-ca/root-ca-key.pem \
   -out $BASEDIR/ca/root-ca/root-ca.pem -batch -verbose -config $BASEDIR/ca/root-ca/root-ca.conf
 openssl x509 -subject -nameopt RFC2253 -noout -in $BASEDIR/ca/root-ca/root-ca.pem
 
 # Admin cert
-openssl genrsa -out $BASEDIR/admin/admin-key-temp.pem 2048 
+openssl genrsa -out $BASEDIR/admin/admin-key-temp.pem 2048
 openssl pkcs8 -inform PEM -outform PEM -in $BASEDIR/admin/admin-key-temp.pem -topk8 \
-  -nocrypt -v1 PBE-SHA1-3DES -out $BASEDIR/admin/admin-key.pem 
+  -nocrypt -v1 PBE-SHA1-3DES -out $BASEDIR/admin/admin-key.pem
 openssl req -new -key $BASEDIR/admin/admin-key.pem -out $BASEDIR/admin/admin.csr \
   -verbose -config $BASEDIR/admin/admin.conf
 openssl x509 -req -days 365 -in $BASEDIR/admin/admin.csr -CA $BASEDIR/ca/root-ca/root-ca.pem \
   -CAkey $BASEDIR/ca/root-ca/root-ca-key.pem -CAcreateserial -sha256 -out $BASEDIR/admin/admin.pem \
   -extensions req_ext -extfile $BASEDIR/admin/admin.conf
-openssl x509 -subject -nameopt RFC2253 -noout -in $BASEDIR/admin/admin.pem 
+openssl x509 -subject -nameopt RFC2253 -noout -in $BASEDIR/admin/admin.pem
 # Admin keystore
 rm -f $BASEDIR/admin/admin.keystore
 
 openssl pkcs12 -export -name admin -out $BASEDIR/admin/admin.p12 -inkey $BASEDIR/admin/admin-key.pem -passout "pass:92cdf688aac64d17b230" -in $BASEDIR/admin/admin.pem -CAfile $BASEDIR/ca/root-ca/root-ca.pem
 
 # Node cert
-openssl genrsa -out $BASEDIR/transport/node-key-temp.pem 2048 
+openssl genrsa -out $BASEDIR/transport/node-key-temp.pem 2048
 openssl pkcs8 -inform PEM -outform PEM -in $BASEDIR/transport/node-key-temp.pem -topk8 \
   -nocrypt -v1 PBE-SHA1-3DES -out $BASEDIR/transport/node-key.pem
 openssl req -new -key $BASEDIR/transport/node-key.pem -out $BASEDIR/transport/node.csr -batch \
@@ -38,8 +38,8 @@ openssl x509 -subject -nameopt RFC2253 -noout -in $BASEDIR/transport/node.pem
 
 openssl pkcs12 -export -name node -out $BASEDIR/transport/node.p12 -inkey $BASEDIR/transport/node-key.pem -passout "pass:92cdf688aac64d17b230" -in $BASEDIR/transport/node.pem -CAfile $BASEDIR/ca/root-ca/root-ca.pem
 
-# efk Rest cert
-openssl genrsa -out $BASEDIR/ofd-rest/ofd-rest-key-temp.pem 2048 
+# ofd Rest cert
+openssl genrsa -out $BASEDIR/ofd-rest/ofd-rest-key-temp.pem 2048
 
 openssl pkcs8 -inform PEM -outform PEM -in $BASEDIR/ofd-rest/ofd-rest-key-temp.pem \
   -topk8 -nocrypt -v1 PBE-SHA1-3DES -out $BASEDIR/ofd-rest/ofd-rest-key.pem
