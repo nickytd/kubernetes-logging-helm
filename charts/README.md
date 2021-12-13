@@ -130,26 +130,28 @@ Used for multiple application startup checks.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
-| opensearch-dashboards.in_cluster | Set to true to provision a opensearch-dashboards instance | true |
-| opensearch-dashboards.url | Specifies external opensearch-dashboards URL when "in_cluster" is false | "" |
-| opensearch-dashboards.replicas | Number of opensearch-dashboards instances | 1 |
-| opensearch-dashboards.extraEnvs | Additional configuration for opensearch-dashboards | - name: "NODE_OPTIONS"<br />  value: "--max-old-space-size=350" |
-| opensearch-dashboards.user | Default opensearch-dashboards user with administrative privileges | "opensearch-dashboards" |
-| opensearch-dashboards.password | Password for the default opensearch-dashboards user | "opensearch-dashboards" |
-| opensearch-dashboards.developer.user | User for the development tenant in opensearch-dashboards. The developer tenant can create searched and visualizations in the respective tenant space | "developer" |
-| opensearch-dashboards.developer.password | Password for the developer user | "developer" |
-| opensearch-dashboards.readonly.user | Readonly user in opensearch-dashboards | "viewer" |
-| opensearch-dashboards.readonly.password | Password for the readonly user | "viewer" |
-| opensearch-dashboards.ingress.enabled | When enabled exposes opensearch-dashboards endpoint as an ingress | false |
-| opensearch-dashboards.ingress.path | Default context path for the ingress | "/" |
-| opensearch-dashboards.ingress.annotations | Any additional ingress controller specific annotations | {} |
-| opensearch-dashboards.ingress.tls | TLS ingress configuration | {} |
-| opensearch-dashboards.index_patterns | Default set of opensearch-dashboards index patterns | ["containers", "systemd", "nginx"] |
-| opensearch-dashboards.tenants | Preconfigured opensearch-dashboards tenants | ["Global", "Developer"] |
-| opensearch-dashboards.affinity | opensearch-dashboards pod affinity definition | {} |
-| opensearch-dashboards.priority_class | opensearch-dashboards pod priority class | "" |
-| opensearch-dashboards.resources | opensearch-dashboards pod resource definition | {} |
-| opensearch-dashboards.tolerarions | opensearch-dashboards pod tolerations definition | [] |
+| opensearch_dashboards.image | opensearch-dashboards image registry | "opensearchproject/opensearch-dashboards" |
+| opensearch_dashboards.imageTag | opensearch-dashboards image tag | "1.2.0" |
+| opensearch_dashboards.in_cluster | Set to true to provision a opensearch-dashboards instance | true |
+| opensearch_dashboards.url | Specifies external opensearch-dashboards URL when "in_cluster" is false | "" |
+| opensearch_dashboards.replicas | Number of opensearch-dashboards instances | 1 |
+| opensearch_dashboards.extraEnvs | Additional configuration for opensearch-dashboards | - name: "NODE_OPTIONS"<br />  value: "--max-old-space-size=350" |
+| opensearch_dashboards.user | Default opensearch-dashboards user with administrative privileges | "opensearch-dashboards" |
+| opensearch_dashboards.password | Password for the default opensearch-dashboards user | "opensearch-dashboards" |
+| opensearch_dashboards.developer.user | User for the development tenant in opensearch-dashboards. The developer tenant can create searched and visualizations in the respective tenant space | "developer" |
+| opensearch_dashboards.developer.password | Password for the developer user | "developer" |
+| opensearch_dashboards.readonly.user | Readonly user in opensearch-dashboards | "viewer" |
+| opensearch_dashboards.readonly.password | Password for the readonly user | "viewer" |
+| opensearch_dashboards.ingress.enabled | When enabled exposes opensearch-dashboards endpoint as an ingress | false |
+| opensearch_dashboards.ingress.path | Default context path for the ingress | "/" |
+| opensearch_dashboards.ingress.annotations | Any additional ingress controller specific annotations | {} |
+| opensearch_dashboards.ingress.tls | TLS ingress configuration | {} |
+| opensearch_dashboards.index_patterns | Default set of opensearch-dashboards index patterns | ["containers", "systemd", "nginx"] |
+| opensearch_dashboards.tenants | Preconfigured opensearch-dashboards tenants | ["Global", "Developer"] |
+| opensearch_dashboards.affinity | opensearch-dashboards pod affinity definition | {} |
+| opensearch_dashboards.priority_class | opensearch-dashboards pod priority class | "" |
+| opensearch_dashboards.resources | opensearch-dashboards pod resource definition | {} |
+| opensearch_dashboards.tolerarions | opensearch-dashboards pod tolerations definition | [] |
 
 
 # Fluent-bit configuration

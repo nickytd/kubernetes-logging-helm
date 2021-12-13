@@ -49,7 +49,7 @@ spec:
           name: init
       containers:
       - name: main
-        image: {{ .Values.opensearch.image }}-dashboards:{{ .Values.opensearch.imageTag }}
+        image: {{ .Values.opensearch_dashboards.image }}:{{ .Values.opensearch_dashboards.imageTag }}
         resources: {{- toYaml .Values.opensearch_dashboards.resources | nindent 10 }}
         env:
         {{- if .Values.opensearch_dashboards.server_base_path }}

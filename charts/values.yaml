@@ -12,7 +12,7 @@ storage_class: {}
 # logs are pushed to an external OS.
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 1.2.0
+  imageTag: 1.2.1
   imagePullPolicy: IfNotPresent
   single_node: false
   in_cluster: true
@@ -125,6 +125,8 @@ data:
 # opensearch-dashboards instance. In this case only jobs creating index
 # templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
+  image: "opensearchproject/opensearch-dashboards"
+  imageTag: 1.2.0
   in_cluster: true
   url: ""
   replicas: 1
@@ -164,7 +166,7 @@ opensearch_dashboards:
 data_prepper:
   enabled: false
   image: opensearchproject/data-prepper
-  imageTag: 1.1.0
+  imageTag: 1.1.1
   replicas: 1
   heap_size: "256M"
   resources:
