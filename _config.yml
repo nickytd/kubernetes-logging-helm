@@ -22,8 +22,8 @@ title: Kubernetes Logging Helm
 email: nickytd@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   A scalable containerized logging stack featuring Opensearch
-baseurl: "/nickytd/kubernetes-logging-helm" # the subpath of your site, e.g. /blog
-url: "https://github.com" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/kubernetes-logging-helm" # the subpath of your site, e.g. /blog
+url: "https://nickytd.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: "nickytd"
 github_username:  "nickytd"
 
