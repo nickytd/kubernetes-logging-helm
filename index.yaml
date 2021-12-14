@@ -2,7 +2,19 @@ apiVersion: v1
 entries:
   kubernetes-logging:
   - apiVersion: v1
-    created: "2021-12-13T14:13:35.193307+01:00"
+    created: "2021-12-14T09:36:45.834853+01:00"
+    description: Kubernetes logging stack with Opensearch
+    digest: 3afc385c578cfc3746eb9a36cb6bf552b0fc20e72d09f11277a3b17498531e33
+    maintainers:
+    - email: nickytd@gmail.com
+      name: Niki Dokovski
+      url: https://github.com/nickytd
+    name: kubernetes-logging
+    urls:
+    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.7.4/kubernetes-logging-2.7.4.tgz
+    version: 2.7.4
+  - apiVersion: v1
+    created: "2021-12-14T09:36:45.651233+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 64cb86fb5bdc4259f8b84fc564703b0c167e895562a5a8844c7e54dcb5ad675a
     name: kubernetes-logging
@@ -10,7 +22,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.7.3/kubernetes-logging-2.7.3.tgz
     version: 2.7.3
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.996233+01:00"
+    created: "2021-12-14T09:36:45.455636+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 3723e01aaafd06627a0986e320fde6330339c63a71cc015472c7183119f673ae
     name: kubernetes-logging
@@ -18,7 +30,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.7.2/kubernetes-logging-2.7.2.tgz
     version: 2.7.2
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.820838+01:00"
+    created: "2021-12-14T09:36:45.251566+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 68671153b5e96b646e29d522fdbf045db13b9fc848e5122ce5ec9ef6a9d78a39
     name: kubernetes-logging
@@ -26,7 +38,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.7.1/kubernetes-logging-2.7.1.tgz
     version: 2.7.1
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.624888+01:00"
+    created: "2021-12-14T09:36:45.074739+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: e9fbb310637550dda86255e83c45863fc9fd8c54e81ebceea40fe07c6cacf65d
     name: kubernetes-logging
@@ -34,7 +46,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.6.0/kubernetes-logging-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.448789+01:00"
+    created: "2021-12-14T09:36:44.893591+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 464d3caf1722573cf7c13c0f88a291b63874162219b83221115dd0afecb1e92b
     name: kubernetes-logging
@@ -42,7 +54,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.4.1/kubernetes-logging-2.4.1.tgz
     version: 2.4.1
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.288424+01:00"
+    created: "2021-12-14T09:36:44.713165+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 8b9fcfef5ffabe70bf1cc787f8c3f85109ca0eb28aece3b4fd0f7d2b12ae73a5
     name: kubernetes-logging
@@ -50,7 +62,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.4.0/kubernetes-logging-2.4.0.tgz
     version: 2.4.0
   - apiVersion: v1
-    created: "2021-12-13T14:13:34.115227+01:00"
+    created: "2021-12-14T09:36:44.466955+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: f487b04904b99a7ea5706dae17bc0d135145888345c0f609d603cdc76eb16f06
     name: kubernetes-logging
@@ -58,7 +70,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.3.0/kubernetes-logging-2.3.0.tgz
     version: 2.3.0
   - apiVersion: v1
-    created: "2021-12-13T14:13:33.946948+01:00"
+    created: "2021-12-14T09:36:44.268415+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 06febc1599fa9d9f85dc9526eaf660c90739e337bdbc89c092e3bfe55b4f4e74
     name: kubernetes-logging
@@ -66,7 +78,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.2.4/kubernetes-logging-2.2.4.tgz
     version: 2.2.4
   - apiVersion: v1
-    created: "2021-12-13T14:13:33.768578+01:00"
+    created: "2021-12-14T09:36:44.09287+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: 83b6a4d9b2bafa7879323bc8b32dfe9445088a780ce320c8d1a8b9fe6dac1e43
     name: kubernetes-logging
@@ -74,7 +86,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.2.3/kubernetes-logging-2.2.3.tgz
     version: 2.2.3
   - apiVersion: v1
-    created: "2021-12-13T14:13:33.595184+01:00"
+    created: "2021-12-14T09:36:43.915671+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: a08eed875a5908edcc308f725c152233f251a74fa664cdad68d848385732c8f3
     name: kubernetes-logging
@@ -82,7 +94,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.2.2/kubernetes-logging-2.2.2.tgz
     version: 2.2.2
   - apiVersion: v1
-    created: "2021-12-13T14:13:33.392668+01:00"
+    created: "2021-12-14T09:36:43.742551+01:00"
     description: Kubernetes logging stack with Opensearch
     digest: b01109290e7a824862cde7acf1addb3aa070224619e5517c55bcbb5e30fbb552
     name: kubernetes-logging
@@ -90,7 +102,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.1.4/kubernetes-logging-2.1.4.tgz
     version: 2.1.4
   - apiVersion: v1
-    created: "2021-12-13T14:13:33.177105+01:00"
+    created: "2021-12-14T09:36:43.570821+01:00"
     description: A Helm chart for kubernetes logging stack featuring Opensearch
     digest: 4fc9eecee63ecc89e01d4b5b5ce2c188c88d4a99ead3802c83e8232f3b0a49a3
     name: kubernetes-logging
@@ -98,7 +110,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-2.1.3/kubernetes-logging-2.1.3.tgz
     version: 2.1.3
   - apiVersion: v1
-    created: "2021-12-13T14:13:32.990378+01:00"
+    created: "2021-12-14T09:36:43.351319+01:00"
     description: A Helm chart for kubernetes logging stack
     digest: 21444220b57ed441694c15065825a2d47761732ca15f6878b84fceec7133db48
     name: kubernetes-logging
@@ -106,7 +118,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-1.2.0/kubernetes-logging-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
-    created: "2021-12-13T14:13:32.805483+01:00"
+    created: "2021-12-14T09:36:43.163706+01:00"
     description: A Helm chart for kubernetes logging stack
     digest: 91b7fadde78204dd59aefc407ef2a7fb661fb573f0617d966b70a10f660c811b
     name: kubernetes-logging
@@ -114,7 +126,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-1.1.1/kubernetes-logging-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
-    created: "2021-12-13T14:13:32.63063+01:00"
+    created: "2021-12-14T09:36:42.976352+01:00"
     description: A Helm chart for kubernetes logging stack
     digest: 1b6a65c3cd5d206e6fc3b53740cb895a4644a560b9662845b20f715340138bed
     name: kubernetes-logging
@@ -122,7 +134,7 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-1.0.0/kubernetes-logging-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v1
-    created: "2021-12-13T14:13:32.44643+01:00"
+    created: "2021-12-14T09:36:42.781044+01:00"
     description: A Helm chart for kubernetes logging stack
     digest: 0d2dad984df7d71585d5e5adbe0eb296864fd69290648e78660ee0bc528c3cbf
     name: kubernetes-logging
@@ -130,11 +142,11 @@ entries:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.18.3/kubernetes-logging-0.18.3.tgz
     version: 0.18.3
   - apiVersion: v1
-    created: "2021-12-13T14:13:32.25688+01:00"
+    created: "2021-12-14T09:36:42.573239+01:00"
     description: A Helm chart for kubernetes logging stack
     digest: 1a49252ab7c117d5056c931d6057249d42ff3e555fd0bc53c081886e6570f672
     name: kubernetes-logging
     urls:
     - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-0.18.1/kubernetes-logging-0.18.1.tgz
     version: 0.18.1
-generated: "2021-12-13T14:13:35.193401+01:00"
+generated: "2021-12-14T09:36:45.835386+01:00"
