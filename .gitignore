@@ -3,3 +3,6 @@
 templates.yaml
 .cr-*
 ssl/
+.cr-index
+.cr-release-packages
+_site
