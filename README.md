@@ -20,5 +20,4 @@ helm install ofd logging/kubernetes-logging
 Pages: https://nickytd.github.io/kubernetes-logging-helm
 
 Uprgade Notes 2.x to 3.0.0:
-
 Since version 3.0.0, the chart values are renamed and follow camel case recommendation.
