@@ -23,10 +23,11 @@ helm repo update
 
 ## Install a release
 {% highlight bash %}
-helm install ofd -n logging logging/kubernetes-logging
+helm install ofd logging/kubernetes-logging
 {% endhighlight %}
 
-Requirement: The target namespace shall be **"logging"**
+Uprgade Notes 2.x to 3.0.0:
+Since version 3.0.0, the chart values are renamed and follow camel case recommendation.
 
 <h2>{{ site.data.deployments.docs_list_title }}</h2>
 <ul>
