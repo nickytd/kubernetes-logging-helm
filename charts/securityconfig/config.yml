@@ -48,16 +48,16 @@ config:
           config:
             idp:
               enable_ssl: true
-              metadata_url: {{ .Values.opensearch.saml.idp.metadata_url }}
-              entity_id: {{ .Values.opensearch.saml.idp.entity_id }}
+              metadata_url: {{ .Values.opensearch.saml.idp.metadataUrl }}
+              entity_id: {{ .Values.opensearch.saml.idp.entityId }}
               {{- with .Values.opensearch.saml.idp.cacerts }}
               pemtrustedcas_content: |- {{ . | nindent 16 }}
               {{- end }}
             sp:
-              entity_id: {{ .Values.opensearch.saml.sp.entity_id }}
+              entity_id: {{ .Values.opensearch.saml.sp.entityId }}
             opensearch-dashboards_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
-            roles_key: groups
-            exchange_key: {{ .Values.opensearch.saml.exchange_key }}
+            rolesKey: groups
+            exchangeKey: {{ .Values.opensearch.saml.exchangeKey }}
         authentication_backend:
           type: noop
 {{- else if .Values.opensearch.oidc.enabled }}
@@ -70,10 +70,10 @@ config:
           challenge: false
           config:
             enable_ssl: true
-            subject_key: {{ .Values.opensearch.oidc.subject_key }}
-            roles_key: {{ .Values.opensearch.oidc.roles_key }}
-            openid_connect_url: {{ .Values.opensearch.oidc.discovery_url }}
-            {{- $verify := .Values.opensearch.oidc.verify_hostnames -}}
+            subject_key: {{ .Values.opensearch.oidc.subjectKey }}
+            roles_key: {{ .Values.opensearch.oidc.rolesKey }}
+            openid_connect_url: {{ .Values.opensearch.oidc.discoveryUrl }}
+            {{- $verify := .Values.opensearch.oidc.verifyHostnames -}}
             {{- with .Values.opensearch.oidc.cacerts }}
             openid_connect_idp:
               enable_ssl: true

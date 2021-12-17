@@ -72,7 +72,7 @@ spec:
               name: {{ .Release.Name }}-opensearch-dashboards-credentials-developer
               key: password
         - name: INDEX_PATTERNS
-          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.index_patterns }}
+          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.indexPatterns }}
         - name: TENANTS
           value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.opensearch_dashboards.tenants }}
         volumeMounts:

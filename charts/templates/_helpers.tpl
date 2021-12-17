@@ -35,11 +35,11 @@ Create default labels section
 */}}
 {{- define "logging.labels" }}
 {{ include "logging.selectorLabels" . }}
-{{- if .Chart.Version }}
-app.kubernetes.io/version: {{ .Chart.Version | quote }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/openDistro: {{ .Values.opensearch.imageTag }}
+app.kubernetes.io/opensearch: {{ .Values.opensearch.imageTag }}
 {{- end }}
 
 {{/*
@@ -57,7 +57,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "os_url" -}}
-{{- if .Values.opensearch.in_cluster -}}
+{{- if .Values.opensearch.inCluster -}}
 {{ printf "https://%s-client.%s.%s:9200" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
 {{- printf "%s" .Values.opensearch.url -}}
@@ -65,7 +65,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "os_host" -}}
-{{- if .Values.opensearch.in_cluster -}}
+{{- if .Values.opensearch.inCluster -}}
 {{ printf "%s-client.%s.%s" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
 {{- printf "%s" .Values.opensearch.url -}}
@@ -73,7 +73,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "os_port" -}}
-{{- if .Values.opensearch.in_cluster -}}
+{{- if .Values.opensearch.inCluster -}}
 {{ printf "%d" 9200 }}
 {{- else -}}
 {{- printf "%d" .Values.opensearch.port -}}
@@ -81,7 +81,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "opensearch-dashboards_url" -}}
-{{- if $.Values.opensearch_dashboards.in_cluster -}}
+{{- if $.Values.opensearch_dashboards.inCluster -}}
 {{ printf "http://%s-opensearch-dashboards.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
 {{- else -}}
 {{- printf "%s" .Values.opensearch_dashboards.url -}}

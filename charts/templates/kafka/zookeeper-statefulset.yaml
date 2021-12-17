@@ -16,7 +16,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: zk
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.zookeeper.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.zookeeper.priorityClass }}
       {{- with .Values.zookeeper.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -29,7 +29,7 @@ spec:
       initContainers:
       - image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid ; do  echo \"retry create data and logs folders\" && sleep 2 ; done"]
+        command: ["sh", "-c", "until mkdir -p /volumes/data /volumes/logs && rm -f /volumes/data/myid && echo ${MY_POD_NAME##*-} > /volumes/data/myid; do echo \"retry create data and logs folders\" && sleep 2; done"]
         name: init
         env:
         - name: MY_POD_NAME
@@ -54,7 +54,7 @@ spec:
           name: admin
         env:
         - name: JVMFLAGS
-          value: -Xmx{{ .Values.zookeeper.heap_size }}
+          value: -Xmx{{ .Values.zookeeper.heapSize }}
         - name: ZOO_CFG_EXTRA
           value: "metricsProvider.className=org.apache.zookeeper.metrics.prometheus.PrometheusMetricsProvider metricsProvider.httpPort=7070"
         - name: ZOO_SERVERS
@@ -75,8 +75,8 @@ spec:
   - metadata:
       name: zk-data
     spec:
-      {{- if or .Values.storage_class .Values.zookeeper.storage_class }}
-      storageClassName: {{ default .Values.storage_class .Values.zookeeper.storage_class | quote }}
+      {{- if or .Values.storageClass .Values.zookeeper.storageClass }}
+      storageClassName: {{ default .Values.storageClass .Values.zookeeper.storageClass | quote }}
       {{- end }}
       accessModes: [ "ReadWriteOnce" ]
       resources:

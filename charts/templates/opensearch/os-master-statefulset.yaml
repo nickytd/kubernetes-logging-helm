@@ -1,4 +1,4 @@
-{{- if and (.Values.opensearch.in_cluster) (not .Values.opensearch.single_node) }}
+{{- if and (.Values.opensearch.inCluster) (not .Values.opensearch.singleNode) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -18,12 +18,12 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/opensearch/os-certificates-sec.yaml") . | sha256sum }}
+        checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: master
         node: os
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.master.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.master.priorityClass }}
       {{- with .Values.master.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -34,6 +34,31 @@ spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init/init_os_node.sh "]
+        volumeMounts:
+        - name: init
+          mountPath: /init
+        - name: shared
+          mountPath: /shared
+        - name: certificates
+          mountPath: /config/node-key.pem
+          subPath: serverKey
+        - name: certificates
+          mountPath: /config/ofd-rest-key.pem
+          subPath: serverKey
+        - name: os-data
+          mountPath: /data
+        {{- if .Values.opensearch.snapshot.enabled }}
+        - name: os-snapshot
+          mountPath: /snapshot
+        {{- end }}
+        securityContext:
+          privileged: true
+          runAsUser: 0
       containers:
       - name: main
         image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
@@ -62,35 +87,26 @@ spec:
           subPath: log4j2.properties
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
-          subPath: node.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/node-key.pem
-          subPath: node-key.pem
+          subPath: serverCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/ofd-rest.pem
-          subPath: ofd-rest.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/ofd-rest-key.pem
-          subPath: ofd-rest-key.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/opensearch.truststore
-          subPath: opensearch.truststore
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/http.truststore
-          subPath: http.truststore
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/keystore.jks
-          subPath: keystore.jks
+          subPath: serverCert
+        - name: shared
+          mountPath: /usr/share/opensearch/config/node-key.key
+          subPath: node-key.key
+        - name: shared
+          mountPath: /usr/share/opensearch/config/ofd-rest-key.key
+          subPath: ofd-rest-key.key
         env:
         - name: "NAMESPACE"
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xms{{ .Values.master.heap_size }} -Xmx{{ .Values.master.heap_size }} {{ .Values.opensearch.additional_jvm_params }}"
+          value: "-Xms{{ .Values.master.heapSize }} -Xmx{{ .Values.master.heapSize }} {{ .Values.opensearch.additionalJvmParams }}"
         - name: NODE_DATA
           value: "false"
         - name: NODE_INGEST
@@ -98,6 +114,10 @@ spec:
         - name: NODE_MASTER
           value: "true"
       volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
       - name: opensearch
         configMap:
           name: {{ .Release.Name }}
@@ -111,34 +131,22 @@ spec:
       {{- end }}
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end}}
       - name: securityconfig
         secret:
           secretName: {{ .Release.Name }}-securityconfig
-      # opensearch requires vm.max_map_count to be at least 262144.
-      # If your OS already sets up this number to a higher value, feel free
-      # to remove this init container.
-      initContainers:
-      - name: init
-        image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh","-c","/sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000 /data && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
-        volumeMounts:
-        - name: os-data
-          mountPath: /data
-        {{- if .Values.opensearch.snapshot.enabled }}
-        - name: os-snapshot
-          mountPath: /snapshot
-        {{- end }}
-        securityContext:
-          privileged: true
-          runAsUser: 0
+      - name: shared
+        emptyDir: {}
   volumeClaimTemplates:
   - metadata:
       name: os-data
     spec:
-      {{- if or .Values.storage_class .Values.master.storage_class }}
-      storageClassName: {{ default .Values.storage_class .Values.master.storage_class | quote }}
+      {{- if or .Values.storageClass .Values.master.storageClass }}
+      storageClassName: {{ default .Values.storageClass .Values.master.storageClass | quote }}
       {{- end }}
       accessModes:
       - ReadWriteOnce

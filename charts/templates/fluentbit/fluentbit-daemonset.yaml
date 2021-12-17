@@ -15,7 +15,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: fluentbit
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.fluentbit.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.fluentbit.priorityClass }}
       securityContext:
         runAsUser: 0
       serviceAccountName: {{ .Release.Name}}-fluentbit
@@ -93,13 +93,13 @@ spec:
           mountPath: /fluent-bit/etc
         - name: certificates
           mountPath: /fluent-bit/ssl/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         - name: certificates
           mountPath: /fluent-bit/ssl/admin.pem
-          subPath: admin.pem
+          subPath: adminCert
         - name: certificates
           mountPath: /fluent-bit/ssl/admin-key.pem
-          subPath: admin-key.pem
+          subPath: adminKey
       terminationGracePeriodSeconds: 10
       volumes:
       - name: init
@@ -122,7 +122,11 @@ spec:
           name: {{ .Release.Name}}-fluent-bit
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
       {{- with .Values.fluentbit.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

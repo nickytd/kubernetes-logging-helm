@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.opensearch.inCluster }}
 {{ range $masterId := until (.Values.master.replicas | int) }}
 ---
 apiVersion: v1
@@ -11,7 +11,7 @@ spec:
     - port: 9300
       name: transport
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
-    {{- if $.Values.opensearch.single_node }}
+    {{- if $.Values.opensearch.singleNode }}
     type: single
     {{- else }}
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-master-{{ $masterId }}

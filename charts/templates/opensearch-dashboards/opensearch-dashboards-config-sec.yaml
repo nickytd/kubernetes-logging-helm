@@ -31,14 +31,14 @@ stringData:
     opensearch_security.auth.type: "saml"
 {{- else if .Values.opensearch.oidc.enabled }}
     opensearch_security.auth.type: "openid"
-    opensearch_security.openid.connect_url: {{ .Values.opensearch.oidc.discovery_url }}
+    opensearch_security.openid.connect_url: {{ .Values.opensearch.oidc.discoveryUrl }}
     {{- if .Values.opensearch.oidc.cacerts }}
     opensearch_security.openid.root_ca: /opt/opensearch-dashboards/config/openid-ca.pem
     {{- end }}
-    opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.client_id }}
-    opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.client_secret }}
+    opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.clientId }}
+    opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.clientSecret }}
     opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
-    opensearch_security.openid.logout_url: {{ .Values.opensearch.oidc.logout_url }}
+    opensearch_security.openid.logout_url: {{ .Values.opensearch.oidc.logoutUrl }}
     opensearch_security.openid.scope: {{ .Values.opensearch.oidc.scope }}
 {{- end }}
 

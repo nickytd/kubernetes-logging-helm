@@ -14,9 +14,11 @@ helm repo update
 ```
 
 ```bash
-helm install ofd -n logging logging/kubernetes-logging
+helm install ofd logging/kubernetes-logging
 ```
-Requirement: The target namespace shall be "logging"
-
 
 Pages: https://nickytd.github.io/kubernetes-logging-helm
+
+Uprgade Notes 2.x to 3.0.0:
+
+Since version 3.0.0, the chart values are renamed and follow camel case recommendation.

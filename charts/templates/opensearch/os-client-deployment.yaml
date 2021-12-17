@@ -1,4 +1,4 @@
-{{- if and (.Values.opensearch.in_cluster) (not .Values.opensearch.single_node) }}
+{{- if and (.Values.opensearch.inCluster) (not .Values.opensearch.singleNode) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,13 +15,13 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/opensearch/os-certificates-sec.yaml") . | sha256sum }}
-        checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
+        checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
+        checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: client
         node: os
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.client.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.client.priorityClass }}
       {{- with .Values.client.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -35,6 +35,34 @@ spec:
       {{- with .Values.client.topologySpreadConstraints }}
       topologySpreadConstraints: {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+      - name: init
+        image: {{ include "init_container.image" . }}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/init/check_host_port.sh $os_master 9300 && /init/init_os_node.sh "]
+        env:
+          - name: os_master
+            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+        - name: certificates
+          mountPath: /config/node-key.pem
+          subPath: serverKey
+        - name: certificates
+          mountPath: /config/ofd-rest-key.pem
+          subPath: serverKey
+        - name: os-data
+          mountPath: /data
+        {{- if .Values.opensearch.snapshot.enabled }}
+        - name: os-snapshot
+          mountPath: /snapshot
+        {{- end }}
+        - mountPath: "/init"
+          name: init
+        securityContext:
+          runAsUser: 0
+          privileged: true
       containers:
       - name: main
         image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
@@ -64,25 +92,19 @@ spec:
           mountPath: /data
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
-          subPath: node.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/node-key.pem
-          subPath: node-key.pem
+          subPath: serverCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/ofd-rest.pem
-          subPath: ofd-rest.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/ofd-rest-key.pem
-          subPath: ofd-rest-key.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/opensearch.truststore
-          subPath: opensearch.truststore
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/http.truststore
-          subPath: http.truststore
+          subPath: serverCert
+        - name: shared
+          mountPath: /usr/share/opensearch/config/node-key.key
+          subPath: node-key.key
+        - name: shared
+          mountPath: /usr/share/opensearch/config/ofd-rest-key.key
+          subPath: ofd-rest-key.key
         {{- if .Values.opensearch.snapshot.enabled }}
         - name: os-snapshot
           mountPath: /snapshot
@@ -101,8 +123,8 @@ spec:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xms{{ .Values.client.heap_size }} -Xmx{{ .Values.client.heap_size }} \
-                  {{ .Values.opensearch.additional_jvm_params }} \
+          value: "-Xms{{ .Values.client.heapSize }} -Xmx{{ .Values.client.heapSize }} \
+                  {{ .Values.opensearch.additionalJvmParams }} \
                   -Djava.util.logging.config.file=/usr/share/opensearch/config/logging.properties"
         - name: NAMESPACE
           valueFrom:
@@ -114,31 +136,6 @@ spec:
           value: "false"
         - name: NODE_INGEST
           value: "false"
-      # opensearch requires vm.max_map_count to be at least 262144.
-      # If your OS already sets up this number to a higher value, feel free
-      # to remove this init container.
-      initContainers:
-      - image: {{ include "init_container.image" . }}
-        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_host_port.sh $es_master 9300 \
-                   && /sbin/sysctl -w vm.max_map_count=262144 || true && chown 1000:1000  /data \
-                   && if [ -d /snapshot ]; then chown 1000:1000 /snapshot ; fi"]
-        name: init
-        env:
-          - name: es_master
-            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
-        volumeMounts:
-        - name: os-data
-          mountPath: /data
-        {{- if .Values.opensearch.snapshot.enabled }}
-        - name: os-snapshot
-          mountPath: /snapshot
-        {{- end }}
-        - mountPath: "/init"
-          name: init
-        securityContext:
-          runAsUser: 0
-          privileged: true
       volumes:
       - name: opensearch
         configMap:
@@ -161,8 +158,14 @@ spec:
         emptyDir: {}
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
       - name: securityconfig
         secret:
           secretName: {{ .Release.Name }}-securityconfig
+      - name: shared
+        emptyDir: {}
 {{- end }}

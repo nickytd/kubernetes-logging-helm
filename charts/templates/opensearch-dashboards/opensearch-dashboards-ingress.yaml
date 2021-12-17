@@ -1,4 +1,4 @@
-{{- if and .Values.opensearch_dashboards.ingress.enabled .Values.opensearch_dashboards.in_cluster }}
+{{- if and .Values.opensearch_dashboards.ingress.enabled .Values.opensearch_dashboards.inCluster }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

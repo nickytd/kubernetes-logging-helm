@@ -17,7 +17,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/fluentd/fluentd-config.yaml") . | sha256sum }}
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.fluentd.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.fluentd.priorityClass }}
       serviceAccountName: {{ .Release.Name}}-fluentd
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
@@ -92,13 +92,7 @@ spec:
           mountPath: /fluentd/etc
         - name: certificates
           mountPath: /fluentd/ssl/root-ca.pem
-          subPath: root-ca.pem
-        - name: certificates
-          mountPath: /fluentd/ssl/admin.pem
-          subPath: admin.pem
-        - name: certificates
-          mountPath: /fluentd/ssl/admin-key.pem
-          subPath: admin-key.pem
+          subPath: caCert
         - name: index-templates
           mountPath: /fluentd/templates
       terminationGracePeriodSeconds: 10
@@ -114,7 +108,11 @@ spec:
           name: {{ .Release.Name}}-fluentd
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
       - name: index-templates
         configMap:
           name: {{ .Release.Name}}-index-templates

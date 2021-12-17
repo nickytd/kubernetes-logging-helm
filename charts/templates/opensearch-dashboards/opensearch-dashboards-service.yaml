@@ -1,4 +1,4 @@
-{{- if .Values.opensearch_dashboards.in_cluster }}
+{{- if .Values.opensearch_dashboards.inCluster }}
 apiVersion: v1
 kind: Service
 metadata:

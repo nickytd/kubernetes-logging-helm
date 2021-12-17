@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.opensearch.inCluster }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -23,13 +23,24 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_host_port.sh $os_master 9300"]
+        command: ["sh", "-c", "/init/check_host_port.sh $os_master 9300 && /init/init_os_node.sh -only-keys"]
         env:
           - name: os_master
             value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
         volumeMounts:
         - mountPath: "/init"
           name: init
+        - mountPath: "/shared"
+          name: shared
+        - name: certificates
+          mountPath: /config/node-key.pem
+          subPath: serverKey
+        - name: certificates
+          mountPath: /config/ofd-rest-key.pem
+          subPath: serverKey
+        - name: certificates
+          mountPath: /config/admin-key.pem
+          subPath: adminKey
       containers:
       - name: main
         image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
@@ -86,28 +97,32 @@ spec:
           subPath: setup.sh
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
-          subPath: node.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/node-key.pem
-          subPath: node-key.pem
+          subPath: serverCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         - name: certificates
           mountPath: /usr/share/opensearch/config/admin.pem
-          subPath: admin.pem
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/admin-key.pem
-          subPath: admin-key.pem
+          subPath: adminCert
+        - name: shared
+          mountPath: /usr/share/opensearch/config/node-key.key
+          subPath: node-key.key
+        - name: shared
+          mountPath: /usr/share/opensearch/config/ofd-rest-key.key
+          subPath: ofd-rest-key.key
+        - name: shared
+          mountPath: /usr/share/opensearch/config/admin-key.key
+          subPath: admin-key.key
         - name: securityconfig
           mountPath: /usr/share/opensearch/plugins/opensearch-security/securityconfig
-        - name: certificates
-          mountPath: /usr/share/opensearch/config/http.truststore
-          subPath: http.truststore
       volumes:
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
       - name: securityconfig
         secret:
           secretName: {{ .Release.Name }}-securityconfig
@@ -120,4 +135,6 @@ spec:
         configMap:
           name: {{ .Release.Name}}-securityadmin
           defaultMode: 0755
+      - name: shared
+        emptyDir: {}
 {{- end }}

@@ -36,15 +36,15 @@ spec:
           --bootstrap-server $kafka --create  --topic {{ . }} \
           --partitions {{ ($.Values.kafka.replicas | int) }} \
           --replication-factor {{ (sub ($.Values.kafka.replicas | int) 1) }} \
-          --if-not-exists && {{ end -}}
-        {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka  --alter  \
-          --topic {{ . }} --partitions {{ ($.Values.kafka.replicas | int) }} \
-          --if-exists || true && {{ end -}}
+          --if-not-exists || true &&  {{ end -}}
         {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-configs.sh \
           --bootstrap-server $kafka  --alter \
           --entity-type topics --entity-name {{ . }} \
-          --add-config {{ $.Values.kafka.topics.config }} && {{ end -}} true"]
+          --add-config {{ $.Values.kafka.topics.config }} || true && {{ end -}}
+        {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-topics.sh \
+          --bootstrap-server $kafka  --alter  \
+          --topic {{ . }} --partitions {{ ($.Values.kafka.replicas | int) }} \
+          --if-exists || true && {{ end -}} true "]
         env:
         - name: kafka
           value: {{$.Release.Name}}-kafka-0:9092

@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.opensearch.inCluster }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

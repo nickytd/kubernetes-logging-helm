@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.opensearch.inCluster }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -39,7 +39,7 @@ data:
     /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
       -cacert /usr/share/opensearch/config/root-ca.pem \
       -cert /usr/share/opensearch/config/admin.pem \
-      -key /usr/share/opensearch/config/admin-key.pem \
+      -key /usr/share/opensearch/config/admin-key.key \
       -cd /usr/share/opensearch/plugins/opensearch-security/securityconfig/ \
       -h $os_node -sniff -nhnv -icl
 
@@ -48,7 +48,7 @@ data:
     /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
       -cacert /usr/share/opensearch/config/root-ca.pem \
       -cert /usr/share/opensearch/config/admin.pem \
-      -key /usr/share/opensearch/config/admin-key.pem \
+      -key /usr/share/opensearch/config/admin-key.key \
       -f /tmp/internal_users.yml \
       -h $os_node -sniff -nhnv -icl
 

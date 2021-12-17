@@ -1,4 +1,4 @@
-{{ if .Values.opensearch.in_cluster }}
+{{ if .Values.opensearch.inCluster }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,7 +10,7 @@ data:
       1:
         action: delete_indices
         description: >-
-          Delete indices older than {{ default 1 .Values.opensearch.retention_days }} days.
+          Delete indices older than {{ default 1 .Values.opensearch.retentionDays }} days.
           Ignore the error if the filter does not result in an
           actionable list of indices (ignore_empty_list) and exit cleanly.
         options:
@@ -24,7 +24,7 @@ data:
           direction: older
           timestring: '%Y.%m.%d'
           unit: days
-          unit_count: {{ default 1 .Values.opensearch.retention_days }}
+          unit_count: {{ default 1 .Values.opensearch.retentionDays }}
           exclude:
         - filtertype: kibana
           exclude: True

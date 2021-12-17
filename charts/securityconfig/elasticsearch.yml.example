@@ -92,7 +92,7 @@ plugins.security.audit.type: internal_opensearch
 #plugins.security.audit.config.username: auditloguser
 #plugins.security.audit.config.password: auditlogpassword
 #plugins.security.audit.config.enable_ssl: false
-#plugins.security.audit.config.verify_hostnames: false
+#plugins.security.audit.config.verifyHostnames: false
 #plugins.security.audit.config.enable_ssl_client_auth: false
 #plugins.security.audit.config.cert_alias: mycert
 #plugins.security.audit.config.pemkey_filepath: key.pem

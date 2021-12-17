@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.in_cluster }}
+{{- if .Values.opensearch.inCluster }}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -56,7 +56,7 @@ spec:
               subPath: curator.yml
             - name: certificates
               mountPath: /etc/root-ca.pem
-              subPath: root-ca.pem
+              subPath: caCert
           restartPolicy: OnFailure
           volumes:
           - name: init
@@ -71,5 +71,9 @@ spec:
               secretName: {{ .Release.Name }}-curator
           - name: certificates
             secret:
-              secretName: {{ .Release.Name }}-certificates
+              {{- if .Values.opensearch.inClusterCertificates.secretName }}
+              secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+              {{- else }}
+              secretName: {{ .Release.Name }}-cluster-certificates
+              {{- end }}
 {{- end }}

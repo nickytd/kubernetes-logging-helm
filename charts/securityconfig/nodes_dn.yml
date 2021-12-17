@@ -5,4 +5,4 @@ _meta:
 # Define nodesdn mapping name and corresponding values
 logging:
   nodes_dn:
-    - CN=*.logging.svc.cluster.local,OU=logging,O=K8S,C=DE
+    - CN=*.{{ .Release.Namespace }}.svc.cluster.local

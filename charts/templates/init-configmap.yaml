@@ -66,3 +66,35 @@ data:
       echo "retrying $os_url"
       sleep 5
     done
+
+  init_os_node.sh: |-
+    #!/bin/bash
+    set -e
+
+    for f in /config/*.pem
+    do
+      echo "converting $f key to pkcs8"
+
+      filename=$(basename -- "$f")
+      filename="${filename%.*}"
+
+      openssl pkcs8 -topk8 -inform PEM -outform PEM  \
+      -v1 PBE-SHA1-3DES -in $f -out "/shared/$filename.key" -nocrypt
+
+    done
+    chown 1000:1000 /shared && chmod 644 /shared/*
+
+    if [ "$1" = "-only-keys" ]; then
+      exit 0
+    fi
+
+    /sbin/sysctl -w vm.max_map_count=262144
+    chown 1000:1000  /data
+
+    if [ -d /snapshot ]; then
+      chown 1000:1000 /snapshot
+    fi
+
+
+
+

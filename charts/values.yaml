@@ -1,57 +1,60 @@
 # Default values for kubernetes-logging.
 # Global values
-cluster_name: "logging"
+clusterName: "logging"
 imagePullSecrets: []
-priority_class: "logging"
-storage_class: {}
+priorityClass: "logging"
+storageClass: {}
 
 # OFD configuration
-# A complete OFD setup is provisioned when "in_cluster" is set to true. It can
+# A complete OFD setup is provisioned when "inCluster" is set to true. It can
 # be scaled accordingly to the environment needs with the concrete
-# configurations of the nodes that follow. In case "in_cluster" is set to false,
+# configurations of the nodes that follow. In case "inCluster" is set to false,
 # logs are pushed to an external OS.
 opensearch:
   image: "opensearchproject/opensearch"
   imageTag: 1.2.1
   imagePullPolicy: IfNotPresent
-  single_node: false
-  in_cluster: true
+  singleNode: false
+  inCluster: true
   snapshot:
     enabled: false
-    storage_class: ""
+    storageClass: {}
     size: "5Gi"
-  retention_days: 7
-  additional_jvm_params: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
-  url: ""
+  retentionDays: 7
+  additionalJvmParams: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+  url: {}
   port: 9200
   user: "osadmin"
   password: "osadmin"
+  inClusterCertificates:
+    generateCertificates: true
+    sercretName: {}
   saml: {}
   #  enabled: false
-  #  idp: 
-  #    metadata_url:
-  #    entity_id:
+  #  idp:
+  #    metadataUrl:
+  #    entityId:
   #    cacerts:
-  #  sp: 
-  #    entity_id:
-  #  exchange_key: ""
-  #  admin_role: ""
-  #  viewer_role: ""
-  #  developer_role: ""
+  #  sp:
+  #    entityId:
+  #  exchangeKey: {}
+  #  adminRole: {}
+  #  viewerRole: {}
+  #  developerRole: {}
   oidc: {}
   #  enabled: false
-  #  discovery_url: ""
-  #  subject_key: "email"
-  #  roles_key: "roles"
-  #  admin_role: ""
-  #  viewer_role: ""
-  #  developer_role: ""
+  #  discoveryUrl: {}
+  #  subjectKey: "email"
+  #  rolesKey: "roles"
+  #  adminRole: {}
+  #  viewerRole: {}
+  #  developerRole: {}
   #  cacerts: {}
-  #  client_id: ""
-  #  client_secret: ""
+  #  clientId: {}
+  #  clientSecret: {}
   #  scope: "openid"
-  #  verify_hostnames: true
-  #  logout_url: 
+  #  verifyHostnames: true
+  #  logoutUrl:
 
 #Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
 os_curator:
@@ -62,35 +65,35 @@ os_curator:
 #Init container configuration. Used for multiple application startup checks
 init_container:
   image: "nickytd/init-container"
-  imageTag: "0.1.0"
+  imageTag: "1.0.0"
   imagePullPolicy: IfNotPresent
 
-# Configuration of OS master node if "in_cluster" is true
+# Configuration of OS master node if "inCluster" is true
 master:
   replicas: 1
   storage: "1Gi"
-  heap_size: "256m"
+  heapSize: "256m"
   resources:
     requests:
       memory: "700Mi"
     limits:
       memory: "700Mi"
-  storage_class: ""
-  priority_class: ""
+  storageClass: {}
+  priorityClass: {}
   tolerations: []
   affinity: {}
 
-# Configuration of OS coordination node if "in_cluster" is true
+# Configuration of OS coordination node if "inCluster" is true
 client:
   replicas: 1
-  heap_size: "512m"
+  heapSize: "512m"
   resources:
     requests:
       memory: "1000Mi"
     limits:
       memory: "2000Mi"
   ingress:
-    host: ""
+    host: {}
     path: "/"
     enabled: false
     annotations: {}
@@ -104,31 +107,31 @@ client:
   #  labelSelector:
   #    matchLabels:
   #      type: client
-  priority_class: ""
+  priorityClass: {}
 
-# Configuration of OS data node if "in_cluster" is true
+# Configuration of OS data node if "inCluster" is true
 data:
   replicas: 1
-  heap_size: "512m"
+  heapSize: "512m"
   storage: "1Gi"
   resources:
     requests:
       memory: "1000Mi"
     limits:
       memory: "2000Mi"
-  storage_class: ""
-  priority_class: ""
+  storageClass: {}
+  priorityClass: {}
   tolerations: []
   affinity: {}
 
-# When in_cluster is set to false it determines an external
+# When inCluster is set to false it determines an external
 # opensearch-dashboards instance. In this case only jobs creating index
 # templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
   image: "opensearchproject/opensearch-dashboards"
   imageTag: 1.2.0
-  in_cluster: true
-  url: ""
+  inCluster: true
+  url: {}
   replicas: 1
   extraEnvs:
   - name: "NODE_OPTIONS"
@@ -142,12 +145,12 @@ opensearch_dashboards:
     user: "developer"
     password: "develop"
   ingress:
-    host: ""
+    host: {}
     path: "/"
     enabled: false
     annotations: {}
     tls: {}
-  index_patterns:
+  indexPatterns:
     - containers
     - systemd
     - nginx
@@ -161,14 +164,14 @@ opensearch_dashboards:
       memory: "500Mi"
   tolerations: []
   affinity: {}
-  priority_class: ""
+  priorityClass: {}
 
 data_prepper:
   enabled: false
   image: opensearchproject/data-prepper
   imageTag: 1.1.1
   replicas: 1
-  heap_size: "256M"
+  heapSize: "256M"
   resources:
     requests:
       memory: "500Mi"
@@ -183,7 +186,7 @@ data_prepper:
   #  labelSelector:
   #    matchLabels:
   #      type: data-prepper
-  priority_class: ""  
+  priorityClass: {}
 
 fluentbit:
   image: "fluent/fluent-bit"
@@ -198,13 +201,13 @@ fluentbit:
       memory: "50Mi"
     limits:
       memory: "100Mi"
-  priority_class: ""
+  priorityClass: {}
   tolerations: []
   affinity: {}
   metrics:
     enabled: false
     interval: "30s"
-    namespace: ""
+    namespace: {}
 
 fluentd:
   replicas: 1
@@ -216,7 +219,7 @@ fluentd:
       memory: "100Mi"
     limits:
       memory: "500Mi"
-  priority_class: ""
+  priorityClass: {}
   tolerations: []
   affinity: {}
   topologySpreadConstraints: {}
@@ -234,18 +237,18 @@ kafka:
   replicas: 1
   image: "bitnami/kafka"
   imageTag: "2.8.1"
-  heap_size: "256m"
+  heapSize: "256m"
   storage: "1Gi"
   topics:
-    config: "retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
+    config: "max.message.bytes=10000000,retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
     name: ["containers"]
   resources:
     requests:
       memory: "600Mi"
     limits:
       memory: "600Mi"
-  storage_class: ""
-  priority_class: ""
+  storageClass: {}
+  priorityClass: {}
   tolerations: []
   affinity: {}
 
@@ -254,14 +257,14 @@ zookeeper:
   replicas: 1
   image: "zookeeper"
   imageTag: "3.7.0"
-  heap_size: "128m"
+  heapSize: "128m"
   storage: 1Gi
   resources:
     requests:
       memory: "300Mi"
     limits:
       memory: "300Mi"
-  storage_class: ""
-  priority_class: ""
+  storageClass: {}
+  priorityClass: {}
   tolerations: []
   affinity: {}

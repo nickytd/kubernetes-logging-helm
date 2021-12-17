@@ -1,4 +1,4 @@
-{{- if .Values.opensearch_dashboards.in_cluster }}
+{{- if .Values.opensearch_dashboards.inCluster }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,7 +16,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: opensearch-dashboards
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.opensearch_dashboards.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.opensearch_dashboards.priorityClass }}
       {{- with .Values.opensearch_dashboards.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -69,13 +69,13 @@ spec:
           subPath: opensearch_dashboards.yml
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/admin.pem
-          subPath: admin.pem
+          subPath: adminCert
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/admin-key.pem
-          subPath: admin-key.pem
+          subPath: adminKey
         {{- if .Values.opensearch.oidc.cacerts }}
         - name: oidc
           mountPath: /opt/opensearch-dashboards/config/openid-ca.pem
@@ -91,7 +91,12 @@ spec:
           defaultMode: 0755
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
+      - name: securityconfig
       {{- if .Values.opensearch.oidc.cacerts }}
       - name: oidc
         secret:

@@ -9,21 +9,21 @@ _meta:
 # Administrator privileges
 all_access:
   reserved: true
-  {{- with list .Values.opensearch.saml.admin_role .Values.opensearch.oidc.admin_role "administrator" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.adminRole .Values.opensearch.oidc.adminRole "administrator" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps external os user to admin role"
 
 administrator:
   reserved: true
-  {{- with list .Values.opensearch.saml.admin_role .Values.opensearch.oidc.admin_role "administrator" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.adminRole .Values.opensearch.oidc.adminRole "administrator" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps external os user to admin role"
 
 alerting_full_access:
   reserved: true
-  {{- with list .Values.opensearch.saml.admin_role .Values.opensearch.oidc.admin_role "administrator" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.adminRole .Values.opensearch.oidc.adminRole "administrator" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps external os user to admin role"
@@ -33,7 +33,7 @@ opensearch-dashboards_viewer:
   reserved: true
   users:
     - {{ .Values.opensearch_dashboards.readonly.user }}
-  {{- with list .Values.opensearch.saml.viewer_role .Values.opensearch.oidc.viewer_role "viewer" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.viewerRole .Values.opensearch.oidc.viewerRole "viewer" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps viewer backend role"
@@ -42,7 +42,7 @@ alerting_view_alerts:
   reserved: true
   users:
     - {{ .Values.opensearch_dashboards.readonly.user }}
-  {{- with list .Values.opensearch.saml.viewer_role .Values.opensearch.oidc.viewer_role "viewer" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.viewerRole .Values.opensearch.oidc.viewerRole "viewer" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps viewer backend role"
@@ -53,7 +53,7 @@ opensearch-dashboards_developer:
   reserved: true
   users:
     - {{ .Values.opensearch_dashboards.developer.user }}
-  {{- with list .Values.opensearch.saml.developer_role .Values.opensearch.oidc.developer_role "developer" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.developerRole .Values.opensearch.oidc.developerRole "developer" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}  
   description: "Maps developer backend role"
@@ -62,7 +62,7 @@ alerting_crud_alerts:
   reserved: true
   users:
     - {{ .Values.opensearch_dashboards.developer.user }}
-  {{- with list .Values.opensearch.saml.developer_role .Values.opensearch.oidc.developer_role "developer" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.developerRole .Values.opensearch.oidc.developerRole "developer" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps developer backend role"
@@ -70,7 +70,7 @@ alerting_crud_alerts:
 # kibana user  access
 kibana_user:
   reserved: true
-  {{- with list .Values.opensearch.saml.viewer_role .Values.opensearch.oidc.viewer_role .Values.opensearch.saml.developer_role .Values.opensearch.oidc.developer_role "viewer" "developer" | mustCompact | mustUniq }}
+  {{- with list .Values.opensearch.saml.viewerRole .Values.opensearch.oidc.viewerRole .Values.opensearch.saml.developerRole .Values.opensearch.oidc.developerRole "viewer" "developer" | mustCompact | mustUniq }}
   backend_roles: {{ . | toYaml | nindent 2 }}
   {{- end }}
   description: "Maps viewer and developer backend roles to opensearch-dashboards_user role"      

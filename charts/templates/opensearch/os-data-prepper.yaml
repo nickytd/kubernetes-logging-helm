@@ -17,7 +17,7 @@ spec:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: data-prepper
     spec:
-      priorityClassName: {{ default .Values.priority_class .Values.data_prepper.priority_class }}
+      priorityClassName: {{ default .Values.priorityClass .Values.data_prepper.priorityClass }}
       {{- with .Values.data_prepper.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
@@ -52,7 +52,7 @@ spec:
           subPath: data-prepper-config.yaml
         - name: certificates
           mountPath: /usr/share/data-prepper/root-ca.pem
-          subPath: root-ca.pem
+          subPath: caCert
         env:
         - name: os_url
           value: {{ include "os_url" . }}
@@ -67,8 +67,8 @@ spec:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
         - name: JAVA_OPTS
-          value: "-Xms{{ .Values.data_prepper.heap_size }} -Xmx{{ .Values.data_prepper.heap_size }} \
-                  {{ .Values.opensearch.additional_jvm_params }}"
+          value: "-Xms{{ .Values.data_prepper.heapSize }} -Xmx{{ .Values.data_prepper.heapSize }} \
+                  {{ .Values.opensearch.additionalJvmParams }}"
       initContainers:
       - name: init
         image: {{ include "init_container.image" . }}
@@ -103,5 +103,9 @@ spec:
           defaultMode: 0755
       - name: certificates
         secret:
-          secretName: {{ .Release.Name }}-certificates
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
 {{- end }}
