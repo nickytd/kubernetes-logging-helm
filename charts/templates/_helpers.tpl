@@ -127,3 +127,11 @@ Create zookeeper server str
 {{- $str -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Get certificates secret name
+*/}}
+{{- define "getSecretName" -}}
+{{- $res := printf "%s-%s" .namespace .name -}}
+{{- $res -}}
+{{- end -}}
