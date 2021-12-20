@@ -28,7 +28,7 @@ opensearch:
   password: "osadmin"
   inClusterCertificates:
     generateCertificates: true
-    sercretName: {}
+    secretName: {}
   saml: {}
   #  enabled: false
   #  idp:
