@@ -1,22 +1,22 @@
 {{- if and .Values.opensearch.inClusterCertificates.generateCertificates (not .Values.opensearch.inClusterCertificates.secretName) }}
 {{- $param := dict "name" "cluster-certificates" "namespace" .Release.Name -}}
 {{- $name := (include "getSecretName" $param ) -}}
-{{ $ca := genCA "logging" 3650 }}
-{{ $cn := printf "*.%s.svc.cluster.local" .Release.Namespace }}
-{{ $server := genSignedCert $cn nil nil 3650 $ca }}
-{{ $admin := genSignedCert "admin" nil nil 3650 $ca }}
 apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-cluster-certificates
   labels: {{ include "logging.labels" . | indent 4 }}
   annotations:
-    "helm.sh/hook": "pre-install"
+    "helm.sh/hook": "pre-install,pre-upgrade"
     "helm.sh/hook-delete-policy": "before-hook-creation"
 data:
   {{- $secret := lookup "v1" "Secret" .Release.Namespace $name -}}
   {{- if or (not $secret) (not $secret.data) }}
   # generate certificates if secret does not exists
+  {{ $ca := genCA "logging" 3650 }}
+  {{ $cn := printf "*.%s.svc.cluster.local" .Release.Namespace }}
+  {{ $server := genSignedCert $cn nil nil 3650 $ca }}
+  {{ $admin := genSignedCert "admin" nil nil 3650 $ca }}
   caCert: {{ b64enc $ca.Cert }}
   adminCert: {{ b64enc $admin.Cert }}
   adminKey: {{ b64enc $admin.Key }}
