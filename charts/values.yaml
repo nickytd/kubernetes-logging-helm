@@ -12,7 +12,7 @@ storageClass: {}
 # logs are pushed to an external OS.
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 1.2.1
+  imageTag: 1.2.3
   imagePullPolicy: IfNotPresent
   singleNode: false
   inCluster: true
@@ -169,7 +169,7 @@ opensearch_dashboards:
 data_prepper:
   enabled: false
   image: opensearchproject/data-prepper
-  imageTag: 1.1.1
+  imageTag: 1.2.1
   replicas: 1
   heapSize: "256M"
   resources:
@@ -190,7 +190,7 @@ data_prepper:
 
 fluentbit:
   image: "fluent/fluent-bit"
-  imageTag: "1.8.9"
+  imageTag: "1.8.11"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
