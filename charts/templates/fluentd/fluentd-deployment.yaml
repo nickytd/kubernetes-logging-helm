@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name}}-fluentd
   labels: {{ include "logging.labels" . | indent 4 }}
-    k8s-app: fluend
+    k8s-app: fluentd
 spec:
   replicas: {{ .Values.fluentd.replicas }}
   selector:
@@ -79,15 +79,15 @@ spec:
           httpGet:
             path: /metrics
             port: metrics
-          initialDelaySeconds: 60
-          periodSeconds: 60
+          initialDelaySeconds: 15
+          periodSeconds: 15
         ports:
         - name: metrics
           containerPort: 24231
           protocol: TCP
         volumeMounts:
-        - name: fluentd-buffer
-          mountPath: /fluentd/buffer
+        - name: fluentd-root
+          mountPath: /var/log/fluentd
         - name: fluentd-config
           mountPath: /fluentd/etc
         - name: certificates
@@ -101,7 +101,7 @@ spec:
         configMap:
           name: {{ .Release.Name}}-init
           defaultMode: 0755
-      - name: fluentd-buffer
+      - name: fluentd-root
         emptyDir: {}
       - name: fluentd-config
         configMap:
