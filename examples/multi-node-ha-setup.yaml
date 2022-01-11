@@ -3,7 +3,7 @@
 # Otherwise it deploys coordination, data and master nodes
 # The recommended configuration in scaled out setups is to disable single_node and enable kafka
 opensearch:
-  single_node: false  
+  singleNode: false
 
 # opensearch coordination node configuration
 data:
@@ -73,6 +73,7 @@ opensearch_dashboards:
 
 # Kafka should be enabled in scaled out configuration
 kafka:
+  enabled: true
   replicas: 2
   affinity:
     podAntiAffinity:
@@ -86,10 +87,6 @@ kafka:
               values:
               - kafka
           topologyKey: kubernetes.io/hostname
-
-  enabled: true
-  topics:
-    replication_factor: 1
 
 zookeeper:
   replicas: 2    

@@ -3,7 +3,7 @@
 # Otherwise it deploys coordination, data and master nodes
 # The recommended configuration in scaled out setups is to disable single_node and enable kafka
 opensearch:
-  single_node: true
+  singleNode: true
 
 # opensearch coordination node configuration
 client:
@@ -34,10 +34,6 @@ opensearch_dashboards:
       - hosts:
           - opensearch.local.dev
         secretName: opensearch-dashboards-tls  
-  index_patterns:
-    - containers
-    - systemd
-    - nginx    
 
 # Kafka should be enabled in scaled out configuration
 kafka:
