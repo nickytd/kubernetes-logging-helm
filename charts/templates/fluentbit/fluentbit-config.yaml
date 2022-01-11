@@ -9,13 +9,20 @@ data:
   # ======================================================
   fluent-bit.conf: |-
     [SERVICE]
-        Flush         1
-        Log_Level     info
-        Daemon        off
-        Parsers_File  parsers.conf
-        HTTP_Server   On
-        HTTP_Listen   0.0.0.0
-        HTTP_Port     2020
+        Flush                     1
+        Log_Level                 info
+        Daemon                    off
+        Parsers_File              parsers.conf
+        HTTP_Server               On
+        HTTP_Listen               0.0.0.0
+        HTTP_Port                 2020
+        storage.type              filesystem
+        storage.path              /var/log/flb-storage/
+        storage.sync              normal
+        storage.checksum          off
+        storage.backlog.mem_limit 50M
+        storage.max_chunks_up     512
+        storage.metrics           on
 
     @INCLUDE input-*.conf
     @INCLUDE filter-kubernetes.conf
@@ -46,7 +53,7 @@ data:
         Parser            docker
         {{- end }}
         Log_Level         info
-        multiline.parser docker, cri        
+        multiline.parser  cri, docker, go, python, java
 
   input-systemd.conf: |-
     [INPUT]
@@ -105,6 +112,7 @@ data:
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     On
+        Generate_ID         On
         tls                 On
         tls.Verify          On
         tls.ca_file         /fluent-bit/ssl/root-ca.pem
@@ -126,6 +134,7 @@ data:
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     On
+        Generate_ID         On
         tls                 On
         tls.Verify          On
         tls.ca_file         /fluent-bit/ssl/root-ca.pem
@@ -147,6 +156,7 @@ data:
         Trace_Error         On
         Suppress_Type_Name  On     
         Include_Tag_Key     On
+        Generate_ID         On
         tls                 On
         tls.Verify          On
         tls.ca_file         /fluent-bit/ssl/root-ca.pem
@@ -159,9 +169,11 @@ data:
         Match                         *
         Brokers                       {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
         Topics                        containers
+        Retry_Limit                   False
         timestamp_format              iso8601
         rdkafka.log.connection.close  false
         rdkafka.request.required.acks 1
+        rdkafka.message.max.bytes     10000000
 
   parsers.conf: |-
     [PARSER]
@@ -170,38 +182,12 @@ data:
         Regex       ^(?<host>[^ ]*) - (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<request_length>[^ ]*) (?<request_time>[^ ]*) \[(?<proxy_upstream_name>[^ ]*)\] (\[(?<proxy_alternative_upstream_name>[^ ]*)\] )?(?<upstream_addr>[^ ]*) (?<upstream_response_length>[^ ]*) (?<upstream_response_time>[^ ]*) (?<upstream_status>[^ ]*) (?<reg_id>[^ ]*).*$
         Time_Key    time
         Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name        json
-        Format      json
-        Time_Key    time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        # https://github.com/microsoft/fluentbit-containerd-cri-o-json-log/blob/main/config.yaml#L83
-        Name        cri
-        Format      regex
-        Regex       ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
-        Time_Key    time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
         
     [PARSER]
         # https://github.com/Yolean/fluent-bit-kubernetes-logging/blob/kustomize-base/base/parser-cri.conf#L9
         Name        kube-tag
         Format      regex
-        Regex       ^(?<pod_id>[^.]+)\.(?<namespace_name>[^.]+)\.(?<pod_name>[^.]+)\.(?<container_name>[^.]+)$    
-
-    [PARSER]
-        Name        docker
-        Format      json
-        Time_Key    time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L
-        Time_Keep   Off
-
-    [PARSER]
-        Name        logfmt
-        Format      logfmt
-        Time_Key    time
+        Regex       ^(?<pod_id>[^.]+)\.(?<namespace_name>[^.]+)\.(?<pod_name>[^.]+)\.(?<container_name>[^.]+)$
 
     [PARSER]
         Name        syslog
@@ -209,10 +195,3 @@ data:
         Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
         Time_Key    time
         Time_Format %b %d %H:%M:%S
-
-    [PARSER]
-        Name multiline
-        Format regex
-        Regex       ^(?<time>(\d)+(-\d+)+(\S)+\W(\S)+)(\s+)(?<action>\S+)(\s+)(?<on>\S+)(\s+)(?<content>.*)
-        Time_Key    time
-        Time_Format %Y-%m-%d %H:%M:%S.%L
