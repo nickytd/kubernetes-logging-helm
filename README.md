@@ -50,7 +50,7 @@ Kubernetes Logging stack helm chart parameters
 | opensearch.snapshot.size | Snapshot volume size | "5Gi" |
 
 
-# Opensearch Curator job configuration.
+# Opensearch Curator job configuration. 
 
 Used for daily cron job operations. For example maintaining the index retention.
 
@@ -60,7 +60,7 @@ Used for daily cron job operations. For example maintaining the index retention.
 | os_curator.imageTag | opensearch curator image tag | "5.8.4" |
 | os_curator.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
 
-# Init container configuration.
+# Init container configuration. 
 
 Used for multiple application startup checks.
 
@@ -169,13 +169,30 @@ Used for multiple application startup checks.
 | fluentbit.tolerarions | Fluentbit pod tolerations definition. All tainted nodes needs to be reflected in the tolerations array | [] |
 | fluentbit.metrics.enabled | Set to true to enable Prometheus metrics. Requires Prometheus Operator | false |
 | fluentbit.metrics.interval | Metrics scrape interval | "30s" |
-| fluentbit.metrics.namespace | Namespace where servicemonitor is created | "" |
+| fluentbit.metrics.namespace | Namespace where servicemonitor is created | "" | 
 
-# Fluentd configuration.
+
+# Logstash configuration.
+Opensearch [Logstash](https://opensearch.org/docs/latest/clients/logstash/index/) features a dedicated output plugin for opensearch
+|  Parameter | Description  | Default  |
+|---|---|---|
+| logstash.enabled | Set to false to disable logstash logs processing engine | true |
+| logstash.image | Logstash image registry | "opensearchproject/logstash-oss-with-opensearch-output-plugin" |
+| logstash.imageTag | Fluentd image tag | "7.16.2 |
+| logstash.replicas | Number of logstash instances | 1 |
+| logstash.heapSize | JVM Heap size of an opensearch logstash instance | "256M" |
+| logstash.affinity | Logstash pod affinity definition | {} |
+| logstash.priorityClass | Fluentd pod priority class | "" |
+| logstash.resources | Fluentd pod resource definition | {} |
+| logstash.tolerarions | Fluentd pod tolerations definition | [] |
+| logstash.topologySpreadConstraints | Fluentd scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
+
+# Fluentd configuration. 
 Fluentd is supplied only when kafka.enabled is set to true.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
+| fluentd.enabled | Set to true to provision a fluentd instance. Disable logstash to avoid running multiple logs processing engines. | false |
 | fluentd.image | Fluentd image registry | "nickytd/fluentd" |
 | fluentd.imageTag | Fluentd image tag | "v1.13" |
 | fluentd.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |
@@ -187,7 +204,7 @@ Fluentd is supplied only when kafka.enabled is set to true.
 | fluentd.tolerarions | Fluentd pod tolerations definition | [] |
 | fluentd.topologySpreadConstraints | Fluentd scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
 
-# Kafka configuration.
+# Kafka configuration. 
 Kafka is used in scaled out scenario when a message broker is inserted on the logs stream.
 
 |  Parameter | Description  | Default  |
@@ -207,7 +224,7 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 | kafka.tolerarions | Kafka pod tolerations definition | [] |
 
 
-# Zookeeper (dependency of kafka)
+#Zookeeper is a dependency of kafka
 
 |  Parameter | Description  | Default  |
 |---|---|---|
@@ -222,3 +239,7 @@ Kafka is used in scaled out scenario when a message broker is inserted on the lo
 | zookeeper.storage | Zookeeper pod persistent storage size | "1Gi" |
 | zookeeper.storageClass | Storage class of the persistence volume | "1Gi" |
 | zookeeper.tolerarions | Zookeeper pod tolerations definition | [] |
+
+Example configuration:
+ 1. [single node setup](https://github.com/nickytd/kubernetes-logging-helm/blob/ddc174e6fef71e375f1e27fa3ce5188a2831aeb5/examples/single-node-setup.yaml)
+ 2. [multi node ha setup](https://github.com/nickytd/kubernetes-logging-helm/blob/ddc174e6fef71e375f1e27fa3ce5188a2831aeb5/examples/multi-node-ha-setup.yaml)
