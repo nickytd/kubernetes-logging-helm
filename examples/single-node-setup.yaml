@@ -39,6 +39,12 @@ opensearch_dashboards:
 kafka:
   enabled: false
 
+logstash:
+  enabled: false
+
+fluend:
+  enabled: false
+
 fluentbit:
   containersLogsHostPath: /var/log/pods
   #adjust host path if needed
