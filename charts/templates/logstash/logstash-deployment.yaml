@@ -114,4 +114,10 @@ spec:
           {{- else }}
           secretName: {{ .Release.Name }}-cluster-certificates
           {{- end }}
+      {{- with .Values.logstash.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.logstash.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
