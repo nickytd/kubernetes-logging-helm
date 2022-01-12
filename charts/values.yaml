@@ -72,12 +72,12 @@ init_container:
 master:
   replicas: 1
   storage: "1Gi"
-  heapSize: "256m"
+  heapSize: "256M"
   resources:
     requests:
-      memory: "700Mi"
+      memory: "600Mi"
     limits:
-      memory: "700Mi"
+      memory: "600Mi"
   storageClass: {}
   priorityClass: {}
   tolerations: []
@@ -86,7 +86,7 @@ master:
 # Configuration of OS coordination node if "inCluster" is true
 client:
   replicas: 1
-  heapSize: "512m"
+  heapSize: "512M"
   resources:
     requests:
       memory: "1000Mi"
@@ -112,7 +112,7 @@ client:
 # Configuration of OS data node if "inCluster" is true
 data:
   replicas: 1
-  heapSize: "512m"
+  heapSize: "512M"
   storage: "1Gi"
   resources:
     requests:
@@ -174,9 +174,9 @@ data_prepper:
   heapSize: "256M"
   resources:
     requests:
-      memory: "500Mi"
+      memory: "600Mi"
     limits:
-      memory: "500Mi"
+      memory: "600Mi"
   tolerations: []
   affinity: {}
   topologySpreadConstraints: {}
@@ -209,7 +209,36 @@ fluentbit:
     interval: "30s"
     namespace: {}
 
+## Logstash is the recommended approach for delivering log stream to opensearch
+## kafka -> logstash -> opensearch
+## Note: kafka needs to be enabled as well
+logstash:
+  enabled: true
+  image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
+  imageTag: "7.16.2"
+  replicas: 1
+  heapSize: "256M"
+  resources:
+    requests:
+      memory: "600Mi"
+    limits:
+      memory: "600Mi"
+  priorityClass: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: {}
+  #- maxSkew: 1
+  #  topologyKey: kubernetes.io/hostname
+  #  whenUnsatisfiable: ScheduleAnyway
+  #  labelSelector:
+  #    matchLabels:
+  #      type: logstash
+
+## Logstash is the recommended approach for delivering log stream to opensearch
+## kafka -> logstash -> opensearch
+## Fluentd is now deprecated and will be removed in the next major release
 fluentd:
+  enabled: false
   replicas: 1
   image: "nickytd/fluentd"
   imageTag: "v1.13"
@@ -228,7 +257,7 @@ fluentd:
   #  whenUnsatisfiable: ScheduleAnyway
   #  labelSelector:
   #    matchLabels:
-  #      k8s-app: fluentd
+  #      type: fluentd
 
 # In scaled out setup kafka queues are used as ingestion points to accommodate
 # spiked in the logging stream volumes.
@@ -237,7 +266,7 @@ kafka:
   replicas: 1
   image: "bitnami/kafka"
   imageTag: "2.8.1"
-  heapSize: "256m"
+  heapSize: "256M"
   storage: "1Gi"
   topics:
     config: "max.message.bytes=10000000,retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
@@ -257,7 +286,7 @@ zookeeper:
   replicas: 1
   image: "zookeeper"
   imageTag: "3.7.0"
-  heapSize: "128m"
+  heapSize: "128M"
   storage: 1Gi
   resources:
     requests:

@@ -1,4 +1,4 @@
-{{- if .Values.kafka.enabled }} 
+{{- if and .Values.kafka.enabled .Values.fluentd.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -205,4 +205,4 @@ data:
       </match>
     </label>
 
-{{ end }}    
+{{- end }}

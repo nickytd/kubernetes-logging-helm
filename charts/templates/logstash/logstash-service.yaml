@@ -1,0 +1,20 @@
+{{- if and .Values.kafka.enabled .Values.logstash.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-logstash
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: monitoring-api
+    port: 9600
+    targetPort: monitoring-api
+{{- if not .Values.kafka.enabled }}
+  - name: containers
+    port: 5044
+    targetPort: containers
+{{- end }}
+  selector: {{ include "logging.selectorLabels" . | indent 4 }}
+    type: logstash
+{{- end }}

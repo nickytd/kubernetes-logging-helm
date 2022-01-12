@@ -1,7 +1,7 @@
-{{- if and .Values.kafka.enabled .Values.fluentd.enabled }}
+{{- if and .Values.kafka.enabled .Values.logstash.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Release.Name}}-fluentd
+  name: {{ .Release.Name}}-logstash
   labels: {{ include "logging.labels" . | indent 4 }}
 {{- end }}

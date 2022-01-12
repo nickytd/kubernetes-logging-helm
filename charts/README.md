@@ -171,11 +171,28 @@ Used for multiple application startup checks.
 | fluentbit.metrics.interval | Metrics scrape interval | "30s" |
 | fluentbit.metrics.namespace | Namespace where servicemonitor is created | "" | 
 
+
+# Logstash configuration.
+Opensearch [Logstash](https://opensearch.org/docs/latest/clients/logstash/index/) features a dedicated output plugin for opensearch
+|  Parameter | Description  | Default  |
+|---|---|---|
+| logstash.enabled | Set to false to disable logstash logs processing engine | true |
+| logstash.image | Logstash image registry | "opensearchproject/logstash-oss-with-opensearch-output-plugin" |
+| logstash.imageTag | Fluentd image tag | "7.16.2 |
+| logstash.replicas | Number of logstash instances | 1 |
+| logstash.heapSize | JVM Heap size of an opensearch logstash instance | "256M" |
+| logstash.affinity | Logstash pod affinity definition | {} |
+| logstash.priorityClass | Fluentd pod priority class | "" |
+| logstash.resources | Fluentd pod resource definition | {} |
+| logstash.tolerarions | Fluentd pod tolerations definition | [] |
+| logstash.topologySpreadConstraints | Fluentd scheduling spread configuration. If possible the workload can be evenly distributed among cluster nodes | {} |
+
 # Fluentd configuration. 
 Fluentd is supplied only when kafka.enabled is set to true.
 
 |  Parameter | Description  | Default  |
 |---|---|---|
+| fluentd.enabled | Set to true to provision a fluentd instance. Disable logstash to avoid running multiple logs processing engines. | false |
 | fluentd.image | Fluentd image registry | "nickytd/fluentd" |
 | fluentd.imageTag | Fluentd image tag | "v1.13" |
 | fluentd.imagePullPolicy | Sets container image pull policy | "IfNotPresent" |

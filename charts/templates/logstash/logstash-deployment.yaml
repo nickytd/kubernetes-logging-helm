@@ -1,0 +1,117 @@
+{{- if and .Values.kafka.enabled .Values.logstash.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-logstash
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.logstash.replicas}}
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+      type: logstash
+  template:
+    metadata:
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        type: logstash
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/logstash/logstash-configmap.yaml") . | sha256sum }}
+    spec:
+      priorityClassName: {{ default .Values.priorityClass .Values.logstash.priorityClass }}
+      serviceAccountName: {{ .Release.Name}}-logstash
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.logstash.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        {{- if .Values.kafka.enabled }}
+        command: ["sh","-c",'/init/check_os.sh && /init/check_host_port.sh $kafka 9092']
+        {{- else }}
+        command: ["sh","-c",'/init/check_os.sh']
+        {{- end }}
+        env:
+        - name: os_url
+          value: {{ include "os_url" . }}
+        - name: os_user
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
+        - name: os_pass
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
+        - name: kafka
+          value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}
+        volumeMounts:
+        - mountPath: "/init"
+          name: init
+      containers:
+      - name: logstash
+        image: {{ .Values.logstash.image }}:{{ .Values.logstash.imageTag }}
+        resources: {{ toYaml .Values.logstash.resources | nindent 10 }}
+        ports:
+        - containerPort: 9600
+          name: monitoring-api
+          protocol: TCP
+        {{- if not .Values.kafka.enabled }}
+        - containerPort: 5044
+          name: containers
+          protocol: TCP
+        {{- end }}
+        env:
+        - name: os_url
+          value: {{ include "os_url" . }}
+        - name: os_user
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: username
+        - name: os_pass
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-credentials-admin
+              key: password
+        - name: kafka_brokers
+          value: {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+        - name: LS_JAVA_OPTS
+          value: "-Xms{{ .Values.logstash.heapSize }} -Xmx{{ .Values.logstash.heapSize }}"
+        volumeMounts:
+        - mountPath: "/usr/share/logstash/config/logstash.yml"
+          subPath: logstash.yml
+          name: config
+        - mountPath: "/usr/share/logstash/config/pipelines.yml"
+          subPath: pipelines.yml
+          name: config
+        - mountPath: "/usr/share/logstash/config/log4j2.properties"
+          subPath: log4j2.properties
+          name: config
+        {{- range $path, $bytes := .Files.Glob "index-pipelines/*.*" }}
+        - mountPath: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
+          subPath: {{ printf "%s" (base $path) }}
+          name: config
+        {{- end }}
+        - name: certificates
+          mountPath: /usr/share/logstash/config/root-ca.pem
+          subPath: caCert
+      volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: config
+        configMap:
+          name: {{ .Release.Name}}-logstash
+      - name: certificates
+        secret:
+          {{- if .Values.opensearch.inClusterCertificates.secretName }}
+          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
+          {{- else }}
+          secretName: {{ .Release.Name }}-cluster-certificates
+          {{- end }}
+{{- end }}
