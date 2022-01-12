@@ -26,6 +26,7 @@ data:
 
     @INCLUDE input-*.conf
     @INCLUDE filter-kubernetes.conf
+    @INCLUDE filter-de_dot.conf
     @INCLUDE filter-parser.conf
     @INCLUDE filter-rewrite.conf
     {{- if .Values.kafka.enabled }}
@@ -81,7 +82,14 @@ data:
         K8S-Logging.Exclude On
         Labels              On
         Kube_Meta_Cache_TTL 60s
-        Annotations         Off         
+        Annotations         Off
+
+  filter-de_dot.conf: |-
+    [FILTER]
+        Name    lua
+        Match   kube.*
+        script  /fluent-bit/etc/dedot.lua
+        call    dedot
   
   filter-parser.conf: |-
     [FILTER]
@@ -195,3 +203,34 @@ data:
         Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
         Time_Key    time
         Time_Format %b %d %H:%M:%S
+
+  dedot.lua: |-
+    function dedot(tag, timestamp, record)
+      if record["kubernetes"] == nil then
+        return 0, 0, 0
+      end
+      dedot_keys(record["kubernetes"]["annotations"])
+      dedot_keys(record["kubernetes"]["labels"])
+      return 1, timestamp, record
+    end
+
+    function dedot_keys(map)
+        if map == nil then
+            return
+        end
+        local new_map = {}
+        local changed_keys = {}
+        for k, v in pairs(map) do
+            local dedotted = string.gsub(k, "%.", "_")
+            if dedotted ~= k then
+                new_map[dedotted] = v
+                changed_keys[k] = true
+            end
+        end
+        for k in pairs(changed_keys) do
+            map[k] = nil
+        end
+        for k, v in pairs(new_map) do
+            map[k] = v
+        end
+    end
