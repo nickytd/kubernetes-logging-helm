@@ -78,7 +78,7 @@ spec:
         volumeMounts:
         - name: kafka-data
           mountPath: /kafka  
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 10
       volumes:
       - name: init
         configMap:

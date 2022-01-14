@@ -98,6 +98,7 @@ client:
     enabled: false
     annotations: {}
     tls: {}
+  priorityClass: {}
   tolerations: []
   affinity: {}
   topologySpreadConstraints: {}
@@ -107,7 +108,6 @@ client:
   #  labelSelector:
   #    matchLabels:
   #      type: client
-  priorityClass: {}
 
 # Configuration of OS data node if "inCluster" is true
 data:
@@ -162,9 +162,9 @@ opensearch_dashboards:
       memory: "500Mi"
     limits:
       memory: "500Mi"
+  priorityClass: {}
   tolerations: []
   affinity: {}
-  priorityClass: {}
 
 data_prepper:
   enabled: false
@@ -177,6 +177,7 @@ data_prepper:
       memory: "600Mi"
     limits:
       memory: "600Mi"
+  priorityClass: {}
   tolerations: []
   affinity: {}
   topologySpreadConstraints: {}
@@ -186,7 +187,6 @@ data_prepper:
   #  labelSelector:
   #    matchLabels:
   #      type: data-prepper
-  priorityClass: {}
 
 fluentbit:
   image: "fluent/fluent-bit"
@@ -257,7 +257,7 @@ fluentd:
   #  whenUnsatisfiable: ScheduleAnyway
   #  labelSelector:
   #    matchLabels:
-  #      type: fluentd
+  #      k8s-app: fluentd
 
 # In scaled out setup kafka queues are used as ingestion points to accommodate
 # spiked in the logging stream volumes.

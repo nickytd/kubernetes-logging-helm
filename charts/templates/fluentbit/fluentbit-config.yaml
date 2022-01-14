@@ -16,13 +16,19 @@ data:
         HTTP_Server               On
         HTTP_Listen               0.0.0.0
         HTTP_Port                 2020
+        net.connect_timeout_log_error true
+        net.connect_timeout           100
+        net.keepalive                 on
+        net.keepalive_idle_timeout    60
+        net.dns.mode                  TCP
         storage.type              filesystem
         storage.path              /var/log/flb-storage/
         storage.sync              normal
         storage.checksum          off
         storage.backlog.mem_limit 50M
-        storage.max_chunks_up     512
+        storage.max_chunks_up     1000
         storage.metrics           on
+
 
     @INCLUDE input-*.conf
     @INCLUDE filter-kubernetes.conf
@@ -42,17 +48,13 @@ data:
         Tag_Regex         /var/log/pods/(?<namespace_name>[^_/]+)_(?<pod_name>[^_/]+)_(?<pod_id>[^_/]+)/(?<container_name>[^/]+)/.*
         Path              /var/log/pods/*/*/*.log
         DB                /var/log/flb_kube.db
-        Mem_Buf_Limit     10MB
+        Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
+        Mem_Buf_Limit     50MB
         Buffer_Max_Size   5MB
         Buffer_Chunk_Size 1024k
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Read_from_Head    False
-        {{- if eq .Values.fluentbit.containersRuntime "containerd" }}
-        Parser            cri
-        {{- else }}
-        Parser            docker
-        {{- end }}
         Log_Level         info
         multiline.parser  cri, docker, go, python, java
 
@@ -119,7 +121,8 @@ data:
         Retry_Limit         False
         Trace_Error         On
         Suppress_Type_Name  On
-        Include_Tag_Key     On
+        Include_Tag_Key     Off
+        Time_Key_Nanos      Off
         Generate_ID         On
         tls                 On
         tls.Verify          On
@@ -141,7 +144,8 @@ data:
         Retry_Limit         False
         Trace_Error         On
         Suppress_Type_Name  On
-        Include_Tag_Key     On
+        Include_Tag_Key     Off
+        Time_Key_Nanos      Off
         Generate_ID         On
         tls                 On
         tls.Verify          On
@@ -163,7 +167,8 @@ data:
         Retry_Limit         False
         Trace_Error         On
         Suppress_Type_Name  On     
-        Include_Tag_Key     On
+        Include_Tag_Key     Off
+        Time_Key_Nanos      Off
         Generate_ID         On
         tls                 On
         tls.Verify          On
@@ -179,9 +184,11 @@ data:
         Topics                        containers
         Retry_Limit                   False
         timestamp_format              iso8601
-        rdkafka.log.connection.close  false
-        rdkafka.request.required.acks 1
-        rdkafka.message.max.bytes     10000000
+        rdkafka.log.connection.close          false
+        rdkafka.request.required.acks         all
+        rdkafka.message.max.bytes             10000000
+        rdkafka.queue.buffering.max.ms        50
+        rdkafka.client.id                     ${HOSTNAME}
 
   parsers.conf: |-
     [PARSER]

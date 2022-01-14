@@ -19,6 +19,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/opensearch/os-configmap.yaml") . | sha256sum }}
         checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
+        checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: master
         node: os

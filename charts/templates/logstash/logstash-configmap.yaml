@@ -14,7 +14,6 @@ data:
   pipelines.yml: |-
 {{- range $path, $bytes := .Files.Glob "index-pipelines/*-pipeline.conf" }}
     - pipeline.id: {{ printf "%s" (base $path) }}
-      pipeline.workers: 2
       path.config: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
       pipeline.ecs_compatibility: disabled
 {{ end }}
@@ -42,10 +41,7 @@ data:
     logger.opensearch_output.level = warn
 
     logger.inputs_kafka.name=logstash.inputs.kafka
-    logger.inputs_kafka.level=error
-
-    logger.filters_json.name=logstash.filters.json
-    logger.filters_json.level=error
+    logger.inputs_kafka.level=warn
 
     #slowlog.threshold.warn: 2s
     #slowlog.threshold.info: 1s
@@ -67,8 +63,9 @@ data:
     http.host: "0.0.0.0"
     path.settings: /usr/share/logstash/config
     queue.type: persisted
-    pipeline.batch.size: 125
+    pipeline.batch.size: 1000
+    pipeline.workers: 10
     log.format: plain
-    log.level: error
+    log.level: warn
  
 {{- end }}
