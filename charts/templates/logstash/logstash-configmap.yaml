@@ -12,10 +12,12 @@ data:
 {{ end }}
 
   pipelines.yml: |-
+    - pipeline.id: distributor
+      path.config: /usr/share/logstash/pipeline/{00_input,01_filter,02_distributor}.conf
+
 {{- range $path, $bytes := .Files.Glob "index-pipelines/*-pipeline.conf" }}
     - pipeline.id: {{ printf "%s" (base $path) }}
       path.config: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
-      pipeline.ecs_compatibility: disabled
 {{ end }}
 
   log4j2.properties: |-
@@ -62,10 +64,17 @@ data:
   logstash.yml: |-
     http.host: "0.0.0.0"
     path.settings: /usr/share/logstash/config
+
     queue.type: persisted
+    queue.drain: true
+
     pipeline.batch.size: 1000
     pipeline.workers: 10
+    pipeline.ecs_compatibility: disabled
+
     log.format: plain
     log.level: warn
+
+    config.reload.automatic: true
  
 {{- end }}
