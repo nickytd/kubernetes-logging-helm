@@ -27,9 +27,7 @@ opensearch-dashboards_viewer:
     - "cluster_composite_ops_ro"
   index_permissions:
     - index_patterns:  
-        - "containers-*"
-        - "systemd-*"
-        - "nginx-*"
+        - "*"
       allowed_actions:
         - "read"        
         - "search"
@@ -47,9 +45,7 @@ opensearch-dashboards_developer:
     - "cluster:admin/opensearch/reports/*"     
   index_permissions:
     - index_patterns:
-        - "containers-*"
-        - "systemd-*"
-        - "nginx-*"
+        - "*"
       allowed_actions:
         - "get"
         - "read"       
