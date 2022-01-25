@@ -55,51 +55,18 @@ data:
       3:
         action: alias
         description: >-
-          Alias newly created indices under journals alias
+          Alias newly created indices under systemd alias
         options:
           ignore_empty_list: True
-          name: journals
+          name: systemd
           warn_if_no_indices: False
           disable_action: False
         add:
           filters:
           - filtertype: pattern
             kind: prefix
-            value: journals-
+            value: systemd-
             exclude:
-
-      4:
-        action: alias
-        description: >-
-          Alias newly created indices under beats alias
-        options:
-          ignore_empty_list: True
-          name: beats
-          warn_if_no_indices: False
-          disable_action: False
-        add:
-          filters:
-          - filtertype: pattern
-            kind: prefix
-            value: beats-
-            exclude:
-
-      5:
-        action: alias
-        description: >-
-          Alias newly created indices under metrics alias
-        options:
-          ignore_empty_list: True
-          name: metrics
-          warn_if_no_indices: False
-          disable_action: False
-        add:
-          filters:
-          - filtertype: pattern
-            kind: prefix
-            value: metrics-
-            exclude:
-
       6:
         action: alias
         description: >-

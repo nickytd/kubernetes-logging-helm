@@ -1,12 +1,11 @@
-{{ if .Values.opensearch.inCluster }}
+{{- if .Values.opensearch.inCluster }}
 apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Release.Name }}-curator
   labels: {{ include "logging.labels" . | indent 4 }}
 stringData:
-  curator.yml: |+
-    ---
+  curator.yml: |-
     # Remember, leave a key empty if there is no value.  None will be a string,
     # not a Python "NoneType"
     client:
@@ -22,10 +21,10 @@ stringData:
       password: {{ .Values.opensearch.password }}
       timeout: 300
       master_only: false
-
     logging:
-      loglevel: ERROR
+      loglevel: INFO
       logfile:
       logformat: json
       blacklist: ['urllib3']
+
 {{- end }}
