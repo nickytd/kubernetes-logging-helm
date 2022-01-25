@@ -297,3 +297,10 @@ zookeeper:
   priorityClass: {}
   tolerations: []
   affinity: {}
+
+# additional annotations for chart jobs
+# example argoCD requires its specific annotations
+additionalJobAnnotations: {}
+  #"argocd.argoproj.io/hook": Sync
+  #"argocd.argoproj.io/sync-wave": "0"
+  #"argocd.argoproj.io/hook-delete-policy": BeforeHookCreation,HookSucceeded

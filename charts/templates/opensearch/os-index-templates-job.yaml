@@ -8,6 +8,9 @@ metadata:
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-weight": "-9"
     "helm.sh/hook-delete-policy": "before-hook-creation"
+    {{- with .Values.additionalJobAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   backoffLimit: 10
   template:
