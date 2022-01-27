@@ -65,7 +65,7 @@ os_curator:
 #Init container configuration. Used for multiple application startup checks
 init_container:
   image: "nickytd/init-container"
-  imageTag: "1.0.0"
+  imageTag: "1.0.2"
   imagePullPolicy: IfNotPresent
 
 # Configuration of OS master node if "inCluster" is true
