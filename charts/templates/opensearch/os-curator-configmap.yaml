@@ -51,7 +51,6 @@ data:
             kind: prefix
             value: containers-
             exclude:
-
       3:
         action: alias
         description: >-
@@ -67,18 +66,4 @@ data:
             kind: prefix
             value: systemd-
             exclude:
-      6:
-        action: alias
-        description: >-
-          Alias for all indices
-        options:
-          ignore_empty_list: True
-          name: all
-          warn_if_no_indices: False
-          disable_action: False
-        add:
-          filters:
-          - filtertype: pattern
-            kind: timestring
-            value: '%Y.%m.%d'
 {{- end }}
