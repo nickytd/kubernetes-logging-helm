@@ -33,8 +33,8 @@ data:
     @INCLUDE input-*.conf
     @INCLUDE filter-kubernetes.conf
     @INCLUDE filter-de_dot.conf
-    @INCLUDE filter-parser.conf
     @INCLUDE filter-rewrite.conf
+    @INCLUDE filter-parser.conf
     {{- if .Values.kafka.enabled }}
     @INCLUDE output-kafka.conf
     {{- else }}
@@ -92,20 +92,20 @@ data:
         Match   kube.*
         script  /fluent-bit/etc/dedot.lua
         call    dedot
-  
-  filter-parser.conf: |-
-    [FILTER]
-        Name                parser
-        Match               kube.*
-        Key_Name            log
-        Parser              k8s-nginx-ingress
-        Reserve_Data        True
 
   filter-rewrite.conf: |-
     [FILTER]
         Name          rewrite_tag
         Match         kube.*
-        Rule          $kubernetes['labels']['app.kubernetes.io/name'] "^(ingress-nginx)$" nginx false
+        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
+
+  filter-parser.conf: |-
+    [FILTER]
+        Name                parser
+        Match               nginx
+        Key_Name            log
+        Parser              k8s-nginx-ingress
+        Reserve_Data        True
 
   output-opensearch-nginx.conf: |-
     [OUTPUT]
