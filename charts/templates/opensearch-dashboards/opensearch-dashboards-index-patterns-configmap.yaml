@@ -23,10 +23,12 @@ data:
     #!/bin/bash
 
     echo "opensearch_dashboards URL: $opensearch_dashboards_URL"
-    echo "opensearch_dashboards USER: $opensearch_dashboards_USER"
-    #echo "opensearch_dashboards PASSWORD: $opensearch_dashboards_PASSWORD"
-    echo "opensearch_dashboards DEVELOPER USER: $opensearch_dashboards_DEVELOPER_USER"
-    #echo "opensearch_dashboards DEVELOPER PASSWORD: $opensearch_dashboards_DEVELOPER_PASSWORD"
+    version=`curl -sS -X GET -u$opensearch_dashboards_USER:$opensearch_dashboards_PASSWORD \
+        $opensearch_dashboards_URL/api/status | jq '.version.number'`
+
+    version="${version%\"}"
+    version="${version#\"}"
+    echo "opensearch-dashboards VERSION: ${version}"
     echo "INDEX_PATTERNS: $INDEX_PATTERNS"
     echo "TENANTS: $TENANTS"
 
@@ -38,18 +40,9 @@ data:
     IFS=',' read -ra PATTERNS <<< "$INDEX_PATTERNS"
     IFS=',' read -ra TENANTS <<< "$TENANTS"
 
-    version=`curl -sS -X GET -u$opensearch_dashboards_USER:$opensearch_dashboards_PASSWORD \
-        $opensearch_dashboards_URL/api/status | jq '.version.number'`
-
-    version="${version%\"}"
-    version="${version#\"}"
-
-    echo "opensearch-dashboards VERSION: ${version}"
-
-
     for tenant in "${TENANTS[@]}"; do
-
-      echo "setting up opensearch-dashboards ${tenant} tenant"
+      echo
+      echo "### setting up ${tenant} tenant ###"
 
       if [ $tenant == "Developer" ]; then
         opensearch_dashboards_USER_=$opensearch_dashboards_DEVELOPER_USER
@@ -59,70 +52,57 @@ data:
         opensearch_dashboards_PASSWORD_=$opensearch_dashboards_PASSWORD
       fi
 
+      echo "Importing saved objects for ${tenant} tenant"
+      for f in /saved_objects/* ; do
+        result=`curl -s -w "%{http_code}" -X POST -u${opensearch_dashboards_USER_}:${opensearch_dashboards_PASSWORD_} \
+          ${opensearch_dashboards_URL}/api/saved_objects/_import\?overwrite=true \
+          -H "securitytenant: ${tenant}" -H "osd-xsrf: true" --form file=@${f}`
 
-      for i in "${PATTERNS[@]}"; do
-
-        if [ "${i}" == "all" ]; then
-          pattern="${i}"
+        if [[ "${result}" =~ "200" ]]; then
+          echo "${f} imported"
         else
-          pattern="${i}-*"
+          echo "importing ${f} failed"
+          echo "${result}"
         fi
+      done
 
-        check=`curl -s -w "%{http_code}" -X GET -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
-          -H "securitytenant: ${tenant}" $opensearch_dashboards_URL/api/saved_objects/index-pattern/${pattern}`
+      for pattern in "${PATTERNS[@]}"; do
 
-        if [[ "$check" =~ "404" ]]; then
-
-            result=`curl -s -w "%{http_code}" -X POST -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
-              $opensearch_dashboards_URL/api/saved_objects/index-pattern/${pattern} \
+            result=`curl -s -w "%{http_code}" -X POST -u${opensearch_dashboards_USER_}:${opensearch_dashboards_PASSWORD_} \
+              ${opensearch_dashboards_URL}/api/saved_objects/index-pattern/${pattern}-*\?overwrite=true \
               -H "securitytenant: ${tenant}" -H "osd-xsrf: true" -H "Content-Type: application/json" \
-              -d "{\"attributes\": {\"title\": \"${pattern}\",\"timeFieldName\": \"@timestamp\"}}"`
+              -d "{ \
+                    \"attributes\": { \
+                        \"title\":\"${pattern}-*\", \
+                        \"timeFieldName\":\"@timestamp\", \
+                        \"refresh_fields\":true \
+                    } \
+                  }"`
 
-          if [[ "${result}" =~ "200" ]]; then
-            echo "index pattern ${tenant}/${pattern} created successfully"
-          else
-            echo "creating index pattern: ${tenant}/${pattern} failed"
-          fi
-
-        elif [[ "$check" =~ "200" ]]; then
-          echo "index pattern ${tenant}/${pattern} already exist"
-        else
-           echo "checking index pattern ${tenant}/${pattern} returns: $check"
-        fi
+            if [[ "${result}" =~ "200" ]]; then
+              echo "index pattern ${tenant}/${pattern}-* created successfully"
+            else
+              echo "creating index pattern: ${tenant}/${pattern}-* failed"
+              echo "${result}"
+            fi
 
       done
 
-
-      if [ "${PATTERNS[0]}" == "all" ]; then
-        default="all"
-      else
-        default="${PATTERNS[0]}-*"
-      fi
-
-      echo "setting default index pattern: $default"
-
-      result=`curl -v -s -w "%{http_code}" -X POST -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
-          $opensearch_dashboards_URL/api/saved_objects/config/${version} \
+      default="${PATTERNS[0]}"
+      result=`curl -s -w "%{http_code}" -X POST -u${opensearch_dashboards_USER_}:${opensearch_dashboards_PASSWORD_} \
+          ${opensearch_dashboards_URL}/api/saved_objects/config/${version}\?overwrite=true \
           -H "securitytenant: ${tenant}" -H "osd-xsrf: true" -H "Content-Type: application/json" \
-          -d "{\"attributes\": {\"defaultIndex\": \"${default}\"}}"`
+          -d "{ \
+                \"attributes\": { \
+                    \"defaultIndex\":\"${default}-*\" \
+                } \
+              }"`
 
       if [[ "${result}" =~ "200" ]]; then
-        echo "default index pattern ${tenant}/${default} set successfully"
+        echo "default index pattern ${tenant}/${default}-* set successfully"
       else
-        echo "setting default index pattern ${tenant}/${default} failed ${result}"
+        echo "setting default index pattern ${tenant}/${default}-* failed"
+        echo "${result}"
       fi
-
-    echo "Importing saved objects for ${tenant} tenant"
-    for f in /saved_objects/* ; do
-      result=`curl -s -w "%{http_code}" -X POST -u$opensearch_dashboards_USER_:$opensearch_dashboards_PASSWORD_ \
-        $opensearch_dashboards_URL/api/saved_objects/_import?overwrite=true \
-        -H "securitytenant: ${tenant}" -H "osd-xsrf: true" --form file=@${f}`
-
-      if [[ "${result}" =~ "200" ]]; then
-        echo "${f} imported"
-      else
-        echo "importing ${f} failed ${result}"
-      fi
-    done
 
     done
