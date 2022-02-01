@@ -13,7 +13,6 @@ data:
 
     set -e
 
-    echo "seting up index templates"
     if [ -z ${os_url+x} ]; then
       echo "opensearch url env variable (os_url) is expected but not found";
       exit -1
@@ -26,12 +25,21 @@ data:
     fi
 
 
-    for file in /templates/*.json ; do
-      template=$(echo $file| cut -d'_' -f 1| cut -d'/' -f 3)
-      echo "uploading template $template"
+    templates=("component" "index")
+    for type in ${templates[@]}; do
+      echo
+      echo "### seting up $type templates ###"
+      for file in `find /templates/ -name "*_${type}_template.json" -type f`; do
+        name="$(basename -- $file)"
+        template=$(echo $name| cut -d'_' -f 1| cut -d'/' -f 3)
 
-      result=`curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
-        -u$os_user:$os_pass $os_url/_template/$template -d @$file`
-
-      echo "$result"
+        echo "cleanup depricated cluster _template: $template"
+        curl -sk -w "%{http_code}" -X DELETE -H "Content-Type: application/json" \
+          -u$os_user:$os_pass "$os_url/_template/$template"
+        echo
+        echo "creating $type template: $template"
+        curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
+          -u$os_user:$os_pass "$os_url/_${type}_template/$template" -d @$file
+        echo
+      done
     done

@@ -1,0 +1,35 @@
+{
+   "index_patterns":[
+      "containers-*"
+   ],
+   "composed_of":[
+         "kubernetes-metadata"
+   ],
+   "template":{
+      "settings":{
+         "index":{
+            "mapping":{
+               "total_fields":{
+                  "limit":10000
+               }
+            },
+            "max_docvalue_fields_search":200,
+            "number_of_shards":"{{ (.Values.data.replicas | int) }}",
+            "number_of_replicas":"{{ (sub (.Values.data.replicas | int) 1) }}"
+         }
+      },
+      "mappings":{
+         "_source":{
+            "enabled":true
+         },
+         "properties":{
+            "level":{
+               "type":"keyword"
+            },
+            "message":{
+               "type":"text"
+            }
+         }
+      }
+   }
+}
