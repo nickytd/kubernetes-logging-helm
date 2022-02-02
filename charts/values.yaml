@@ -202,7 +202,8 @@ fluentbit:
     limits:
       memory: "100Mi"
   priorityClass: {}
-  tolerations: []
+  tolerations:
+  - operator: Exists
   affinity: {}
   metrics:
     enabled: false
