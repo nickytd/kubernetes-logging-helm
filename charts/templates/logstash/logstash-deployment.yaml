@@ -82,22 +82,12 @@ spec:
         - name: LS_JAVA_OPTS
           value: "-Xms{{ .Values.logstash.heapSize }} -Xmx{{ .Values.logstash.heapSize }}"
         volumeMounts:
-        - mountPath: "/usr/share/logstash/config/logstash.yml"
-          subPath: logstash.yml
+        - mountPath: "/usr/share/logstash/config"
           name: config
-        - mountPath: "/usr/share/logstash/config/pipelines.yml"
-          subPath: pipelines.yml
-          name: config
-        - mountPath: "/usr/share/logstash/config/log4j2.properties"
-          subPath: log4j2.properties
-          name: config
-        {{- range $path, $bytes := .Files.Glob "index-pipelines/*.*" }}
-        - mountPath: {{ printf "%s%s" "/usr/share/logstash/pipeline/" (base $path) }}
-          subPath: {{ printf "%s" (base $path) }}
-          name: config
-        {{- end }}
+        - mountPath: "/usr/share/logstash/pipeline"
+          name: pipelines
         - name: certificates
-          mountPath: /usr/share/logstash/config/root-ca.pem
+          mountPath: /usr/share/logstash/certs/root-ca.pem
           subPath: caCert
       volumes:
       - name: init
@@ -107,6 +97,9 @@ spec:
       - name: config
         configMap:
           name: {{ .Release.Name}}-logstash
+      - name: pipelines
+        configMap:
+          name: {{ .Release.Name}}-logstash-pipelines
       - name: certificates
         secret:
           {{- if .Values.opensearch.inClusterCertificates.secretName }}

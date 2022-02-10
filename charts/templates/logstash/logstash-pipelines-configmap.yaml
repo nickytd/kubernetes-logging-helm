@@ -1,0 +1,13 @@
+{{- if and .Values.kafka.enabled .Values.logstash.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name}}-logstash-pipelines
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+{{- range $path, $bytes := .Files.Glob "index-pipelines/*.*" }}
+{{- $name := base (dir $path) }}
+{{ base $path | indent 2}}: |-
+{{ (tpl ($.Files.Get $path) $)| indent 4 }}
+{{ end }}
+{{- end }}
