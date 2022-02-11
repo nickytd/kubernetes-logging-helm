@@ -164,6 +164,7 @@ Used for multiple application startup checks.
 | fluentbit.containersLogsHostPath | Path location of the containers logs on the cluster nodes | "/var/log" |
 | fluentbit.journalsLogsHostPath | Path location of the systemd logs on the cluster nodes. On minikube change to "/run/log" | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |
+| fluentbit.extraEnvs | Additional configuration for fluentbit | "" |
 | fluentbit.priorityClass | Fluentbit pod priority class | "" |
 | fluentbit.resources | Fluentbit pod resource definition | {} |
 | fluentbit.tolerarions | Fluentbit pod tolerations definition. All tainted nodes needs to be reflected in the tolerations array | [] |
