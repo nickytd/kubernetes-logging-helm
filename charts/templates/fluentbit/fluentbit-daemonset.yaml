@@ -72,6 +72,9 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
+        {{- if .Values.fluentbit.extraEnvs }}
+          {{- toYaml .Values.fluentbit.extraEnvs | nindent 8 }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /api/v1/health
