@@ -146,6 +146,7 @@ opensearch_dashboards:
     password: "develop"
   ingress:
     host: {}
+    hosts: {}
     path: "/"
     enabled: false
     annotations: {}
@@ -209,6 +210,7 @@ fluentbit:
     enabled: false
     interval: "30s"
     namespace: {}
+  extraEnvs: {}
 
 ## Logstash is the recommended approach for delivering log stream to opensearch
 ## kafka -> logstash -> opensearch
@@ -259,6 +261,7 @@ fluentd:
   #  labelSelector:
   #    matchLabels:
   #      k8s-app: fluentd
+  extraEnvs: {}
 
 # In scaled out setup kafka queues are used as ingestion points to accommodate
 # spiked in the logging stream volumes.

@@ -13,6 +13,7 @@ spec:
     {{- toYaml . | nindent 4}}
   {{- end }}
   rules:
+  {{- if .Values.opensearch_dashboards.ingress.host }}
   - host: {{ .Values.opensearch_dashboards.ingress.host }}
     http:
       paths:
@@ -23,4 +24,20 @@ spec:
             name: {{ .Release.Name }}-opensearch-dashboards
             port:
               number: 5601
+  {{- end }}
+  {{- if .Values.opensearch_dashboards.ingress.hosts }}
+    {{- $root := . -}}
+    {{- range $host := .Values.opensearch_dashboards.ingress.hosts }}
+  - host: {{ $host }}
+    http:
+      paths:
+      - path: {{ $root.Values.opensearch_dashboards.ingress.path }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $root.Release.Name }}-opensearch-dashboards
+            port:
+              number: 5601
+    {{- end }}
+  {{- end }}
 {{- end }}

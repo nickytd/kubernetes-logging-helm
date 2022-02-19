@@ -37,7 +37,13 @@ stringData:
     {{- end }}
     opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.clientId }}
     opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.clientSecret }}
+    {{- if .Values.opensearch_dashboards.ingress.host }}
     opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
+    {{- else }}
+    {{- with (first .Values.opensearch_dashboards.ingress.hosts) }}
+    opensearch_security.openid.base_redirect_url: https://{{ . }}
+    {{- end }}
+    {{- end }}
     opensearch_security.openid.logout_url: {{ .Values.opensearch.oidc.logoutUrl }}
     opensearch_security.openid.scope: {{ .Values.opensearch.oidc.scope }}
 {{- end }}
