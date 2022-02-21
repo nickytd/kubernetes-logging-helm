@@ -146,6 +146,7 @@ opensearch_dashboards:
     password: "develop"
   ingress:
     host: {}
+    hosts: {}
     path: "/"
     enabled: false
     annotations: {}
