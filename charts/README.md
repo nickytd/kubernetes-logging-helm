@@ -143,6 +143,8 @@ Used for multiple application startup checks.
 | opensearch_dashboards.readonly.user | Readonly user in opensearch-dashboards | "viewer" |
 | opensearch_dashboards.readonly.password | Password for the readonly user | "viewer" |
 | opensearch_dashboards.ingress.enabled | When enabled exposes opensearch-dashboards endpoint as an ingress | false |
+| opensearch_dashboards.ingress.host | Single hostname | "" |
+| opensearch_dashboards.ingress.hosts | Reference multiple hostnames  | {} |
 | opensearch_dashboards.ingress.path | Default context path for the ingress | "/" |
 | opensearch_dashboards.ingress.annotations | Any additional ingress controller specific annotations | {} |
 | opensearch_dashboards.ingress.tls | TLS ingress configuration | {} |
@@ -164,6 +166,7 @@ Used for multiple application startup checks.
 | fluentbit.containersLogsHostPath | Path location of the containers logs on the cluster nodes | "/var/log" |
 | fluentbit.journalsLogsHostPath | Path location of the systemd logs on the cluster nodes. On minikube change to "/run/log" | "/var/log" |
 | fluentbit.affinity | Fluentbit pod affinity definition | {} |
+| fluentbit.extraEnvs | Additional configuration for fluentbit | "" |
 | fluentbit.priorityClass | Fluentbit pod priority class | "" |
 | fluentbit.resources | Fluentbit pod resource definition | {} |
 | fluentbit.tolerarions | Fluentbit pod tolerations definition. All tainted nodes needs to be reflected in the tolerations array | [] |
