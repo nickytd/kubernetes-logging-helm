@@ -92,12 +92,6 @@ data:
         script  /fluent-bit/etc/dedot.lua
         call    dedot
 
-  filter-stock-rewrite.conf: |-
-    [FILTER]
-        Name          rewrite_tag
-        Match         kube.*
-        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
-
   filter-stock-parser.conf: |-
     [FILTER]
         Name                parser
@@ -105,6 +99,12 @@ data:
         Key_Name            log
         Parser              k8s-nginx-ingress
         Reserve_Data        True
+
+  filter-stock-rewrite.conf: |-
+    [FILTER]
+        Name          rewrite_tag
+        Match         kube.*
+        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
 
   output-stock-opensearch-nginx.conf: |-
     [OUTPUT]
@@ -177,17 +177,17 @@ data:
 
   output-stock-kafka.conf: |-
     [OUTPUT]
-        Name                          kafka
-        Match                         *
-        Brokers                       {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
-        Topics                        containers
-        Retry_Limit                   False
-        timestamp_format              iso8601
-        rdkafka.log.connection.close          false
-        rdkafka.request.required.acks         all
-        rdkafka.message.max.bytes             10000000
-        rdkafka.queue.buffering.max.ms        50
-        rdkafka.client.id                     ${HOSTNAME}
+        Name                             kafka
+        Match                            *
+        Brokers                          {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+        Topics                           containers
+        Retry_Limit                      False
+        timestamp_format                 iso8601
+        rdkafka.log.connection.close     false
+        rdkafka.request.required.acks    all
+        rdkafka.message.max.bytes        10000000
+        rdkafka.queue.buffering.max.ms   50
+        rdkafka.client.id                ${HOSTNAME}
 
   dedot.lua: |-
     function dedot(tag, timestamp, record)
@@ -242,7 +242,10 @@ data:
         Time_Format %b %d %H:%M:%S
 
     # Appending any additional parsers from fluentbit-custom-files
-    # Using https://github.com/Masterminds/sprig/blob/master/regex.go
+    # parsers.conf must be the LAST file as parsers.conf 
+    # does NOT support the @INCLUDE syntax to append more.
+    #
+    # Using regexMatch (and others) from https://github.com/Masterminds/sprig/blob/master/regex.go
 
 {{- range $path, $_ := .Files.Glob "fluentbit-custom-files/*" }}
 {{- if $path | regexMatch ".*parser.*" }}
