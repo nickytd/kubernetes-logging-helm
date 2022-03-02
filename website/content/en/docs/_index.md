@@ -17,9 +17,7 @@ Finally this helm chart provides index templates management in OpenSearch and in
 
 ## Adding the helm chart repository:
 ``` bash
-helm repo add cs-devops \
-  https://common.repositories.cloud.sap:443/cs-devops-helm \
-  --username=<username> --password=<AUTH_TOKEN>
+helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
 helm repo update
 ```
 
@@ -31,5 +29,5 @@ At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSear
 
 ## Install a release
 ``` bash
-helm install ofd cs-devops/kubernetes-logging
+helm install ofd logging/kubernetes-logging
 ````
