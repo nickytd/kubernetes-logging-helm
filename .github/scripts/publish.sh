@@ -15,4 +15,4 @@ rm -f $tmp/cr.tar.gz
 
 $tmp/cr package chart
 $tmp/cr upload -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url --skip-existing
-$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url -c $GITHUB_REPOSITORY
+$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url -c $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
