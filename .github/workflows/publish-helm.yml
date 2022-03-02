@@ -2,7 +2,7 @@ name: Release Charts
 
 on:
   push:
-    branch:
+    branches:
       - 'main'
     tags:
       - '*.*.*'
