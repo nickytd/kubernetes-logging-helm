@@ -13,8 +13,6 @@ curl -Lo $tmp/cr.tar.gz  "https://github.com/helm/chart-releaser/releases/downlo
 tar -xzvf $tmp/cr.tar.gz -C $tmp
 rm -f $tmp/cr.tar.gz
 
-ls -la $tmp/
-
 $tmp/cr package chart
 $tmp/cr upload -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url --skip-existing
-$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url
+$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url -c $GITHUB_REPOSITORY
