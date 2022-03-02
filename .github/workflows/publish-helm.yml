@@ -30,8 +30,7 @@ jobs:
           version: v3.7.1
 
       - name: Publish Helm charts
-        uses: stefanprodan/helm-gh-pages@master
-        with:
+        run: ./.github/scripts/publish.sh
+        shell: bash
+        env:
           token: ${{ secrets.TOKEN }}
-          branch: gh-pages
-          charts_dir: chart
