@@ -1,6 +1,13 @@
-name: Release Kubernetes Logging Helm Chart
+name: Release Charts
 
 on:
+  push:
+    branches:
+      - main
+    tags:
+    - '*.*.*'
+    paths-ignore:
+      - 'website/**'
   workflow_dispatch:
 
 jobs:
@@ -20,13 +27,11 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v1
         with:
-          version: v3.4.0
-          
-      - name: Helm Chart Releaser
-        uses: helm/chart-releaser-action@v1.2.1
+          version: v3.7.1
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.3.0
+        with:
+          cahrts_dir: /chart
         env:
           CR_TOKEN: "${{ secrets.TOKEN }}"
-        with:
-          charts_dir: charts
-          # The GitHub Pages URL to the charts repo (default: https://<owner>.github.io/<repo>)
-          charts_repo_url: https://nickytd.github.io/kubernetes-logging-helm
