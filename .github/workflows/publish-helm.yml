@@ -2,6 +2,8 @@ name: Release Charts
 
 on:
   push:
+    branch:
+      - 'main'
     tags:
       - '*.*.*'
     paths-ignore:
