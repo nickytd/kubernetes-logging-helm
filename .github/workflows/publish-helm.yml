@@ -35,3 +35,4 @@ jobs:
           token: ${{ secrets.TOKEN }}
           charts_dir: chart
           branch: gh-pages
+          target_dir: charts
