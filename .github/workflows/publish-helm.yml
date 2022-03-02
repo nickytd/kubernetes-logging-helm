@@ -29,9 +29,9 @@ jobs:
         with:
           version: v3.7.1
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.3.0
+      - name: Publish Helm charts
+        uses: stefanprodan/helm-gh-pages@master
         with:
+          token: ${{ secrets.TOKEN }}
           charts_dir: chart
-        env:
-          CR_TOKEN: "${{ secrets.TOKEN }}"
+          branch: gh-pages
