@@ -2,5 +2,4 @@
 .gitignore
 .tgz
 .DS_Store
-examples
-images
+website
