@@ -45,7 +45,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.76a38fce61405760fab5af8534be9f60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.cd8f4c88f3fccb8997684d8d4f33a3b5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -56,7 +56,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <div id=content-mobile>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.76a38fce61405760fab5af8534be9f60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.cd8f4c88f3fccb8997684d8d4f33a3b5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -117,9 +117,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 <p>Finally this helm chart provides index templates management in OpenSearch and index pattern management in <a href=https://opensearch.org/docs/latest/dashboards/index/>OpenSearchDashboards</a>. An initial predefined set of dashboards is also provided for illustration purposes.</p>
 <p><img src=../k8s-logging-stack.jpg alt=Schema></p>
 <h2 id=adding-the-helm-chart-repository>Adding the helm chart repository:</h2>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm repo add cs-devops <span style=color:#f1fa8c>\
-</span><span style=color:#f1fa8c></span>  https://common.repositories.cloud.sap:443/cs-devops-helm <span style=color:#f1fa8c>\
-</span><span style=color:#f1fa8c></span>  --username<span style=color:#ff79c6>=</span>&lt;username&gt; --password<span style=color:#ff79c6>=</span>&lt;AUTH_TOKEN&gt;
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm repo add logging https://nickytd.github.io/kubernetes-logging-helm
 helm repo update
 </code></pre></div>
 <div class="alert alert-primary" role=alert>
@@ -130,7 +128,7 @@ Any authenticated user should have <strong>read access</strong> to the helm repo
 <p>The recommended approach is the get the default <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> and adjust accordingly.
 At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSearchDashboards UI app have to be adjusted. Here is an <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/examples/single-node-setup.yaml>example</a> for a minimal single OpenSearch node setup.</p>
 <h2 id=install-a-release>Install a release</h2>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm install ofd cs-devops/kubernetes-logging
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm install ofd logging/kubernetes-logging
 </code></pre></div>
 <div class=section-index>
 <hr class=panel-line>
@@ -160,7 +158,7 @@ At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSear
 </div>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified March 2, 2022: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/cb560ce8ea8223e2b62cdafced393d7867dbcfb2>update links in documentation (cb560ce)</a>
+Last modified March 2, 2022: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/91147e6cb388111c6bc02ffcfb725291cc310c80>update index readme (91147e6)</a>
 </div>
 </div>
 </main>
