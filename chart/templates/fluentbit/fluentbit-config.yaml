@@ -30,15 +30,24 @@ data:
         storage.metrics               on
 
     @INCLUDE input-stock-*.conf
+    {{- $inputconf := .Files.Glob "fluentbit-custom-files/input-custom-*.conf" }}
+    {{ if $inputconf }}
     @INCLUDE input-custom-*.conf
+    {{- end }}
     @INCLUDE filter-stock-*.conf
+    {{- $filterconf := .Files.Glob "fluentbit-custom-files/filter-custom-*.conf" }}
+    {{ if $filterconf }}
     @INCLUDE filter-custom-*.conf
+    {{- end }}
     {{- if .Values.kafka.enabled }}
     @INCLUDE output-stock-kafka.conf
     {{- else }}
     @INCLUDE output-stock-opensearch-*.conf
     {{- end }}
+    {{- $outputconf := .Files.Glob "fluentbit-custom-files/output-custom-*.conf" }}
+    {{ if $outputconf }}
     @INCLUDE output-custom-*.conf
+    {{- end }}
 
   input-stock-kubernetes.conf: |-
     [INPUT]
