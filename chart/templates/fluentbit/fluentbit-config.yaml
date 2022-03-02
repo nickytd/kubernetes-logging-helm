@@ -10,7 +10,7 @@ data:
   fluent-bit.conf: |-
     [SERVICE]
         Flush                         1
-        Log_Level                     debug
+        Log_Level                     info
         Daemon                        off
         Parsers_File                  parsers.conf
         HTTP_Server                   On
@@ -54,7 +54,7 @@ data:
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Read_from_Head    False
-        Log_Level         debug
+        Log_Level         off
         multiline.parser  cri, docker, go, python, java
 
   input-stock-systemd.conf: |-
