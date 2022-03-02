@@ -1,0 +1,139 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.91.2">
+<link rel=alternate type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/upgrade-notes/_print/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/upgrade-notes/index.xml>
+<meta name=robots content="index, follow">
+<link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
+<title>Upgrade Notes | OFD Logging helm chart</title>
+<meta name=description content="2.x -> 3.0.0
+Since version 3.0.0, the chart values are renamed and follow camel case recommendation. This is a backward incompatibility change and …">
+<meta property="og:title" content="Upgrade Notes">
+<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/upgrade-notes/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="Upgrade Notes">
+<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Upgrade Notes">
+<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
+<link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/kubernetes-logging-helm/>
+<span class=navbar-logo></span><span class=font-weight-bold>OFD Logging helm chart</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/kubernetes-logging-helm/><span></span></a>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.76a38fce61405760fab5af8534be9f60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<aside class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+<div id=td-sidebar-menu class=td-sidebar__inner>
+<div id=content-mobile>
+<form class="td-sidebar__search d-flex align-items-center">
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.76a38fce61405760fab5af8534be9f60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
+</button>
+</form>
+</div>
+<div id=content-desktop></div>
+<nav class="collapse td-sidebar-nav" id=td-section-nav>
+<ul class="td-sidebar-nav__section pr-md-3 ul-0">
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section with-child active-path" id=m-kubernetes-logging-helmdocs-li>
+<a href=/kubernetes-logging-helm/docs/ title="Helm chart overview" class="align-left pl-0 td-sidebar-link td-sidebar-link__section tree-root" id=m-kubernetes-logging-helmdocs><span>Documentation</span></a>
+<ul class=ul-1>
+<li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-kubernetes-logging-helmdocsdeployments-li>
+<a href=/kubernetes-logging-helm/docs/deployments/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-kubernetes-logging-helmdocsdeployments><span>Deployment Layouts</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child active-path" id=m-kubernetes-logging-helmdocsupgrade-notes-li>
+<a href=/kubernetes-logging-helm/docs/upgrade-notes/ class="align-left pl-0 active td-sidebar-link td-sidebar-link__section" id=m-kubernetes-logging-helmdocsupgrade-notes><span class=td-sidebar-nav-active-item>Upgrade Notes</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-kubernetes-logging-helmdocschart-values-li>
+<a href=/kubernetes-logging-helm/docs/chart-values/ class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-kubernetes-logging-helmdocschart-values><span>Helm chart values</span></a>
+</li><li class="td-sidebar-nav__section-title td-sidebar-nav__section without-child" id=m-kubernetes-logging-helmdocsfaq-li>
+<a href=/kubernetes-logging-helm/docs/faq/ title="Frequently asked questions" class="align-left pl-0 td-sidebar-link td-sidebar-link__section" id=m-kubernetes-logging-helmdocsfaq><span>FAQ</span></a>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</aside>
+<aside class="d-none d-xl-block col-xl-2 td-sidebar-toc d-print-none">
+<div class="td-page-meta ml-2 pb-1 pt-2 mb-0">
+<a href=https://github.com/nickytd/kubernetes-logging-helm/tree/main/website/content/en/docs/upgrade-notes/_index.md class=td-page-meta--view target=_blank rel=noopener><i class="fa fa-file-alt fa-fw"></i> View page source</a>
+<a href=https://github.com/nickytd/kubernetes-logging-helm/edit/main/website/content/en/docs/upgrade-notes/_index.md class=td-page-meta--edit target=_blank rel=noopener><i class="fa fa-edit fa-fw"></i> Edit this page</a>
+<a href="https://github.com/nickytd/kubernetes-logging-helm/new/main/website/content/en/docs/upgrade-notes/_index.md?filename=change-me.md&value=---%0Atitle%3A+%22Long+Page+Title%22%0AlinkTitle%3A+%22Short+Nav+Title%22%0Aweight%3A+100%0Adescription%3A+%3E-%0A+++++Page+description+for+heading+and+indexes.%0A---%0A%0A%23%23+Heading%0A%0AEdit+this+template+to+create+your+new+page.%0A%0A%2A+Give+it+a+good+name%2C+ending+in+%60.md%60+-+e.g.+%60getting-started.md%60%0A%2A+Edit+the+%22front+matter%22+section+at+the+top+of+the+page+%28weight+controls+how+its+ordered+amongst+other+pages+in+the+same+directory%3B+lowest+number+first%29.%0A%2A+Add+a+good+commit+message+at+the+bottom+of+the+page+%28%3C80+characters%3B+use+the+extended+description+field+for+more+detail%29.%0A%2A+Create+a+new+branch+so+you+can+preview+your+new+file+and+request+a+review+via+Pull+Request.%0A" class=td-page-meta--child target=_blank rel=noopener><i class="fa fa-edit fa-fw"></i> Create child page</a>
+<a href="https://github.com/nickytd/kubernetes-logging-helm/issues/new?title=Upgrade%20Notes" class=td-page-meta--issue target=_blank rel=noopener><i class="fab fa-github fa-fw"></i> Create documentation issue</a>
+<a href=https://github.com/nickytd/kubernetes-logging-helm/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fas fa-tasks fa-fw"></i> Create project issue</a>
+<a id=print href=https://nickytd.github.io/kubernetes-logging-helm/docs/upgrade-notes/_print/><i class="fa fa-print fa-fw"></i> Print entire section</a>
+</div>
+</aside>
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<nav aria-label=breadcrumb class=td-breadcrumbs>
+<ol class=breadcrumb>
+<li class=breadcrumb-item>
+<a href=https://nickytd.github.io/kubernetes-logging-helm/docs/>Documentation</a>
+</li>
+<li class="breadcrumb-item active" aria-current=page>
+<a href=https://nickytd.github.io/kubernetes-logging-helm/docs/upgrade-notes/>Upgrade Notes</a>
+</li>
+</ol>
+</nav>
+<div class=td-content>
+<h1>Upgrade Notes</h1>
+<header class=article-meta>
+</header>
+<h1 id=2x---300>2.x -> 3.0.0</h1>
+<p>Since version 3.0.0, the chart values are renamed and follow <a href=https://helm.sh/docs/chart_best_practices/values/>camel case recommendation</a>. This is a backward <strong>incompatibility change</strong> and helm chart values for releases needs first to be migrated to the recommended camel case format.</p>
+<div class=section-index>
+</div>
+<div class="text-muted mt-5 pt-3 border-top">
+Last modified March 2, 2022: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/381f7f7b81a0dcd62b56188214516cfbf094522d>switch to hugo generated gh-pages (381f7f7)</a>
+</div>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/kubernetes-logging-helm/js/tabpane-persist.js></script>
+<script src=/kubernetes-logging-helm/js/main.min.8ab8f81ff7e1454d30024cd6f956d4d341c3a97e2a673f988065f2ee4e147922.js integrity="sha256-irj4H/fhRU0wAkzW+VbU00HDqX4qZz+YgGXy7k4UeSI=" crossorigin=anonymous></script>
+</body>
+</html>

@@ -1,8 +1,0 @@
-*.tgz
-.DS_Store
-templates.yaml
-.cr-*
-ssl/
-.cr-index
-.cr-release-packages
-_site

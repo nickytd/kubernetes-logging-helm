@@ -1,0 +1,1235 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.91.2">
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/index.xml>
+<meta name=robots content="noindex, nofollow">
+<link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
+<title>Helm chart overview | OFD Logging helm chart</title>
+<meta name=description content="
+This helm chart deploys a scalable containerized logging stack with the main purpose of enabling log observability for kubernetes applications. The …">
+<meta property="og:title" content="Helm chart overview">
+<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="Helm chart overview">
+<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Helm chart overview">
+<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
+<link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/kubernetes-logging-helm/>
+<span class=navbar-logo></span><span class=font-weight-bold>OFD Logging helm chart</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/kubernetes-logging-helm/><span></span></a>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.76a38fce61405760fab5af8534be9f60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/kubernetes-logging-helm/docs/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>Helm chart overview</h1>
+<ul>
+<li>1: <a href=#pg-da1dd8fb56a8c18860485b01c003d92f>Deployment Layouts</a></li>
+<ul>
+</ul>
+<li>2: <a href=#pg-5cb0fd650727bc1f9017ddcace2f3c54>Upgrade Notes</a></li>
+<ul>
+</ul>
+<li>3: <a href=#pg-4553fe28b20f652961f013e3fc49ad6a>Helm chart values</a></li>
+<ul>
+</ul>
+<li>4: <a href=#pg-4588103fb9a692533044ee756a5f863f>Frequently asked questions</a></li>
+<ul>
+</ul>
+</ul>
+<div class=content>
+<p><img src=../opensearch-k8s.png alt="Basic logo"></p>
+<p>This helm chart deploys a scalable containerized logging stack with the main purpose of enabling log observability for kubernetes applications. The design supports both local development use cases such as minikube deployments up to a scaled production scenarios. The log shippers are <a href=https://fluentbit.io/>FluentBits</a> deployed on each kubernetes node mounting the host filesystem. The latter scenarios leverage <a href=https://kafka.apache.org/>Kafka</a> message broker, completely decoupling in this way, the log generation and log indexing functions.</p>
+<p>The helm chart supports <a href=https://opensearch.org/>OpenSearch</a> in various configurations starting from a single node setup usable for local development, to a scaled multi nodes OpenSearch deployment suitable for production environment. In the latter case there are 3 types of nodes (coordination, data and master) where each of those can be both horizontally and vertically scaled depending on the load and shards replication demands.</p>
+<p>Finally this helm chart provides index templates management in OpenSearch and index pattern management in <a href=https://opensearch.org/docs/latest/dashboards/index/>OpenSearchDashboards</a>. An initial predefined set of dashboards is also provided for illustration purposes.</p>
+<p><img src=../k8s-logging-stack.jpg alt=Schema></p>
+<h2 id=adding-the-helm-chart-repository>Adding the helm chart repository:</h2>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm repo add cs-devops <span style=color:#f1fa8c>\
+</span><span style=color:#f1fa8c></span>  https://common.repositories.cloud.sap:443/cs-devops-helm <span style=color:#f1fa8c>\
+</span><span style=color:#f1fa8c></span>  --username<span style=color:#ff79c6>=</span>&lt;username&gt; --password<span style=color:#ff79c6>=</span>&lt;AUTH_TOKEN&gt;
+helm repo update
+</code></pre></div>
+<div class="alert alert-primary" role=alert>
+<h4 class=alert-heading>Note</h4>
+Any authenticated user should have <strong>read access</strong> to the helm repository.
+</div>
+<h2 id=prepare-a-release-configuration>Prepare a release configuration</h2>
+<p>The recommended approach is the get the default <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> and adjust accordingly.
+At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSearchDashboards UI app have to be adjusted. Here is an <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/examples/single-node-setup.yaml>example</a> for a minimal single OpenSearch node setup.</p>
+<h2 id=install-a-release>Install a release</h2>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>helm install ofd cs-devops/kubernetes-logging
+</code></pre></div>
+</div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-da1dd8fb56a8c18860485b01c003d92f>1 - Deployment Layouts</h1>
+<div class=lead>Overview on available installation layouts</div>
+<p>The kubernetes logging helm chart supports a number of deployment layouts of OpenSearch and other components depending on the concrete purpose and size of the cluster.</p>
+<h2 id=single-node-opensearch>Single node OpenSearch</h2>
+<p><img src=./kubernetes-logging-single-node.png alt=single-node></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>opensearch</span>:
+  <span style=color:#ff79c6>single_node</span>: <span style=color:#ff79c6>true</span>
+
+<span style=color:#ff79c6>fluentbit</span>:
+  <span style=color:#ff79c6>containersLogsHostPath</span>: /var/log/pods
+  <span style=color:#ff79c6>journalsLogsHostPath</span>: /var/log
+  <span style=color:#ff79c6>containersRuntime</span>: docker
+
+<span style=color:#ff79c6>kafka</span>:
+  <span style=color:#ff79c6>false</span>:
+</code></pre></div><p>This layout is the simplest possible requiring the least compute and memory resources. It comprises of the log shippers, a single OpenSearch node and a single OpenSearchDashabord UI. The log shippers are FluentBits deployed on each kubernetes node mounting the host filesystem. Because the locations of the containers logs or the host journals can vary, those locations have to be adapted accordingly in the FluentBit configuration. The logs are directly send to the Opensearch node for indexing without the need of a message broker in between.</p>
+<blockquote>
+<p><strong>Recommendation:</strong> Although the single node can be scaled by simply increasing the replicas in the &ldquo;data&rdquo; configuration, this setup is most suitable for development environments like minikube or kind clusters.</p>
+</blockquote>
+<h2 id=multi-node-opensearch>Multi node OpenSearch</h2>
+<p><img src=./kubernetes-logging-multi-node.png alt=multi-node></p>
+<p>OpenSearch supports dedicated <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node types</a> based on specific functions in the cluster. A <em>coordination node</em>, <em>data node</em> and <em>master node</em> forming an OpenSearch cluster can be deployed when <code>single_node</code> option is disabled.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>opensearch</span>:
+  <span style=color:#ff79c6>single_node</span>: <span style=color:#ff79c6>false</span>
+</code></pre></div><h2 id=scaled-multi-node-opensearch-in-production>Scaled multi node OpenSearch in production</h2>
+<p><img src=./kubernetes-logging-multi-node-production.png alt=multi-node-production></p>
+<p>When the setup is deployed in a production environment both aspects for reliably and throughout of the logs streams are addressed by the helm chart with the introduction of a message broker. A running message broker (Kafka) effectively accumulates spikes of logs volumes or downtimes of the backend OpenSearch cluster.</p>
+<div class="alert alert-warning" role=alert>
+<h4 class=alert-heading>Note:</h4>
+Kafka and Logstash needs to be enabled as well!.
+</div>
+<blockquote>
+<p>Delivery chain is: <code>Kafka</code> -> <code>Logstash</code> -> <code>OpenSearch</code></p>
+</blockquote>
+<p>Even more importantly each component can be scaled horizontally insuring better reliability.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>opensearch</span>:
+  <span style=color:#ff79c6>single_node</span>: <span style=color:#ff79c6>false</span>
+
+<span style=color:#ff79c6>data</span>:
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#ff79c6>master</span>:
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#ff79c6>client</span>:
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#ff79c6>kafka</span>:
+  <span style=color:#ff79c6>enabled</span>: <span style=color:#ff79c6>true</span>
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#ff79c6>zookeeper</span>:
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#ff79c6>fluentd</span>:
+  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
+
+<span style=color:#6272a4>#and so on</span>
+</code></pre></div><p>Additionally each type of workload scheduling strategy can be further optimized by defining node and pods (anti)affinity rules.</p>
+<p>For example for stateful sets like Kafka&rsquo;s or data nodes following affinity strategy guarantees that pods will be scheduled on different kubernetes nodes.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>affinity</span>:
+  <span style=color:#ff79c6>podAntiAffinity</span>:
+    <span style=color:#ff79c6>preferredDuringSchedulingIgnoredDuringExecution</span>:
+    - <span style=color:#ff79c6>weight</span>: <span style=color:#bd93f9>100</span>
+      <span style=color:#ff79c6>podAffinityTerm</span>:
+        <span style=color:#ff79c6>labelSelector</span>:
+          <span style=color:#ff79c6>matchExpressions</span>:
+          - <span style=color:#ff79c6>key</span>: type
+            <span style=color:#ff79c6>operator</span>: In
+            <span style=color:#ff79c6>values</span>:
+            <span style=color:#6272a4># with the corresponding label</span>
+            - kafka
+        <span style=color:#ff79c6>topologyKey</span>: kubernetes.io/hostname
+</code></pre></div><p>Or in the case of a deployments like the OpenSearch coordination nodes or <a href=https://opensearch.org/docs/latest/clients/logstash/index/>Logstashes</a> a spread of pods over nodes can be achieved with:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>topologySpreadConstraints</span>:
+  - <span style=color:#ff79c6>maxSkew</span>: <span style=color:#bd93f9>1</span>
+    <span style=color:#ff79c6>topologyKey</span>: kubernetes.io/hostname
+    <span style=color:#ff79c6>whenUnsatisfiable</span>: ScheduleAnyway
+    <span style=color:#ff79c6>labelSelector</span>:
+      <span style=color:#ff79c6>matchLabels</span>:
+        <span style=color:#6272a4># with the corresponding label</span>
+        <span style=color:#ff79c6>type</span>: client
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-5cb0fd650727bc1f9017ddcace2f3c54>2 - Upgrade Notes</h1>
+<h1 id=2x---300>2.x -> 3.0.0</h1>
+<p>Since version 3.0.0, the chart values are renamed and follow <a href=https://helm.sh/docs/chart_best_practices/values/>camel case recommendation</a>. This is a backward <strong>incompatibility change</strong> and helm chart values for releases needs first to be migrated to the recommended camel case format.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-4553fe28b20f652961f013e3fc49ad6a>3 - Helm chart values</h1>
+<div class=lead>Helm chart values description</div>
+<p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
+<p><img src="https://img.shields.io/badge/Version-3.2.8-informational?style=flat-square" alt="Version: 3.2.8"></p>
+<h2 id=requirements>Requirements</h2>
+<p>Kubernetes: <code>>= 1.21.0</code></p>
+<h2 id=values>Values</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>additionalJobAnnotations</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td>Additional annotations for chart jobs.</td>
+</tr>
+<tr>
+<td>client.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.heapSize</td>
+<td>string</td>
+<td><code>"512M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.annotations</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.host</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.path</td>
+<td>string</td>
+<td><code>"/"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.tls</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.resources.limits.memory</td>
+<td>string</td>
+<td><code>"2000Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.resources.requests.memory</td>
+<td>string</td>
+<td><code>"1000Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.topologySpreadConstraints</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterName</td>
+<td>string</td>
+<td><code>"logging"</code></td>
+<td>Default cluster name.</td>
+</tr>
+<tr>
+<td>data.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.heapSize</td>
+<td>string</td>
+<td><code>"512M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.resources.limits.memory</td>
+<td>string</td>
+<td><code>"2000Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.resources.requests.memory</td>
+<td>string</td>
+<td><code>"1000Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.image</td>
+<td>string</td>
+<td><code>"opensearchproject/data-prepper"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.imageTag</td>
+<td>string</td>
+<td><code>"1.2.1"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.resources.limits.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.resources.requests.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.topologySpreadConstraints</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.containersLogsHostPath</td>
+<td>string</td>
+<td><code>"/var/log/pods"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.containersRuntime</td>
+<td>string</td>
+<td><code>"docker"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.extraEnvs</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.image</td>
+<td>string</td>
+<td><code>"fluent/fluent-bit"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.imageTag</td>
+<td>string</td>
+<td><code>"1.8.12"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.journalsLogsHostPath</td>
+<td>string</td>
+<td><code>"/var/log"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.metrics.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.metrics.interval</td>
+<td>string</td>
+<td><code>"30s"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.metrics.namespace</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.resources.limits.memory</td>
+<td>string</td>
+<td><code>"100Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.resources.requests.memory</td>
+<td>string</td>
+<td><code>"50Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentbit.tolerations[0].operator</td>
+<td>string</td>
+<td><code>"Exists"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.extraEnvs</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.image</td>
+<td>string</td>
+<td><code>"nickytd/fluentd"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.imageTag</td>
+<td>string</td>
+<td><code>"v1.13"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.resources.limits.memory</td>
+<td>string</td>
+<td><code>"500Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.resources.requests.memory</td>
+<td>string</td>
+<td><code>"100Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>fluentd.topologySpreadConstraints</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>imagePullSecrets</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>init_container.image</td>
+<td>string</td>
+<td><code>"nickytd/init-container"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>init_container.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>init_container.imageTag</td>
+<td>string</td>
+<td><code>"1.0.2"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.image</td>
+<td>string</td>
+<td><code>"bitnami/kafka"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.imageTag</td>
+<td>string</td>
+<td><code>"2.8.1"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.resources.limits.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.resources.requests.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.topics.config</td>
+<td>string</td>
+<td><code>"max.message.bytes=10000000,retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.topics.name[0]</td>
+<td>string</td>
+<td><code>"containers"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.enabled</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.image</td>
+<td>string</td>
+<td><code>"opensearchproject/logstash-oss-with-opensearch-output-plugin"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.imageTag</td>
+<td>string</td>
+<td><code>"7.16.2"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.resources.limits.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.resources.requests.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>logstash.topologySpreadConstraints</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.resources.limits.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.resources.requests.memory</td>
+<td>string</td>
+<td><code>"600Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.additionalJvmParams</td>
+<td>string</td>
+<td><code>"-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.image</td>
+<td>string</td>
+<td><code>"opensearchproject/opensearch"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.imageTag</td>
+<td>string</td>
+<td><code>"1.2.4"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.inCluster</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.inClusterCertificates.generateCertificates</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.inClusterCertificates.secretName</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.oidc</td>
+<td>object</td>
+<td><code>(see example in values file)</code></td>
+<td>Place here your settings, if you want to authenticate via <em>OIDC</em> method.</td>
+</tr>
+<tr>
+<td>opensearch.password</td>
+<td>string</td>
+<td><code>"osadmin"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.port</td>
+<td>int</td>
+<td><code>9200</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.retentionDays</td>
+<td>int</td>
+<td><code>7</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.saml</td>
+<td>object</td>
+<td><code>(see example in values file)</code></td>
+<td>Place here your settings, if you want to authenticate via <em>SAML</em> method.</td>
+</tr>
+<tr>
+<td>opensearch.singleNode</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.snapshot.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.snapshot.size</td>
+<td>string</td>
+<td><code>"5Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.snapshot.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.url</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.user</td>
+<td>string</td>
+<td><code>"osadmin"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.developer.password</td>
+<td>string</td>
+<td><code>"develop"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.developer.user</td>
+<td>string</td>
+<td><code>"developer"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.extraEnvs[0].name</td>
+<td>string</td>
+<td><code>"NODE_OPTIONS"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.extraEnvs[0].value</td>
+<td>string</td>
+<td><code>"--max-old-space-size=350"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.image</td>
+<td>string</td>
+<td><code>"opensearchproject/opensearch-dashboards"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.imageTag</td>
+<td>string</td>
+<td><code>"1.2.0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.inCluster</td>
+<td>bool</td>
+<td><code>true</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.indexPatterns[0]</td>
+<td>string</td>
+<td><code>"containers"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.indexPatterns[1]</td>
+<td>string</td>
+<td><code>"systemd"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.indexPatterns[2]</td>
+<td>string</td>
+<td><code>"nginx"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.annotations</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.host</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.hosts</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.path</td>
+<td>string</td>
+<td><code>"/"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.tls</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.password</td>
+<td>string</td>
+<td><code>"opensearch"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.readonly.password</td>
+<td>string</td>
+<td><code>"view"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.readonly.user</td>
+<td>string</td>
+<td><code>"viewer"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.resources.limits.memory</td>
+<td>string</td>
+<td><code>"500Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.resources.requests.memory</td>
+<td>string</td>
+<td><code>"500Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.tenants[0]</td>
+<td>string</td>
+<td><code>"Global"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.tenants[1]</td>
+<td>string</td>
+<td><code>"Developer"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.url</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.user</td>
+<td>string</td>
+<td><code>"opensearch"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>os_curator.image</td>
+<td>string</td>
+<td><code>"nickytd/os-curator"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>os_curator.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>os_curator.imageTag</td>
+<td>string</td>
+<td><code>"5.8.4"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>priorityClass</td>
+<td>string</td>
+<td><code>"logging"</code></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>zookeeper.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.heapSize</td>
+<td>string</td>
+<td><code>"128M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.image</td>
+<td>string</td>
+<td><code>"zookeeper"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.imageTag</td>
+<td>string</td>
+<td><code>"3.7.0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.resources.limits.memory</td>
+<td>string</td>
+<td><code>"300Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.resources.requests.memory</td>
+<td>string</td>
+<td><code>"300Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.tolerations</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id=maintainers>Maintainers</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Url</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Niki Dokovski</td>
+<td><a href=mailto:nickytd@gmail.com>nickytd@gmail.com</a></td>
+<td><a href=https://github.com/nickytd>https://github.com/nickytd</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-4588103fb9a692533044ee756a5f863f>4 - Frequently asked questions</h1>
+<p>#TODO</p>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/kubernetes-logging-helm/js/tabpane-persist.js></script>
+<script src=/kubernetes-logging-helm/js/main.min.8ab8f81ff7e1454d30024cd6f956d4d341c3a97e2a673f988065f2ee4e147922.js integrity="sha256-irj4H/fhRU0wAkzW+VbU00HDqX4qZz+YgGXy7k4UeSI=" crossorigin=anonymous></script>
+</body>
+</html>
