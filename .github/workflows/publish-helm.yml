@@ -34,3 +34,4 @@ jobs:
         with:
           token: ${{ secrets.TOKEN }}
           branch: gh-pages
+          charts_dir: chart
