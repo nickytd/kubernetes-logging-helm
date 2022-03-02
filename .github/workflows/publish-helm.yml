@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-    - '*.*.*'
+      - '*.*.*'
     paths-ignore:
       - 'website/**'
   workflow_dispatch:

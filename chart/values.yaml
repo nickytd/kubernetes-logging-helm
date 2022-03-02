@@ -1,11 +1,20 @@
-# Default values for kubernetes-logging.
+### Default values for kubernetes-logging
+
+# All values with description you can find
+# https://nickytd.github.io/kubernetes-logging-helm/docs/chart-values/
+
 # Global values
+# -- Default cluster name.
 clusterName: "logging"
+# -- TODO
 imagePullSecrets: []
+# -- TODO
 priorityClass: "logging"
+# -- TODO
 storageClass: {}
 
-# OFD configuration
+### OFD configuration
+
 # A complete OFD setup is provisioned when "inCluster" is set to true. It can
 # be scaled accordingly to the environment needs with the concrete
 # configurations of the nodes that follow. In case "inCluster" is set to false,
@@ -29,6 +38,8 @@ opensearch:
   inClusterCertificates:
     generateCertificates: true
     secretName: {}
+  # -- Place here your settings, if you want to authenticate via *SAML* method.
+  # @default -- `(see example in values file)`
   saml: {}
   #  enabled: false
   #  idp:
@@ -41,6 +52,8 @@ opensearch:
   #  adminRole: {}
   #  viewerRole: {}
   #  developerRole: {}
+  # -- Place here your settings, if you want to authenticate via *OIDC* method.
+  # @default -- `(see example in values file)`
   oidc: {}
   #  enabled: false
   #  discoveryUrl: {}
@@ -302,9 +315,9 @@ zookeeper:
   tolerations: []
   affinity: {}
 
-# additional annotations for chart jobs
-# example argoCD requires its specific annotations
+# -- Additional annotations for chart jobs.
 additionalJobAnnotations: {}
+  ### example ArgoCD requires its specific annotations
   #"argocd.argoproj.io/hook": Sync
   #"argocd.argoproj.io/sync-wave": "0"
   #"argocd.argoproj.io/hook-delete-policy": BeforeHookCreation,HookSucceeded

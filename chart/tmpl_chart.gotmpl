@@ -1,0 +1,17 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.homepageLine" . }}
+
+## Overview
+This helm chart deploys a scalable containerized logging stack, enabling log observability for kubernetes applications with OpenSearch. The deployment may take various forms, from a single node setup usable for a local development up to scaled multi nodes OpenSearch deployments used in production environments. It is an easy way to provision a managed OpenSearch cluster with optional Kafka brokers, FluentBits and Logstash(s) supplying additional initialization steps for the various components.
+
+## Contributing
+Contributions are greatly appreciated. The project follows the typical GitHub pull request model. Before starting any work, please either comment on an existing issue, or file a new one. Please, follow [camel case recommendation](https://helm.sh/docs/chart_best_practices/values/).
+
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "chart.maintainersSection" . }}

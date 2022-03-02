@@ -4,7 +4,7 @@
 
 This helm chart deploys a scalable containerized logging stack, enabling log observability for kubernetes applications with Opensearch. The deployment may take various forms, from a single node setup usable for a local development up to scaled multi nodes opensearch deployments used in production environments. It is an easy way to provision a managed Opensearch cluster with optional kafka brokers, flunetbits and logstash(s) supplying additional initialization steps for the various components.
 
-![Kubernetes Logging Stack](images/k8s-logging-stack.jpg)
+![Kubernetes Logging Stack](website/static/k8s-logging-stack.jpg)
 
 
 ## Adding the helm chart repository:

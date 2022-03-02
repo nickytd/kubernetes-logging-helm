@@ -1,0 +1,66 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+name: Publish Documentation
+
+# Controls when the action will run. Triggers the workflow on push or pull
+# request events but only for the main branch
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'website/**'
+      - 'chart/values.yaml'
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in
+# parallel
+jobs:
+  build:
+    name: deploy
+    # The type of runner that the job will run on
+    #runs-on: [self-hosted,Linux,X64]
+    runs-on: kubernetes
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+      - name: Setup Hugo
+        uses: actions/peaceiris-actions-hugo@v2
+        with:
+          hugo-version: '0.91.2'
+          extended: true
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+          # check-latest: true # use stable
+      - name: Install HelmDocs
+        run: |
+          GO111MODULE=on go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
+      - name: Generate helm chart values description
+        run: |
+          mkdir -p website/includes
+          cd chart
+          helm-docs --template-files=tmpl_web.gotmpl --output-file=chart-values-description.md
+          mv chart-values-description.md ../website/includes/.
+      - name: Update Node dependencies
+        run: |
+          cd website
+          npm ci
+      - name: Build GH pages
+        run: |
+          cd website
+          hugo --minify --templateMetricsHints
+      - name: Deploy GH pages
+        uses: actions/peaceiris-actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          publish_dir: ./website/public
+          publish_branch: gh-pages
