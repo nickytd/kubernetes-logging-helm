@@ -19,5 +19,5 @@ echo "git_base_url 	: $git_base_url"
 echo "git_upload_url: $git_upload_url"
 
 $tmp/cr package chart
-$tmp/cr upload -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url -c "$(git rev-parse HEAD)" --skip-existing
-$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $ git_upload_url -c "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --push
+$tmp/cr upload -o $owner -r $git_repo -t $token -b $git_base_url -u $git_upload_url -c "$(git rev-parse HEAD)" --skip-existing
+$tmp/cr index -o $owner -r $git_repo -t $token -b $git_base_url -u $git_upload_url -c "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" --push
