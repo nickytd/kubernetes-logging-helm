@@ -1,8 +1,7 @@
 # All configuration settings:
 #   https://gohugo.io/getting-started/configuration/#all-configuration-settings
 
-baseURL = "https://pages.github.tools.sap/cs-devops/kubernetes-logging-helm/"
-# baseURL = "https://pages.github.tools.sap/d069970-org/kubernetes-logging-helm/" # TMP wrkrnd
+baseURL = "https://nickytd.github.io/kubernetes-logging-helm/"
 title = 'OFD Logging helm chart'
 
 enableRobotsTXT = true
@@ -99,7 +98,7 @@ section = ["HTML", "print", "RSS"]
 [[menu.main]]
     # name = "GitHub"
     # weight = 50
-    # url = "https://github.tools.sap/cs-devops/kubernetes-logging-helm/"
+    # url = "https://github.com/nickytd/kubernetes-logging-helm/"
     # pre = "<i class='fab fa-github'></i>"
 
 [params]
@@ -128,9 +127,9 @@ version = "0.0"
 url_latest_version = "https://pages.github.tools.sap/cs-devops/kubernetes-logging-helm"
 
 # Repository configuration (URLs for in-page links to opening issues and suggesting changes)
-github_repo = "https://github.tools.sap/cs-devops/kubernetes-logging-helm"
+github_repo = "https://github.com/nickytd/kubernetes-logging-helm"
 # An optional link to a related project repo. For example, the sibling repository where your product code lives.
-github_project_repo = "https://github.tools.sap/cs-devops/kubernetes-logging-helm"
+github_project_repo = "https://github.com/nickytd/kubernetes-logging-helm"
 
 # Specify a value here if your content directory is not in your repo's root directory
 github_subdir = "website"

@@ -26,8 +26,8 @@ helm repo update
 {{% alert title="Note" %}}Any authenticated user should have **read access** to the helm repository.{{% /alert %}}
 
 ## Prepare a release configuration
-The recommended approach is the get the default [helm chart values](https://github.tools.sap/cs-devops/kubernetes-logging-helm/blob/main/chart/values.yaml) and adjust accordingly.
-At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSearchDashboards UI app have to be adjusted. Here is an [example](https://github.tools.sap/cs-devops/kubernetes-logging-helm/blob/main/examples/single-node-setup.yaml) for a minimal single OpenSearch node setup.
+The recommended approach is the get the default [helm chart values](https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml) and adjust accordingly.
+At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSearchDashboards UI app have to be adjusted. Here is an [example](https://github.com/nickytd/kubernetes-logging-helm/blob/main/examples/single-node-setup.yaml) for a minimal single OpenSearch node setup.
 
 ## Install a release
 ``` bash
