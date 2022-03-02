@@ -9,8 +9,8 @@ git_upload_url="https://uploads.github.com/"
 
 echo "Installing chart-releaser... $version"
 tmp=`mktemp -d`
-curl -sSLo $tmp/cr.tar.gz  "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
-tar -xzf $tmp/cr.tar.gz
+curl -Lo $tmp/cr.tar.gz  "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
+tar -xzvf $tmp/cr.tar.gz
 rm -f $tmp/cr.tar.gz
 
 ls -la $tmp/
