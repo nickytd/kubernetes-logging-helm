@@ -33,6 +33,4 @@ jobs:
         uses: stefanprodan/helm-gh-pages@master
         with:
           token: ${{ secrets.TOKEN }}
-          charts_dir: chart
           branch: gh-pages
-          target_dir: charts
