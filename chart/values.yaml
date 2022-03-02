@@ -6,11 +6,11 @@
 # Global values
 # -- Default cluster name.
 clusterName: "logging"
-# -- TODO
+# -- Secrets containing credentials for pulling images from private registers
 imagePullSecrets: []
 # -- TODO
 priorityClass: "logging"
-# -- TODO
+# -- Defautl Storage Class for used by Persistence Volume Claims. Can be overwritten by workloads
 storageClass: {}
 
 ### OFD configuration
