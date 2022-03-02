@@ -9,39 +9,38 @@ data:
   # ======================================================
   fluent-bit.conf: |-
     [SERVICE]
-        Flush                     1
-        Log_Level                 info
-        Daemon                    off
-        Parsers_File              parsers.conf
-        HTTP_Server               On
-        HTTP_Listen               0.0.0.0
-        HTTP_Port                 2020
+        Flush                         1
+        Log_Level                     debug
+        Daemon                        off
+        Parsers_File                  parsers.conf
+        HTTP_Server                   On
+        HTTP_Listen                   0.0.0.0
+        HTTP_Port                     2020
         net.connect_timeout_log_error true
         net.connect_timeout           100
         net.keepalive                 on
         net.keepalive_idle_timeout    60
         net.dns.mode                  TCP
-        storage.type              filesystem
-        storage.path              /var/log/flb-storage/
-        storage.sync              normal
-        storage.checksum          off
-        storage.backlog.mem_limit 50M
-        storage.max_chunks_up     1000
-        storage.metrics           on
+        storage.type                  filesystem
+        storage.path                  /var/log/flb-storage/
+        storage.sync                  normal
+        storage.checksum              off
+        storage.backlog.mem_limit     50M
+        storage.max_chunks_up         1000
+        storage.metrics               on
 
-
-    @INCLUDE input-*.conf
-    @INCLUDE filter-kubernetes.conf
-    @INCLUDE filter-de_dot.conf
-    @INCLUDE filter-rewrite.conf
-    @INCLUDE filter-parser.conf
+    @INCLUDE input-stock-*.conf
+    @INCLUDE input-custom-*.conf
+    @INCLUDE filter-stock-*.conf
+    @INCLUDE filter-custom-*.conf
     {{- if .Values.kafka.enabled }}
-    @INCLUDE output-kafka.conf
+    @INCLUDE output-stock-kafka.conf
     {{- else }}
-    @INCLUDE output-opensearch-*.conf
+    @INCLUDE output-stock-opensearch-*.conf
     {{- end }}
-        
-  input-kubernetes.conf: |-
+    @INCLUDE output-custom-*.conf
+
+  input-stock-kubernetes.conf: |-
     [INPUT]
         Name              tail
         Tag               kube.<pod_id>.<namespace_name>.<pod_name>.<container_name>
@@ -55,21 +54,21 @@ data:
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Read_from_Head    False
-        Log_Level         Off
+        Log_Level         debug
         multiline.parser  cri, docker, go, python, java
 
-  input-systemd.conf: |-
+  input-stock-systemd.conf: |-
     [INPUT]
         Name                systemd
         Tag                 systemd.*
         Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
-        Systemd_Filter      _SYSTEMD_UNIT={{.Values.fluentbit.containersRuntime}}.service        
+        Systemd_Filter      _SYSTEMD_UNIT={{.Values.fluentbit.containersRuntime}}.service
         Systemd_Filter_Type Or
-        Read_From_Tail      On    
+        Read_From_Tail      On
         Path                /run/log/journal
         Strip_Underscores   On
-  
-  filter-kubernetes.conf: |-
+
+  filter-stock-kubernetes.conf: |-
     [FILTER]
         Name                kubernetes
         Match               kube.*
@@ -86,20 +85,14 @@ data:
         Kube_Meta_Cache_TTL 60s
         Annotations         Off
 
-  filter-de_dot.conf: |-
+  filter-stock-de_dot.conf: |-
     [FILTER]
         Name    lua
         Match   kube.*
         script  /fluent-bit/etc/dedot.lua
         call    dedot
 
-  filter-rewrite.conf: |-
-    [FILTER]
-        Name          rewrite_tag
-        Match         kube.*
-        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
-
-  filter-parser.conf: |-
+  filter-stock-parser.conf: |-
     [FILTER]
         Name                parser
         Match               nginx
@@ -107,7 +100,13 @@ data:
         Parser              k8s-nginx-ingress
         Reserve_Data        True
 
-  output-opensearch-nginx.conf: |-
+  filter-stock-rewrite.conf: |-
+    [FILTER]
+        Name          rewrite_tag
+        Match         kube.*
+        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
+
+  output-stock-opensearch-nginx.conf: |-
     [OUTPUT]
         Name                es
         Match               nginx
@@ -130,7 +129,7 @@ data:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-opensearch-journals.conf: |-
+  output-stock-opensearch-journals.conf: |-
     [OUTPUT]
         Name                es
         Match               systemd.*
@@ -153,7 +152,7 @@ data:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-opensearch-containers.conf: |-
+  output-stock-opensearch-containers.conf: |-
     [OUTPUT]
         Name                es
         Match               kube.*
@@ -166,7 +165,7 @@ data:
         Replace_Dots        On
         Retry_Limit         False
         Trace_Error         On
-        Suppress_Type_Name  On     
+        Suppress_Type_Name  On
         Include_Tag_Key     Off
         Time_Key_Nanos      Off
         Generate_ID         On
@@ -176,40 +175,19 @@ data:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-kafka.conf: |-
+  output-stock-kafka.conf: |-
     [OUTPUT]
-        Name                          kafka
-        Match                         *
-        Brokers                       {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
-        Topics                        containers
-        Retry_Limit                   False
-        timestamp_format              iso8601
-        rdkafka.log.connection.close          false
-        rdkafka.request.required.acks         all
-        rdkafka.message.max.bytes             10000000
-        rdkafka.queue.buffering.max.ms        50
-        rdkafka.client.id                     ${HOSTNAME}
-
-  parsers.conf: |-
-    [PARSER]
-        Name        k8s-nginx-ingress
-        Format      regex
-        Regex       ^(?<host>[^ ]*) - (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<request_length>[^ ]*) (?<request_time>[^ ]*) \[(?<proxy_upstream_name>[^ ]*)\] (\[(?<proxy_alternative_upstream_name>[^ ]*)\] )?(?<upstream_addr>[^ ]*) (?<upstream_response_length>[^ ]*) (?<upstream_response_time>[^ ]*) (?<upstream_status>[^ ]*) (?<reg_id>[^ ]*).*$
-        Time_Key    time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-        
-    [PARSER]
-        # https://github.com/Yolean/fluent-bit-kubernetes-logging/blob/kustomize-base/base/parser-cri.conf#L9
-        Name        kube-tag
-        Format      regex
-        Regex       ^(?<pod_id>[^.]+)\.(?<namespace_name>[^.]+)\.(?<pod_name>[^.]+)\.(?<container_name>[^.]+)$
-
-    [PARSER]
-        Name        syslog
-        Format      regex
-        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
-        Time_Key    time
-        Time_Format %b %d %H:%M:%S
+        Name                             kafka
+        Match                            *
+        Brokers                          {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
+        Topics                           containers
+        Retry_Limit                      False
+        timestamp_format                 iso8601
+        rdkafka.log.connection.close     false
+        rdkafka.request.required.acks    all
+        rdkafka.message.max.bytes        10000000
+        rdkafka.queue.buffering.max.ms   50
+        rdkafka.client.id                ${HOSTNAME}
 
   dedot.lua: |-
     function dedot(tag, timestamp, record)
@@ -241,3 +219,45 @@ data:
             map[k] = v
         end
     end
+
+  parsers.conf: |-
+    [PARSER]
+        Name        k8s-nginx-ingress
+        Format      regex
+        Regex       ^(?<host>[^ ]*) - (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<request_length>[^ ]*) (?<request_time>[^ ]*) \[(?<proxy_upstream_name>[^ ]*)\] (\[(?<proxy_alternative_upstream_name>[^ ]*)\] )?(?<upstream_addr>[^ ]*) (?<upstream_response_length>[^ ]*) (?<upstream_response_time>[^ ]*) (?<upstream_status>[^ ]*) (?<reg_id>[^ ]*).*$
+        Time_Key    time
+        Time_Format %d/%b/%Y:%H:%M:%S %z
+
+    [PARSER]
+        # https://github.com/Yolean/fluent-bit-kubernetes-logging/blob/kustomize-base/base/parser-cri.conf#L9
+        Name        kube-tag
+        Format      regex
+        Regex       ^(?<pod_id>[^.]+)\.(?<namespace_name>[^.]+)\.(?<pod_name>[^.]+)\.(?<container_name>[^.]+)$
+
+    [PARSER]
+        Name        syslog
+        Format      regex
+        Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
+        Time_Key    time
+        Time_Format %b %d %H:%M:%S
+
+    # Appending any additional parsers from fluentbit-custom-files
+    # parsers.conf must be the LAST file as parsers.conf 
+    # does NOT support the @INCLUDE syntax to append more.
+    #
+    # Using regexMatch (and others) from https://github.com/Masterminds/sprig/blob/master/regex.go
+
+{{- range $path, $_ := .Files.Glob "fluentbit-custom-files/*" }}
+{{- if $path | regexMatch ".*parser.*" }}
+{{ printf "" | nindent 4 }}
+{{ printf "#%s" $path | nindent 4 }}
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
+{{- end }}
+
+{{- range $path, $_ := .Files.Glob "fluentbit-custom-files/*" }}
+{{- if not ($path | regexMatch ".*parser.*") }}
+{{ regexReplaceAll "(.*)/" $path "" | indent 2 }}: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
+{{- end }}
