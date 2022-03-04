@@ -29,37 +29,35 @@ data:
         storage.max_chunks_up         1000
         storage.metrics               on
 
-    @INCLUDE input-tail.conf
-    @INCLUDE input-systemd.conf
+    @INCLUDE _input-tail.conf
+    @INCLUDE _input-systemd.conf
 
-    {{- $inputconf := .Files.Glob "fluentbit-custom-files/input-custom-*.conf" }}
+    {{- $inputconf := .Files.Glob "fluentbit-configs/input-*.conf" }}
     {{ if $inputconf }}
-    @INCLUDE input-custom-*.conf
+    @INCLUDE input-*.conf
     {{- end }}
 
-    # Filer order does matter
-    @INCLUDE filter-kubernetes.conf
-    @INCLUDE filter-de_dot.conf
-    @INCLUDE filter-rewrite.conf
-    @INCLUDE filter-parser.conf
+    # Filter order does matter
+    @INCLUDE _filter-kubernetes.conf
+    @INCLUDE _filter-de_dot.conf
 
-    {{- $filterconf := .Files.Glob "fluentbit-custom-files/filter-custom-*.conf" }}
+    {{- $filterconf := .Files.Glob "fluentbit-configs/filter-*.conf" }}
     {{ if $filterconf }}
-    @INCLUDE filter-custom-*.conf
+    @INCLUDE filter-*.conf
     {{- end }}
 
     {{- if .Values.kafka.enabled }}
-    @INCLUDE output-kafka.conf
+    @INCLUDE _output-kafka.conf
     {{- else }}
-    @INCLUDE output-opensearch-*.conf
+    @INCLUDE _output-opensearch-*.conf
     {{- end }}
 
-    {{- $outputconf := .Files.Glob "fluentbit-custom-files/output-custom-*.conf" }}
+    {{- $outputconf := .Files.Glob "fluentbit-configs/output-*.conf" }}
     {{ if $outputconf }}
-    @INCLUDE output-custom-*.conf
+    @INCLUDE output-*.conf
     {{- end }}
 
-  input-tail.conf: |-
+  _input-tail.conf: |-
     [INPUT]
         Name              tail
         Tag               kube.<pod_id>.<namespace_name>.<pod_name>.<container_name>
@@ -76,7 +74,7 @@ data:
         Log_Level         off
         multiline.parser  cri, docker, go, python, java
 
-  input-systemd.conf: |-
+  _input-systemd.conf: |-
     [INPUT]
         Name                systemd
         Tag                 systemd.*
@@ -87,7 +85,7 @@ data:
         Path                /run/log/journal
         Strip_Underscores   On
 
-  filter-kubernetes.conf: |-
+  _filter-kubernetes.conf: |-
     [FILTER]
         Name                kubernetes
         Match               kube.*
@@ -104,51 +102,14 @@ data:
         Kube_Meta_Cache_TTL 60s
         Annotations         Off
 
-  filter-de_dot.conf: |-
+  _filter-de_dot.conf: |-
     [FILTER]
         Name    lua
         Match   kube.*
         script  /fluent-bit/etc/dedot.lua
         call    dedot
 
-  filter-parser.conf: |-
-    [FILTER]
-        Name                parser
-        Match               nginx
-        Key_Name            log
-        Parser              k8s-nginx-ingress
-        Reserve_Data        True
-
-  filter-rewrite.conf: |-
-    [FILTER]
-        Name          rewrite_tag
-        Match         kube.*
-        Rule          $kubernetes['labels']['app_kubernetes_io/name'] "^(ingress-nginx)$" nginx false
-
-  output-opensearch-nginx.conf: |-
-    [OUTPUT]
-        Name                es
-        Match               nginx
-        Host                ${FLUENT_opensearch_HOST}
-        Port                ${FLUENT_opensearch_PORT}
-        HTTP_User           ${FLUENT_opensearch_USER}
-        HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
-        Logstash_Format     On
-        Logstash_Prefix     nginx
-        Replace_Dots        On
-        Retry_Limit         False
-        Trace_Error         On
-        Suppress_Type_Name  On
-        Include_Tag_Key     Off
-        Time_Key_Nanos      Off
-        Generate_ID         On
-        tls                 On
-        tls.Verify          On
-        tls.ca_file         /fluent-bit/ssl/root-ca.pem
-        tls.crt_file        /fluent-bit/ssl/admin.pem
-        tls.key_file        /fluent-bit/ssl/admin-key.pem
-
-  output-opensearch-journals.conf: |-
+  _output-opensearch-journals.conf: |-
     [OUTPUT]
         Name                es
         Match               systemd.*
@@ -171,7 +132,7 @@ data:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-opensearch-containers.conf: |-
+  _output-opensearch-containers.conf: |-
     [OUTPUT]
         Name                es
         Match               kube.*
@@ -194,7 +155,7 @@ data:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
-  output-kafka.conf: |-
+  _output-kafka.conf: |-
     [OUTPUT]
         Name                             kafka
         Match                            *
@@ -241,13 +202,6 @@ data:
 
   parsers.conf: |-
     [PARSER]
-        Name        k8s-nginx-ingress
-        Format      regex
-        Regex       ^(?<host>[^ ]*) - (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*) "(?<referrer>[^\"]*)" "(?<agent>[^\"]*)" (?<request_length>[^ ]*) (?<request_time>[^ ]*) \[(?<proxy_upstream_name>[^ ]*)\] (\[(?<proxy_alternative_upstream_name>[^ ]*)\] )?(?<upstream_addr>[^ ]*) (?<upstream_response_length>[^ ]*) (?<upstream_response_time>[^ ]*) (?<upstream_status>[^ ]*) (?<reg_id>[^ ]*).*$
-        Time_Key    time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
         # https://github.com/Yolean/fluent-bit-kubernetes-logging/blob/kustomize-base/base/parser-cri.conf#L9
         Name        kube-tag
         Format      regex
@@ -266,17 +220,17 @@ data:
     #
     # Using regexMatch (and others) from https://github.com/Masterminds/sprig/blob/master/regex.go
 
-{{- range $path, $_ := .Files.Glob "fluentbit-custom-files/*" }}
+{{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
 {{- if $path | regexMatch ".*parser.*" }}
 {{ printf "" | nindent 4 }}
 {{ printf "#%s" $path | nindent 4 }}
-{{ $.Files.Get $path | indent 4 }}
+{{ tpl ($.Files.Get $path) $ | indent 4 }}
 {{- end }}
 {{- end }}
 
-{{- range $path, $_ := .Files.Glob "fluentbit-custom-files/*" }}
+{{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
 {{- if not ($path | regexMatch ".*parser.*") }}
 {{ regexReplaceAll "(.*)/" $path "" | indent 2 }}: |-
-{{ $.Files.Get $path | indent 4 }}
+{{ tpl ($.Files.Get $path) $ | indent 4 }}
 {{- end }}
 {{- end }}
