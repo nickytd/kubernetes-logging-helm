@@ -122,7 +122,7 @@ spec:
       {{- end }}
       - name: fluent-bit-config
         configMap:
-          name: {{ .Release.Name}}-fluent-bit
+          name: {{ .Release.Name}}-fluentbit
       - name: certificates
         secret:
           {{- if .Values.opensearch.inClusterCertificates.secretName }}
