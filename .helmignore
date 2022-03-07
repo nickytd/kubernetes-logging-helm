@@ -3,3 +3,4 @@
 .tgz
 .DS_Store
 website
+fluentbit-config-watcher
