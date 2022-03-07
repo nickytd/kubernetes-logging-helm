@@ -50,11 +50,11 @@ data:
     @INCLUDE _output-kafka.conf
     {{- else }}
     @INCLUDE _output-opensearch-*.conf
-    {{- end }}
 
     {{- $outputconf := .Files.Glob "fluentbit-configs/output-*.conf" }}
     {{ if $outputconf }}
     @INCLUDE output-*.conf
+    {{- end }}
     {{- end }}
 
   _input-tail.conf: |-
