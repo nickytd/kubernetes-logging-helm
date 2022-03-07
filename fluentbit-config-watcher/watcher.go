@@ -2,18 +2,19 @@ package main
 
 import (
 	"crypto/sha256"
+	"flag"
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
-	"flag"
 )
 
 var logger = log.NewLogfmtLogger(os.Stdout)
@@ -27,14 +28,14 @@ var debug bool
 
 func main() {
 
-    flag.BoolVar(&debug, "debug", false, "enable debug logs")
-    flag.Parse()
+	flag.BoolVar(&debug, "debug", false, "enable debug logs")
+	flag.Parse()
 
-    if debug {
-      logger = level.NewFilter(logger, level.AllowDebug())
-    } else {
-      logger = level.NewFilter(logger, level.AllowInfo())
-    }
+	if debug {
+		logger = level.NewFilter(logger, level.AllowDebug())
+	} else {
+		logger = level.NewFilter(logger, level.AllowInfo())
+	}
 
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 	level.Debug(logger).Log("msg", "starting")
@@ -49,8 +50,12 @@ func main() {
 		done <- true
 	}()
 
+	ready := make(chan bool, 1)
+	go waitForFluentbit(ready)
+
 	go func() {
 		var hash = "notset"
+		<-ready
 		for {
 			level.Debug(logger).Log("hash", hash)
 			if hash != getSha256() {
@@ -76,7 +81,7 @@ func main() {
 	}()
 
 	<-done
-	level.Info(logger).Log("msg","exiting")
+	level.Info(logger).Log("msg", "exiting")
 
 }
 
@@ -136,4 +141,23 @@ func getSha256() string {
 		b.WriteString(s)
 	}
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(b.String())))
+}
+
+func waitForFluentbit(ready chan bool) {
+
+	for {
+		resp, err := http.Get("http://localhost:2020/api/v1/health")
+		if err != nil {
+			level.Error(logger).Log("error", err.Error())
+		} else {
+			if resp.StatusCode == 200 {
+				level.Debug(logger).Log("msg", "fluentbit is started")
+				ready <- true
+				return
+			}
+		}
+
+		time.Sleep(time.Second * 5)
+	}
+
 }
