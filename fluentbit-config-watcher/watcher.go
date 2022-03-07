@@ -54,8 +54,8 @@ func main() {
 	go waitForFluentbit(ready)
 
 	go func() {
-		var hash = "notset"
 		<-ready
+		hash := getSha256()
 		for {
 			level.Debug(logger).Log("hash", hash)
 			if hash != getSha256() {
@@ -97,7 +97,7 @@ func getFluentbitPID() *os.Process {
 		if f.IsDir() {
 			if pid, err := strconv.Atoi(f.Name()); err == nil {
 				if content, err := ioutil.ReadFile("/proc/" + f.Name() + "/cmdline"); err != nil {
-					level.Error(logger).Log("error", err.Error())
+					level.Debug(logger).Log("error", err.Error())
 					continue
 				} else {
 					if strings.Contains(string(content), "/fluent-bit/bin/fluent-bit") {
