@@ -1,0 +1,8 @@
+# Ignore helmignore file itself
+.helmignore
+
+# Ignore templates for HelmDocs
+*.gotmpl
+
+# Ignore os specific metadata
+.DS_Store
