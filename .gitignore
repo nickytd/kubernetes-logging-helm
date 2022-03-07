@@ -4,3 +4,4 @@ templates.yaml
 .cr-*
 ssl/
 _site
+fluentbit-config-watcher/fluentbit-config-watcher
