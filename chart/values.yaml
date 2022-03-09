@@ -226,8 +226,8 @@ fluentbit:
   extraEnvs: {}
 
 fluentbitConfigWatcher:
-  image: "nickytd/fluentbit-config-watcher"
-  imageTag: "main"
+  image: "nickytd/config-watcher"
+  imageTag: "0.0.2"
   imagePullPolicy: IfNotPresent
 
 ## Logstash is the recommended approach for delivering log stream to opensearch
