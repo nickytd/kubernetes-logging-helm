@@ -15,7 +15,8 @@ data:
   # generate certificates if secret does not exists
   {{ $ca := genCA "logging" 3650 }}
   {{ $cn := printf "*.%s.svc.cluster.local" .Release.Namespace }}
-  {{ $server := genSignedCert $cn nil nil 3650 $ca }}
+  {{ $an := list ( $cn ) }}
+  {{ $server := genSignedCert $cn nil $an 3650 $ca }}
   {{ $admin := genSignedCert "admin" nil nil 3650 $ca }}
   caCert: {{ b64enc $ca.Cert }}
   adminCert: {{ b64enc $admin.Cert }}
