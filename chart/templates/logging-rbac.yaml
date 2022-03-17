@@ -45,26 +45,6 @@ roleRef:
   name: {{ .Release.Name }}
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: {{ .Release.Name }}
-  labels: {{ include "logging.labels" . | indent 4 }}
-spec:
-  privileged: true
-  allowPrivilegeEscalation: true
-  readOnlyRootFilesystem: false
-  volumes:
-  - "*"
-  seLinux:
-    rule: RunAsAny
-  supplementalGroups:
-    rule: RunAsAny
-  runAsUser:
-    rule: RunAsAny
-  fsGroup:
-    rule: RunAsAny
----
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
