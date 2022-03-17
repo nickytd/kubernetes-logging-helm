@@ -1,7 +1,0 @@
-{{- if and .Values.kafka.enabled .Values.fluentd.enabled }}
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Release.Name}}-fluentd
-  labels: {{ include "logging.labels" . | indent 4 }}
-{{- end }}

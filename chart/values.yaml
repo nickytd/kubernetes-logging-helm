@@ -106,11 +106,11 @@ client:
     limits:
       memory: "2000Mi"
   ingress:
-    host: {}
+    host: []
     path: "/"
     enabled: false
     annotations: {}
-    tls: {}
+    tls: []
   priorityClass: {}
   tolerations: []
   affinity: {}
@@ -158,12 +158,12 @@ opensearch_dashboards:
     user: "developer"
     password: "develop"
   ingress:
-    host: {}
+    host: []
     hosts: {}
     path: "/"
     enabled: false
     annotations: {}
-    tls: {}
+    tls: []
   indexPatterns:
     - containers
     - systemd
@@ -254,32 +254,6 @@ logstash:
   #  labelSelector:
   #    matchLabels:
   #      type: logstash
-
-## Logstash is the recommended approach for delivering log stream to opensearch
-## kafka -> logstash -> opensearch
-## Fluentd is now deprecated and will be removed in the next major release
-fluentd:
-  enabled: false
-  replicas: 1
-  image: "nickytd/fluentd"
-  imageTag: "v1.13"
-  imagePullPolicy: IfNotPresent
-  resources:
-    requests:
-      memory: "100Mi"
-    limits:
-      memory: "500Mi"
-  priorityClass: {}
-  tolerations: []
-  affinity: {}
-  topologySpreadConstraints: {}
-  #- maxSkew: 1
-  #  topologyKey: kubernetes.io/hostname
-  #  whenUnsatisfiable: ScheduleAnyway
-  #  labelSelector:
-  #    matchLabels:
-  #      k8s-app: fluentd
-  extraEnvs: {}
 
 # In scaled out setup kafka queues are used as ingestion points to accommodate
 # spiked in the logging stream volumes.
