@@ -45,7 +45,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.59ef4d2df8f12fbbc5bc9fb4dda77c20.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.e22def0bb327203e1db23b76d24b8003.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -193,7 +193,7 @@ Kafka and Logstash needs to be enabled as well!.
 <h1 id=pg-4553fe28b20f652961f013e3fc49ad6a>3 - Helm chart values</h1>
 <div class=lead>Helm chart values description</div>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-3.3.1-informational?style=flat-square" alt="Version: 3.3.1"></p>
+<p><img src="https://img.shields.io/badge/Version-3.3.2-informational?style=flat-square" alt="Version: 3.3.2"></p>
 <h2 id=requirements>Requirements</h2>
 <p>Kubernetes: <code>>= 1.21.0</code></p>
 <h2 id=values>Values</h2>
@@ -239,8 +239,8 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>client.ingress.host</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>list</td>
+<td><code>[]</code></td>
 <td></td>
 </tr>
 <tr>
@@ -251,8 +251,8 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>client.ingress.tls</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>list</td>
+<td><code>[]</code></td>
 <td></td>
 </tr>
 <tr>
@@ -523,78 +523,6 @@ Kafka and Logstash needs to be enabled as well!.
 <td>fluentbitConfigWatcher.imageTag</td>
 <td>string</td>
 <td><code>"0.0.3"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.affinity</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.enabled</td>
-<td>bool</td>
-<td><code>false</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.extraEnvs</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.image</td>
-<td>string</td>
-<td><code>"nickytd/fluentd"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.imagePullPolicy</td>
-<td>string</td>
-<td><code>"IfNotPresent"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.imageTag</td>
-<td>string</td>
-<td><code>"v1.13"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.priorityClass</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.replicas</td>
-<td>int</td>
-<td><code>1</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.resources.limits.memory</td>
-<td>string</td>
-<td><code>"500Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.resources.requests.memory</td>
-<td>string</td>
-<td><code>"100Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.tolerations</td>
-<td>list</td>
-<td><code>[]</code></td>
-<td></td>
-</tr>
-<tr>
-<td>fluentd.topologySpreadConstraints</td>
-<td>object</td>
-<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -1013,8 +941,8 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>opensearch_dashboards.ingress.host</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>list</td>
+<td><code>[]</code></td>
 <td></td>
 </tr>
 <tr>
@@ -1031,8 +959,8 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>opensearch_dashboards.ingress.tls</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>list</td>
+<td><code>[]</code></td>
 <td></td>
 </tr>
 <tr>
