@@ -10,6 +10,11 @@ spec:
   - name: monitoring-api
     port: 9600
     targetPort: monitoring-api
+{{- if .Values.logstash.monitoring.enabled }}
+  - name: metrics
+    port: {{ .Values.logstash.monitoring.metricsPort }}
+    targetPort: metrics
+{{- end }}
 {{- if not .Values.kafka.enabled }}
   - name: containers
     port: 5044

@@ -247,6 +247,15 @@ logstash:
   priorityClass: {}
   tolerations: []
   affinity: {}
+  monitoring:
+    enabled: false
+    image: "nickytd/logstash-exporter"
+    imageTag: "0.2.0"
+    metricsPort: 9198
+    serviceMonitor:
+      enabled: false
+      namespace: ""
+
   topologySpreadConstraints: {}
   #- maxSkew: 1
   #  topologyKey: kubernetes.io/hostname

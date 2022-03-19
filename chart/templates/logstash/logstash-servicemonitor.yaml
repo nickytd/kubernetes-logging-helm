@@ -1,0 +1,15 @@
+{{- if and .Values.kafka.enabled .Values.logstash.enabled }}
+{{- if and .Values.logstash.monitoring.serviceMonitor.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name}}-logstash
+  namespace: {{ default .Release.Namespace .Values.logstash.monitoring.serviceMonitor.namespace }}
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
+  endpoints:
+  - port: metrics
+{{- end }}
+{{- end }}

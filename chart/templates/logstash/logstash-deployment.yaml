@@ -89,6 +89,24 @@ spec:
         - name: certificates
           mountPath: /usr/share/logstash/certs/root-ca.pem
           subPath: caCert
+      {{- if .Values.logstash.monitoring.enabled }}
+      - name: exporter
+        image: {{ .Values.logstash.monitoring.image }}:{{ .Values.logstash.monitoring.imageTag }}
+        args:
+          - --logstash.endpoint=http://localhost:9600
+          - --web.listen-address=:{{ .Values.logstash.monitoring.metricsPort }}
+        ports:
+         - containerPort: {{ .Values.logstash.monitoring.metricsPort }}
+           name: metrics
+           protocol: TCP
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+      {{- end }}
       volumes:
       - name: init
         configMap:
