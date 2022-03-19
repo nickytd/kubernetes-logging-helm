@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.e22def0bb327203e1db23b76d24b8003.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.2c2e778c454322064dc5cc3761e65ab2.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -71,9 +71,7 @@ This is the multi-page printable view of this section.
 </ul>
 <div class=content>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-3.3.2-informational?style=flat-square" alt="Version: 3.3.2"></p>
-<h2 id=requirements>Requirements</h2>
-<p>Kubernetes: <code>>= 1.21.0</code></p>
+<p><img src="https://img.shields.io/badge/Version-3.3.3-informational?style=flat-square" alt="Version: 3.3.3"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -107,6 +105,12 @@ This is the multi-page printable view of this section.
 <td>client.ingress.annotations</td>
 <td>object</td>
 <td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.ingress.className</td>
+<td>string</td>
+<td><code>""</code></td>
 <td></td>
 </tr>
 <tr>
@@ -809,6 +813,12 @@ This is the multi-page printable view of this section.
 <td>opensearch_dashboards.ingress.annotations</td>
 <td>object</td>
 <td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch_dashboards.ingress.className</td>
+<td>string</td>
+<td><code>""</code></td>
 <td></td>
 </tr>
 <tr>
