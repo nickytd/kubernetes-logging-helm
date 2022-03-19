@@ -1,6 +1,16 @@
-{{- if .Values.opensearch.inCluster }}
-{{- if .Values.client.ingress.enabled -}}
+{{- if and .Values.opensearch.inCluster .Values.client.ingress.enabled -}}
+{{- if and .Values.client.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.client.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.client.ingress.annotations "kubernetes.io/ingress.class" .Values.client.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}-os
@@ -10,6 +20,9 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if and .Values.client.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.client.ingress.className }}
+  {{- end }}
   {{- with .Values.client.ingress.tls }}
   tls:
     {{- toYaml . | nindent 4 }}
@@ -19,11 +32,17 @@ spec:
     http:
       paths:
       - path: {{ .Values.client.ingress.path }}
+        {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
         pathType: Prefix
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ .Release.Name}}-client
+            name: {{ .Release.Name }}-client
             port:
               number: 9200
+          {{- else }}
+          serviceName: {{ .Release.Name }}-client
+          servicePort: 9200
+          {{- end }}
 {{- end -}}
-{{- end }}
