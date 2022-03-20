@@ -229,7 +229,7 @@ fluentbit:
 
 fluentbitConfigWatcher:
   image: "nickytd/config-watcher"
-  imageTag: "0.0.3"
+  imageTag: "0.1.0"
   imagePullPolicy: IfNotPresent
 
 ## Logstash is the recommended approach for delivering log stream to opensearch
@@ -252,7 +252,7 @@ logstash:
   monitoring:
     enabled: false
     image: "nickytd/logstash-exporter"
-    imageTag: "0.2.0"
+    imageTag: "0.3.0"
     metricsPort: 9198
     serviceMonitor:
       enabled: false
