@@ -1,4 +1,4 @@
-[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubernetes-logging)](https://artifacthub.io/packages/search?repo=kubernetes-logging)
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/kubernetes-logging)](https://artifacthub.io/packages/search?repo=kubernetes-logging) ![Release Charts](https://github.com/nickytd/kubernetes-logging-helm/workflows/Release%20Charts/badge.svg) ![Publis Documentation](https://github.com/nickytd/kubernetes-logging-helm/workflows/Publish%20Documentation/badge.svg)
 
 # kubernetes-logging-helm with [Opensearch](https://opensearch.org)
 
