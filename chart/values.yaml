@@ -185,7 +185,7 @@ opensearch_dashboards:
 data_prepper:
   enabled: false
   image: opensearchproject/data-prepper
-  imageTag: 1.2.1
+  imageTag: 1.3.0
   replicas: 1
   heapSize: "256M"
   resources:
