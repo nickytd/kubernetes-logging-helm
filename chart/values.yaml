@@ -272,7 +272,7 @@ kafka:
   enabled: true
   replicas: 1
   image: "bitnami/kafka"
-  imageTag: "2.8.1"
+  imageTag: "3.1.0"
   heapSize: "256M"
   storage: "1Gi"
   topics:
@@ -292,7 +292,7 @@ kafka:
 zookeeper:
   replicas: 1
   image: "zookeeper"
-  imageTag: "3.7.0"
+  imageTag: "3.8.0"
   heapSize: "128M"
   storage: 1Gi
   resources:
