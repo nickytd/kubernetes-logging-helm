@@ -53,6 +53,7 @@ jobs:
       - name: Update Node dependencies
         run: |
           cd website
+          npm install postcss-cli
           npm ci
       - name: Build GH pages
         run: |
