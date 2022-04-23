@@ -5,3 +5,7 @@ templates.yaml
 ssl/
 _site
 fluentbit-config-watcher/fluentbit-config-watcher
+website/.hugo_build.lock
+website/node_modules
+website/public
+website/resources
