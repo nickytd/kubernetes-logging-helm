@@ -103,7 +103,7 @@ data:
 
   _output-opensearch-journals.conf: |-
     [OUTPUT]
-        Name                es
+        Name                opensearch
         Match               systemd.*
         Host                ${FLUENT_opensearch_HOST}
         Port                ${FLUENT_opensearch_PORT}
@@ -126,7 +126,7 @@ data:
 
   _output-opensearch-containers.conf: |-
     [OUTPUT]
-        Name                es
+        Name                opensearch
         Match               kube.*
         Host                ${FLUENT_opensearch_HOST}
         Port                ${FLUENT_opensearch_PORT}
