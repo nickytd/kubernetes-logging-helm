@@ -11,7 +11,9 @@ stringData:
       delay: "100"
       source:
         otel_trace_source:
-          ssl: false
+          ssl: true
+          sslKeyCertChainFile: "/usr/share/data-prepper/server.crt"
+          sslKeyFile: "/usr/share/data-prepper/server.key"
           port: 21890
       buffer:
         bounded_blocking:

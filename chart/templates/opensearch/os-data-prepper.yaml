@@ -53,6 +53,12 @@ spec:
         - name: certificates
           mountPath: /usr/share/data-prepper/root-ca.pem
           subPath: caCert
+        - name: certificates
+          mountPath: /usr/share/data-prepper/server.key
+          subPath: serverKey
+        - name: certificates
+          mountPath: /usr/share/data-prepper/server.crt
+          subPath: serverCert
         env:
         - name: os_url
           value: {{ include "os_url" . }}
