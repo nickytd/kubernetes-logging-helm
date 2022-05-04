@@ -63,7 +63,7 @@ data:
         Skip_Long_Lines   Off
         Refresh_Interval  10
         Read_from_Head    False
-        multiline.parser  cri
+        multiline.parser  cri, go, java
 
   _input-systemd.conf: |-
     [INPUT]
