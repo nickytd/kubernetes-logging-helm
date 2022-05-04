@@ -75,6 +75,6 @@ stringData:
     plugins.security.ssl.http.pemcert_filepath: ofd-rest.pem
     plugins.security.ssl.http.pemkey_filepath: ofd-rest-key.key
     plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
-    plugins.security.restapi.roles_enabled: ["all_access", "admin"]
+    plugins.security.restapi.roles_enabled: ["all_access", "administrator"]
 
 {{- end }}
