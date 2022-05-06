@@ -69,13 +69,13 @@ spec:
           subPath: opensearch_dashboards.yml
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/root-ca.pem
-          subPath: caCert
-        - name: certificates
+          subPath: ca.crt
+        - name: admin-certificate
           mountPath: /opt/opensearch-dashboards/config/admin.pem
-          subPath: adminCert
+          subPath: tls.crt
         - name: certificates
           mountPath: /opt/opensearch-dashboards/config/admin-key.pem
-          subPath: adminKey
+          subPath: tls.key
         {{- if .Values.opensearch.oidc.cacerts }}
         - name: oidc
           mountPath: /opt/opensearch-dashboards/config/openid-ca.pem
@@ -91,11 +91,10 @@ spec:
           defaultMode: 0755
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
+      - name: admin-certificate
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-admin-certificate
       - name: securityconfig
       {{- if .Values.opensearch.oidc.cacerts }}
       - name: oidc

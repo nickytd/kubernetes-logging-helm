@@ -37,13 +37,13 @@ spec:
           name: shared
         - name: certificates
           mountPath: /config/node-key.pem
-          subPath: serverKey
+          subPath: tls.key
         - name: certificates
           mountPath: /config/ofd-rest-key.pem
-          subPath: serverKey
-        - name: certificates
+          subPath: tls.key
+        - name: admin-certificate
           mountPath: /config/admin-key.pem
-          subPath: adminKey
+          subPath: tls.key
       containers:
       - name: main
         image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
@@ -100,13 +100,13 @@ spec:
           subPath: setup.sh
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
-          subPath: serverCert
+          subPath: tls.crt
         - name: certificates
           mountPath: /usr/share/opensearch/config/root-ca.pem
-          subPath: caCert
-        - name: certificates
+          subPath: ca.crt
+        - name: admin-certificate
           mountPath: /usr/share/opensearch/config/admin.pem
-          subPath: adminCert
+          subPath: tls.crt
         - name: shared
           mountPath: /usr/share/opensearch/config/node-key.key
           subPath: node-key.key
@@ -121,11 +121,10 @@ spec:
       volumes:
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
+      - name: admin-certificate
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-admin-certificate
       - name: securityconfig
         secret:
           secretName: {{ .Release.Name }}-securityconfig

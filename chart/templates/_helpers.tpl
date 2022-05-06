@@ -34,11 +34,10 @@ Create chart name and version as used by the chart label.
 Create default labels section
 */}}
 {{- define "logging.labels" }}
-{{ include "logging.selectorLabels" . }}
+{{- include "logging.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/opensearch: {{ .Values.opensearch.imageTag }}
 {{- end }}
 

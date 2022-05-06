@@ -88,7 +88,7 @@ spec:
           name: pipelines
         - name: certificates
           mountPath: /usr/share/logstash/certs/root-ca.pem
-          subPath: caCert
+          subPath: ca.crt
       {{- if .Values.logstash.monitoring.enabled }}
       - name: exporter
         image: {{ .Values.logstash.monitoring.image }}:{{ .Values.logstash.monitoring.imageTag }}
@@ -120,11 +120,7 @@ spec:
           name: {{ .Release.Name}}-logstash-pipelines
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
       {{- with .Values.logstash.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

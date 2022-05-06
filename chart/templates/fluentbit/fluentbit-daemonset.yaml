@@ -96,13 +96,13 @@ spec:
           mountPath: /fluent-bit/etc
         - name: certificates
           mountPath: /fluent-bit/ssl/root-ca.pem
-          subPath: caCert
-        - name: certificates
+          subPath: ca.crt
+        - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin.pem
-          subPath: adminCert
-        - name: certificates
+          subPath: tls.crt
+        - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin-key.pem
-          subPath: adminKey
+          subPath: tls.key
       - name: fluentbit-config-watcher
         image: {{ .Values.fluentbitConfigWatcher.image }}:{{ .Values.fluentbitConfigWatcher.imageTag }}
         imagePullPolicy: {{ .Values.fluentbitConfigWatcher.imagePullPolicy }}
@@ -132,11 +132,10 @@ spec:
           name: {{ .Release.Name}}-fluentbit
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
+      - name: admin-certificate
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-admin-certificate
       {{- with .Values.fluentbit.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}

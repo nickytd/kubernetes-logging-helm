@@ -52,13 +52,13 @@ spec:
           subPath: data-prepper-config.yaml
         - name: certificates
           mountPath: /usr/share/data-prepper/root-ca.pem
-          subPath: caCert
+          subPath: ca.crt
         - name: certificates
           mountPath: /usr/share/data-prepper/server.key
-          subPath: serverKey
+          subPath: tls.key
         - name: certificates
           mountPath: /usr/share/data-prepper/server.crt
-          subPath: serverCert
+          subPath: tls.crt
         env:
         - name: os_url
           value: {{ include "os_url" . }}
@@ -109,9 +109,5 @@ spec:
           defaultMode: 0755
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
 {{- end }}

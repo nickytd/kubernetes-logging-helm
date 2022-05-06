@@ -1,34 +1,50 @@
-{{- if and .Values.opensearch.inClusterCertificates.generateCertificates (not .Values.opensearch.inClusterCertificates.secretName) }}
-{{- $param := dict "name" "cluster-certificates" "namespace" .Release.Name -}}
+{{- if not .Values.opensearch.certManager.enabled }}
+{{- $param := dict "name" "opensearch-certificates" "namespace" .Release.Name -}}
 {{- $name := (include "getSecretName" $param ) -}}
+{{- $ca := genCA "logging" 3650 }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Release.Name }}-cluster-certificates
+  name: {{ .Release.Name }}-opensearch-certificates
   labels: {{ include "logging.labels" . | indent 4 }}
-  annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
-    "helm.sh/hook-delete-policy": "before-hook-creation"
+type: kubernetes.io/tls
 data:
   {{- $secret := lookup "v1" "Secret" .Release.Namespace $name -}}
   {{- if or (not $secret) (not $secret.data) }}
   # generate certificates if secret does not exists
-  {{ $ca := genCA "logging" 3650 }}
-  {{ $cn := printf "*.%s.svc.cluster.local" .Release.Namespace }}
-  {{ $an := list ( $cn ) }}
-  {{ $server := genSignedCert $cn nil $an 3650 $ca }}
-  {{ $admin := genSignedCert "admin" nil nil 3650 $ca }}
-  caCert: {{ b64enc $ca.Cert }}
-  adminCert: {{ b64enc $admin.Cert }}
-  adminKey: {{ b64enc $admin.Key }}
-  serverCert: {{ b64enc $server.Cert }}
-  serverKey: {{ b64enc $server.Key }}
-  {{ else }}
+  {{- $cn := printf "*.%s.svc.cluster.local" .Release.Namespace }}
+  {{- $an := list ( $cn ) }}
+  {{- $server := genSignedCert $cn nil $an 3650 $ca }}
+  ca.crt: {{ b64enc $ca.Cert }}
+  tls.crt: {{ b64enc $server.Cert }}
+  tls.key: {{ b64enc $server.Key }}
+  {{- else }}
   # reset existing secret values
-  caCert: {{ $secret.data.caCert }}
-  adminCert: {{ $secret.data.adminCert }}
-  adminKey: {{ $secret.data.adminKey }}
-  serverCert: {{ $secret.data.serverCert }}
-  serverKey: {{ $secret.data.serverKey }}
-  {{ end }}
-{{ end }}
+  ca.crt: {{ index $secret.data "ca.crt" }}
+  tls.crt: {{ index $secret.data "tls.crt" }}
+  tls.key: {{ index $secret.data "tls.key" }}
+  {{- end }}
+---
+{{- $param := dict "name" "opensearch-admin-certificate" "namespace" .Release.Name -}}
+{{- $name := (include "getSecretName" $param ) -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-opensearch-admin-certificate
+  labels: {{ include "logging.labels" . | indent 4 }}
+type: kubernetes.io/tls
+data:
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace $name -}}
+  {{- if or (not $secret) (not $secret.data) }}
+  # generate certificate if secret does not exists
+  {{- $admin := genSignedCert "admin" nil nil 3650 $ca }}
+  ca.crt: {{ b64enc $ca.Cert }}
+  tls.crt: {{ b64enc $admin.Cert }}
+  tls.key: {{ b64enc $admin.Key }}
+  {{- else }}
+  # reset existing secret values
+  ca.crt: {{ index $secret.data "ca.crt" }}
+  tls.crt: {{ index $secret.data "tls.crt" }}
+  tls.key: {{ index $secret.data "tls.key" }}
+  {{- end }}
+{{- end }}

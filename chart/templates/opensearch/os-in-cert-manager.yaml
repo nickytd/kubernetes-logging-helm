@@ -1,0 +1,81 @@
+{{- if .Values.opensearch.certManager.enabled }}
+{{- if not .Values.opensearch.certManager.issuerRef }}
+---
+{{- $param := dict "name" "opensearch-ca" "namespace" .Release.Name -}}
+{{- $name := (include "getSecretName" $param ) -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Values.opensearch.certManager.namespace }}
+  labels: {{ include "logging.labels" . | indent 4 }}
+type: kubernetes.io/tls
+data:
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace $name -}}
+  {{- if or (not $secret) (not $secret.data) }}
+  {{- $ca := genCA "logging" 3650 }}
+  # generate certificates if secret does not exists
+  tls.crt: {{ b64enc $ca.Cert }}
+  tls.key: {{ b64enc $ca.Key }}
+  {{- else }}
+  # reset existing secret values
+  tls.crt: {{ index $secret.data "tls.crt" }}
+  tls.key: {{ index $secret.data "tls.key" }}
+  {{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ $.Release.Name }}-ca-issuer
+  labels: {{ include "logging.labels" $ | indent 4 }}
+spec:
+  ca:
+    secretName: {{ $name }}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels: {{ include "logging.labels" $ | indent 4 }}
+  name: {{ $.Release.Name }}-opensearch-certificates
+spec:
+  isCA: false
+  usages:
+    - client auth
+    - server auth
+    - key encipherment
+    - digital signature
+  commonName: "*.{{ $.Release.Namespace }}.svc.cluster.local"
+  dnsNames:
+    - "*.{{ $.Release.Namespace }}.svc.cluster.local"
+  issuerRef:
+    {{- if .Values.opensearch.certManager.issuerRef }}
+    {{- toYaml .Values.opensearch.certManager.issuerRef | nindent 4 }}
+    {{- else }}
+    kind: ClusterIssuer
+    name: {{ $.Release.Name }}-ca-issuer
+    {{- end }}
+  secretName: {{ $.Release.Name }}-opensearch-certificates
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels: {{ include "logging.labels" $ | indent 4 }}
+  name: {{ $.Release.Name }}-opensearch-admin-certificate
+spec:
+  isCA: false
+  commonName: admin
+  usages:
+    - client auth
+    - server auth
+    - key encipherment
+    - digital signature
+  issuerRef:
+    {{- if .Values.opensearch.certManager.issuerRef }}
+    {{- toYaml .Values.opensearch.certManager.issuerRef | nindent 4 }}
+    {{- else }}
+    kind: ClusterIssuer
+    name: {{ $.Release.Name }}-ca-issuer
+    {{- end }}
+  secretName: {{ $.Release.Name }}-opensearch-admin-certificate
+{{- end }}

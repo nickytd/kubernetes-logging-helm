@@ -60,7 +60,7 @@ spec:
               subPath: curator.yml
             - name: certificates
               mountPath: /etc/root-ca.pem
-              subPath: caCert
+              subPath: ca.crt
           restartPolicy: OnFailure
           volumes:
           - name: init
@@ -75,9 +75,5 @@ spec:
               secretName: {{ .Release.Name }}-curator
           - name: certificates
             secret:
-              {{- if .Values.opensearch.inClusterCertificates.secretName }}
-              secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-              {{- else }}
-              secretName: {{ .Release.Name }}-cluster-certificates
-              {{- end }}
+              secretName: {{ .Release.Name }}-opensearch-certificates
 {{- end }}

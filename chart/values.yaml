@@ -35,9 +35,12 @@ opensearch:
   port: 9200
   user: "osadmin"
   password: "osadmin"
-  inClusterCertificates:
-    generateCertificates: true
-    secretName: {}
+  certManager:
+    enabled: false
+    namespace: ""
+    issuerRef: {}
+    # kind:
+    # name:
   # -- Place here your settings, if you want to authenticate via *SAML* method.
   # @default -- `(see example in values file)`
   saml: {}

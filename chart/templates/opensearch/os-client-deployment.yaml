@@ -48,10 +48,10 @@ spec:
           mountPath: /shared
         - name: certificates
           mountPath: /config/node-key.pem
-          subPath: serverKey
+          subPath: tls.key
         - name: certificates
           mountPath: /config/ofd-rest-key.pem
-          subPath: serverKey
+          subPath: tls.key
         - name: os-data
           mountPath: /data
         {{- if .Values.opensearch.snapshot.enabled }}
@@ -92,13 +92,13 @@ spec:
           mountPath: /data
         - name: certificates
           mountPath: /usr/share/opensearch/config/node.pem
-          subPath: serverCert
+          subPath: tls.crt
         - name: certificates
           mountPath: /usr/share/opensearch/config/root-ca.pem
-          subPath: caCert
+          subPath: ca.crt
         - name: certificates
           mountPath: /usr/share/opensearch/config/ofd-rest.pem
-          subPath: serverCert
+          subPath: tls.crt
         - name: shared
           mountPath: /usr/share/opensearch/config/node-key.key
           subPath: node-key.key
@@ -158,11 +158,10 @@ spec:
         emptyDir: {}
       - name: certificates
         secret:
-          {{- if .Values.opensearch.inClusterCertificates.secretName }}
-          secretName: {{ .Values.opensearch.inClusterCertificates.secretName }}
-          {{- else }}
-          secretName: {{ .Release.Name }}-cluster-certificates
-          {{- end }}
+          secretName: {{ .Release.Name }}-opensearch-certificates
+      - name: admin-certificate
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-admin-certificate
       - name: securityconfig
         secret:
           secretName: {{ .Release.Name }}-securityconfig
