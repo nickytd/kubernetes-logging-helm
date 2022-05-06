@@ -45,7 +45,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5ccde0e0101b2b9e298bf1094b9a1098.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.2c939832d955a6f191b285abb017cff4.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -193,7 +193,7 @@ Kafka and Logstash needs to be enabled as well!.
 <h1 id=pg-4553fe28b20f652961f013e3fc49ad6a>3 - Helm chart values</h1>
 <div class=lead>Helm chart values description</div>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-3.6.1-informational?style=flat-square" alt="Version: 3.6.1"></p>
+<p><img src="https://img.shields.io/badge/Version-3.7.0-informational?style=flat-square" alt="Version: 3.7.0"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -800,6 +800,24 @@ Kafka and Logstash needs to be enabled as well!.
 <td></td>
 </tr>
 <tr>
+<td>opensearch.certManager.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.certManager.issuerRef</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>opensearch.certManager.namespace</td>
+<td>string</td>
+<td><code>""</code></td>
+<td></td>
+</tr>
+<tr>
 <td>opensearch.image</td>
 <td>string</td>
 <td><code>"opensearchproject/opensearch"</code></td>
@@ -821,18 +839,6 @@ Kafka and Logstash needs to be enabled as well!.
 <td>opensearch.inCluster</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td></td>
-</tr>
-<tr>
-<td>opensearch.inClusterCertificates.generateCertificates</td>
-<td>bool</td>
-<td><code>true</code></td>
-<td></td>
-</tr>
-<tr>
-<td>opensearch.inClusterCertificates.secretName</td>
-<td>object</td>
-<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
