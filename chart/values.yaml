@@ -91,9 +91,9 @@ master:
   heapSize: "256M"
   resources:
     requests:
-      memory: "600Mi"
+      memory: "700Mi"
     limits:
-      memory: "600Mi"
+      memory: "700Mi"
   storageClass: {}
   priorityClass: {}
   tolerations: []
