@@ -21,7 +21,7 @@ storageClass: {}
 # logs are pushed to an external OS.
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 1.3.2
+  imageTag: 2.0.0
   imagePullPolicy: IfNotPresent
   singleNode: false
   inCluster: true
@@ -146,7 +146,7 @@ data:
 # templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 1.3.2
+  imageTag: 2.0.0
   inCluster: true
   url: {}
   replicas: 1
@@ -232,7 +232,7 @@ fluentbit:
 
 fluentbitConfigWatcher:
   image: "nickytd/config-watcher"
-  imageTag: "0.1.0"
+  imageTag: "0.2.0"
   imagePullPolicy: IfNotPresent
 
 ## Logstash is the recommended approach for delivering log stream to opensearch

@@ -10,6 +10,8 @@ spec:
   ports:
     - port: 9300
       name: transport
+    - port: 9200
+      name: http
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
     {{- if $.Values.opensearch.singleNode }}
     type: single

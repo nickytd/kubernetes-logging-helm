@@ -5,51 +5,62 @@ metadata:
   labels: {{ include "logging.labels" . | indent 4 }}
 stringData:
   opensearch_dashboards.yml: |-
-    server.name: opensearch-dashboards
-    server.host: "0"
+    server:
+      host: "0.0.0.0"
+      {{- if .Values.opensearch.saml.enabled }}
+      xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
+      {{- end }}
 
-    logging.quiet: true
-    logging.verbose: false
-    logging.json: true
+    logging:
+      quiet: true
+      verbose: false
+      json: true
 
-    opensearch.logQueries: false
-    opensearch.hosts: ["{{ include "os_url" . }}"]
-    opensearch.ssl.verificationMode: none
-    opensearch.username: {{ .Values.opensearch_dashboards.user }}
-    opensearch.password: {{ .Values.opensearch_dashboards.password }}
-    opensearch.requestHeadersWhitelist: ["securitytenant","authorization"]
+    opensearch:
+      logQueries: false
+      hosts:
+      - {{ include "os_url" . }}
+      username: {{ .Values.opensearch_dashboards.user }}
+      password: {{ .Values.opensearch_dashboards.password }}
+      requestHeadersWhitelist: ["securitytenant","authorization"]
+      ssl:
+        verificationMode: none
+        certificateAuthorities:
+        - /opt/opensearch-dashboards/config/root-ca.pem
 
-    # Optional setting that enables you to specify a path to the PEM file for the certificate
-    # authority for your opensearch instance.
-    opensearch.ssl.certificateAuthorities:
-    - /opt/opensearch-dashboards/config/root-ca.pem
+    opensearch_security:
+      readonly_mode:
+        roles: ["opensearch-dashboards_read_only"]
+      {{- if .Values.opensearch.saml.enabled }}
+      auth:
+        type: "saml"
+      {{- else if .Values.opensearch.oidc.enabled }}
+      auth:
+        type: "openid"
+      openid:
+        scope: {{ .Values.opensearch.oidc.scope }}
+        connect_url: {{ .Values.opensearch.oidc.discoveryUrl }}
+        logout_url: {{ .Values.opensearch.oidc.logoutUrl }}
+        client_id: {{ .Values.opensearch.oidc.clientId }}
+        client_secret: {{ .Values.opensearch.oidc.clientSecret }}
+        {{- if .Values.opensearch.oidc.cacerts }}
+        root_ca: /opt/opensearch-dashboards/config/openid-ca.pem
+        {{- end }}
+        {{- if .Values.opensearch_dashboards.ingress.host }}
+        base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
+        {{- else }}
+        {{- with (first .Values.opensearch_dashboards.ingress.hosts) }}
+        base_redirect_url: https://{{ . }}
+        {{- end }}
+        {{- end }}
+      {{- end }}
 
-    opensearch_security.readonly_mode.roles: ["opensearch-dashboards_read_only"]
+      multitenancy:
+        enabled: true
+        tenants:
+          enable_global: true
+          enable_private: true
+          preferred: ["Developer","Global","Private"]
 
-{{ if .Values.opensearch.saml.enabled }}
-    server.xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
-    opensearch_security.auth.type: "saml"
-{{- else if .Values.opensearch.oidc.enabled }}
-    opensearch_security.auth.type: "openid"
-    opensearch_security.openid.connect_url: {{ .Values.opensearch.oidc.discoveryUrl }}
-    {{- if .Values.opensearch.oidc.cacerts }}
-    opensearch_security.openid.root_ca: /opt/opensearch-dashboards/config/openid-ca.pem
-    {{- end }}
-    opensearch_security.openid.client_id: {{ .Values.opensearch.oidc.clientId }}
-    opensearch_security.openid.client_secret: {{ .Values.opensearch.oidc.clientSecret }}
-    {{- if .Values.opensearch_dashboards.ingress.host }}
-    opensearch_security.openid.base_redirect_url: https://{{ .Values.opensearch_dashboards.ingress.host }}
-    {{- else }}
-    {{- with (first .Values.opensearch_dashboards.ingress.hosts) }}
-    opensearch_security.openid.base_redirect_url: https://{{ . }}
-    {{- end }}
-    {{- end }}
-    opensearch_security.openid.logout_url: {{ .Values.opensearch.oidc.logoutUrl }}
-    opensearch_security.openid.scope: {{ .Values.opensearch.oidc.scope }}
-{{- end }}
-
-    opensearch_security.multitenancy.enabled: true
-    opensearch_security.multitenancy.tenants.enable_global: true
-    opensearch_security.multitenancy.tenants.enable_private: true
-    opensearch_security.multitenancy.tenants.preferred: ["Developer","Global","Private"]
-    opensearch_security.cookie.secure: false
+      cookie:
+        secure: false
