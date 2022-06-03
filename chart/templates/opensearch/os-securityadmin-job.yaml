@@ -26,10 +26,10 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_host_port.sh $os_node 9200 && /init/init_os_node.sh -only-keys"]
+        command: ["sh", "-c", "/init/check_host_port.sh $os_node 9300 && /init/init_os_node.sh -only-keys"]
         env:
           - name: os_node
-            value: {{ printf "%s-master-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.master.replicas | int) 1) .Release.Namespace}}
+            value: {{ printf "%s-data-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.data.replicas | int) 1) .Release.Namespace}}
         volumeMounts:
         - mountPath: "/init"
           name: init
@@ -53,7 +53,7 @@ spec:
         - name: os_url
           value: {{ include "os_url" . }}
         - name: os_node
-          value: {{ printf "%s-master-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.master.replicas | int) 1) .Release.Namespace}}
+          value: {{ printf "%s-data-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.data.replicas | int) 1) .Release.Namespace}}
         - name: os_user
           valueFrom:
             secretKeyRef:

@@ -27,7 +27,7 @@ spec:
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         image: {{ include "init_container.image" . }}
         {{- if .Values.kafka.enabled }}
-        command: ["sh","-c",'/init/check_os.sh && && /init/check_job.sh && /init/check_host_port.sh $kafka 9092']
+        command: ["sh","-c",'/init/check_os.sh && /init/check_job.sh && /init/check_host_port.sh $kafka 9092']
         {{ else }}
         command: ["sh","-c",'/init/check_os.sh && /init/check_job.sh']
         {{- end }}

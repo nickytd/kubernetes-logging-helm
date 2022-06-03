@@ -11,7 +11,7 @@ data:
 
     state="down"
     while [[ ! $state =~ "green" ]]; do
-      state=`curl -sS -X GET -u$os_user:$os_pass \
+      state=`curl -sS -X GET -u$opensearch_dashboards_USER:$opensearch_dashboards_PASSWORD \
         $opensearch_dashboards_URL/api/status | jq '.status.overall.state'`
       echo "opensearch_dashboards overall state $state"
       sleep 2

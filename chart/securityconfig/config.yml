@@ -10,11 +10,11 @@ config:
     # Set filtered_alias_mode to 'nowarn' to allow more than 2 filtered aliases per index silently
     #filtered_alias_mode: warn
     do_not_fail_on_forbidden: true
-    #kibana:
+    kibana:
     # opensearch-dashboards multitenancy
-    #  multitenancy_enabled: true
-    #  server_username: {{ .Values.opensearch_dashboards.user }}
-    #  index: '.opensearch'
+      multitenancy_enabled: true
+      server_username: {{ .Values.opensearch_dashboards.user }}
+      #index: '.kibana'
     http:
       anonymous_auth_enabled: false
       xff:

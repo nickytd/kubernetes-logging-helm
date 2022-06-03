@@ -8,7 +8,9 @@ stringData:
     server:
       host: "0.0.0.0"
       {{- if .Values.opensearch.saml.enabled }}
-      xsrf.whitelist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout"]
+      xsrf.whitelist:
+        - "/_opendistro/_security/saml/acs"
+        - "/_opendistro/_security/saml/logout"
       {{- end }}
 
     logging:
@@ -60,7 +62,10 @@ stringData:
         tenants:
           enable_global: true
           enable_private: true
-          preferred: ["Developer","Global","Private"]
+          preferred:
+            - "Developer"
+            - "Global"
+            - "Private"
 
       cookie:
-        secure: false
+        secure: true
