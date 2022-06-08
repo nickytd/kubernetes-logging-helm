@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-kafka-topics
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  setup.sh: |-
+    #!/bin/bash
+
+    for (( r=0; r<$partitions; r++ ));do
+     if (( r == 0 )); then
+       brokers="$r"
+     else
+       brokers="$brokers,$r"
+     fi
+    done
+
+    echo "topics: $TOPICS, partitions: $partitions, replication factor: $replicas, brokers: $brokers"
+
+    if [ -z $TOPICS ]; then
+      echo "No kafka topics are defined"
+      exit 0
+    fi
+
+    IFS=',' read -ra TOPICS <<< "$TOPICS"
+    for topic in "${TOPICS[@]}"; do
+
+      echo "Setting up kafka topic $topic"
+
+      /opt/bitnami/kafka/bin/kafka-topics.sh \
+          --bootstrap-server $kafka --create --topic $topic \
+          --partitions $partitions \
+          --replication-factor $replicas \
+          --if-not-exists
+
+      /opt/bitnami/kafka/bin/kafka-topics.sh \
+          --bootstrap-server $kafka --alter --topic $topic \
+          --partitions $partitions \
+          --if-exists
+
+      if (( $replicas > 0 )); then
+          echo '{"version":1,
+              "partitions":[' > /tmp/reassign.json
+              for i in $(seq 0 $replicas); do
+                  if (( i == $replicas )); then
+                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$brokers]}" >> /tmp/reassign.json
+                  else
+                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$brokers]}," >> /tmp/reassign.json
+                  fi
+              done
+          echo ']
+              }' >> /tmp/reassign.json
+
+          /opt/bitnami/kafka/bin/kafka-reassign-partitions.sh \
+              --bootstrap-server $kafka --reassignment-json-file /tmp/reassign.json \
+              --execute
+      fi
+
+      /opt/bitnami/kafka/bin/kafka-configs.sh \
+          --bootstrap-server $kafka  --alter \
+          --topic $topic \
+          --add-config {{ $.Values.kafka.topics.config }}
+
+      /opt/bitnami/kafka/bin/kafka-topics.sh \
+          --bootstrap-server $kafka --describe  --topic $topic
+
+    done

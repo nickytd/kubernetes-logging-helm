@@ -30,28 +30,30 @@ spec:
         - mountPath: "/init"
           name: init
       containers:
-      - name: kafka-topic-config
+      - name: kafka
         image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
-        command: ["/bin/sh","-c","{{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka --create  --topic {{ . }} \
-          --partitions {{ ($.Values.kafka.replicas | int) }} \
-          --replication-factor {{ (sub ($.Values.kafka.replicas | int) 1) }} \
-          --if-not-exists || true &&  {{ end -}}
-        {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-configs.sh \
-          --bootstrap-server $kafka  --alter \
-          --entity-type topics --entity-name {{ . }} \
-          --add-config {{ $.Values.kafka.topics.config }} || true && {{ end -}}
-        {{- range .Values.kafka.topics.name -}} /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka  --alter  \
-          --topic {{ . }} --partitions {{ ($.Values.kafka.replicas | int) }} \
-          --if-exists || true && {{ end -}} true "]
+        command: ["/bin/sh","-c","/setup.sh"]
         env:
         - name: kafka
-          value: {{$.Release.Name}}-kafka-0:9092
+          value: {{ printf "%s-kafka-0.%s.svc.cluster.local:9092" .Release.Name .Release.Namespace }}
+        - name: TOPICS
+          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.kafka.topics.names }}
+        - name: partitions
+          value: "{{ ($.Values.kafka.replicas | int) }}"
+        - name: replicas
+          value: "{{ (sub ($.Values.kafka.replicas | int) 1) }}"
+        volumeMounts:
+        - mountPath: "/setup.sh"
+          name: setup
+          subPath: setup.sh
       restartPolicy: Never
       volumes:
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
+          defaultMode: 0755
+      - name: setup
+        configMap:
+          name: {{ .Release.Name }}-kafka-topics
           defaultMode: 0755
 {{- end }}
