@@ -42,10 +42,18 @@ data:
           echo '{"version":1,
               "partitions":[' > /tmp/reassign.json
               for i in $(seq 0 $replicas); do
+
+                  b=""
+                  for j in $(seq 0 $replicas); do
+                    if (( $i != $j )); then b="$b,$j"; fi
+                    b=${b%","}
+                    b=${b#","}
+                  done
+
                   if (( i == $replicas )); then
-                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$brokers]}" >> /tmp/reassign.json
+                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$b]}" >> /tmp/reassign.json
                   else
-                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$brokers]}," >> /tmp/reassign.json
+                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$b]}," >> /tmp/reassign.json
                   fi
               done
           echo ']
