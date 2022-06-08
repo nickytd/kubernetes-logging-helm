@@ -280,9 +280,9 @@ kafka:
   image: "bitnami/kafka"
   imageTag: "3.1.0"
   heapSize: "256M"
-  storage: "1Gi"
+  storage: "10Gi"
   topics:
-    config: "max.message.bytes=10000000,retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"
+    config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
     name: ["containers"]
   resources:
     requests:
