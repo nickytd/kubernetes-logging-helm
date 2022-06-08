@@ -69,3 +69,8 @@ stringData:
 
       cookie:
         secure: true
+
+    {{- with .Values.opensearch_dashboards.branding }}
+    opensearchDashboards.branding:
+    {{- toYaml . | nindent 6 }}
+    {{- end }}

@@ -145,6 +145,9 @@ data:
 # opensearch-dashboards instance. In this case only jobs creating index
 # templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
+  # dashboards custom branding configuration
+  # https://opensearch.org/docs/latest/dashboards/branding/
+  branding: {}
   image: "opensearchproject/opensearch-dashboards"
   imageTag: 2.0.0
   inCluster: true
