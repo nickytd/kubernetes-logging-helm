@@ -5,6 +5,9 @@ metadata:
     app: logger
   name: logger
 spec:
+  completions: 10
+  completionMode: "Indexed"
+  ttlSecondsAfterFinished: 100
   parallelism: 2
   template:
     metadata:      
