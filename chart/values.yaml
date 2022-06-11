@@ -282,8 +282,9 @@ kafka:
   heapSize: "256M"
   storage: "10Gi"
   topics:
-    config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
-    names: ["containers"]
+    - name: "containers"
+      config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
+      partitions: 10
   resources:
     requests:
       memory: "600Mi"

@@ -32,20 +32,19 @@ spec:
       containers:
       - name: kafka
         image: {{ .Values.kafka.image }}:{{ .Values.kafka.imageTag }}
-        command: ["/bin/sh","-c","/setup.sh"]
+        command: ["/bin/sh","-c","/topics-conf/setup.sh"]
         env:
         - name: kafka
           value: {{ printf "%s-kafka-0.%s.svc.cluster.local:9092" .Release.Name .Release.Namespace }}
-        - name: TOPICS
-          value: {{ include "helm-toolkit.utils.joinListWithComma" .Values.kafka.topics.names }}
-        - name: partitions
-          value: "{{ ($.Values.kafka.replicas | int) }}"
         - name: replicas
           value: "{{ (sub ($.Values.kafka.replicas | int) 1) }}"
         volumeMounts:
-        - mountPath: "/setup.sh"
-          name: setup
+        - name: setup
+          mountPath: /topics-conf/setup.sh
           subPath: setup.sh
+        - name: setup
+          mountPath: /topics-conf/topics.conf
+          subPath: topics.conf
       restartPolicy: Never
       volumes:
       - name: init

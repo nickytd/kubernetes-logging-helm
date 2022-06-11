@@ -4,72 +4,74 @@ metadata:
   name: {{ .Release.Name }}-kafka-topics
   labels: {{ include "logging.labels" . | indent 4 }}
 data:
+  topics.conf: |
+    {{- range .Values.kafka.topics }}
+      {{ printf "%s;%s;%d" .name .config ( .partitions | int) }}
+    {{ end }}
+
   setup.sh: |-
     #!/bin/bash
 
-    for (( r=0; r<$partitions; r++ ));do
-     if (( r == 0 )); then
-       brokers="$r"
-     else
+    dir=$(dirname $0)
+
+    for (( r=0; r<=$replicas; r++ ));do
        brokers="$brokers,$r"
-     fi
     done
+    brokers=${brokers%","};brokers=${brokers#","};
 
-    echo "topics: $TOPICS, partitions: $partitions, replication factor: $replicas, brokers: $brokers"
+    input="$dir/topics.conf"
 
-    if [ -z $TOPICS ]; then
-      echo "No kafka topics are defined"
-      exit 0
-    fi
+    if [[ -f "$input" ]]; then
+        while IFS= read -r line; do
 
-    IFS=',' read -ra TOPICS <<< "$TOPICS"
-    for topic in "${TOPICS[@]}"; do
+          IFS=';' read -ra topic <<< "$line"
+          if [[ ! "${#topic[@]}" -eq "3" ]]; then
+            echo "topic configuration line $line is not in expected format name,config,partitions"
+            continue
+          fi
 
-      echo "Setting up kafka topic $topic"
+          echo "Setting up kafka topic name: ${topic[0]}, partitions: ${topic[2]},replication factor: $replicas, brokers: $brokers"
 
-      /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka --create --topic $topic \
-          --partitions $partitions \
-          --replication-factor $replicas \
-          --if-not-exists
+          /opt/bitnami/kafka/bin/kafka-topics.sh \
+            --bootstrap-server $kafka --create --topic ${topic[0]} \
+            --partitions ${topic[2]} \
+            --replication-factor $replicas \
+            --if-not-exists
 
-      /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka --alter --topic $topic \
-          --partitions $partitions \
-          --if-exists
+          /opt/bitnami/kafka/bin/kafka-topics.sh \
+            --bootstrap-server $kafka --alter --topic ${topic[0]} \
+            --partitions ${topic[2]} \
+            --if-exists
 
-      if (( $replicas > 0 )); then
-          echo '{"version":1,
+          if [[ "$replicas" -gt "0" ]]; then
+            echo '{"version":1,
               "partitions":[' > /tmp/reassign.json
-              for i in $(seq 0 $replicas); do
 
-                  b=""
-                  for j in $(seq 0 $replicas); do
-                    if (( $i != $j )); then b="$b,$j"; fi
-                    b=${b%","}
-                    b=${b#","}
-                  done
-
-                  if (( i == $replicas )); then
-                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$b]}" >> /tmp/reassign.json
-                  else
-                    echo "    {\"topic\":\"$topic\",\"partition\":$i,\"replicas\":[$b]}," >> /tmp/reassign.json
-                  fi
-              done
-          echo ']
+            for (( i=0; i<${topic[2]}; i++ ));do
+                b="$(echo $brokers | tr "," "\n" | shuf | tr  "\n" ",")"; b=${b%","}
+                if (( $i == ${topic[2]}-1 )); then
+                    echo "    {\"topic\":\"${topic[0]}\",\"partition\":$i,\"replicas\":[$b]}" >> /tmp/reassign.json
+                else
+                    echo "    {\"topic\":\"${topic[0]}\",\"partition\":$i,\"replicas\":[$b]}," >> /tmp/reassign.json
+                fi
+            done
+            echo ']
               }' >> /tmp/reassign.json
 
-          /opt/bitnami/kafka/bin/kafka-reassign-partitions.sh \
+            /opt/bitnami/kafka/bin/kafka-reassign-partitions.sh \
               --bootstrap-server $kafka --reassignment-json-file /tmp/reassign.json \
               --execute
-      fi
+          fi
 
-      /opt/bitnami/kafka/bin/kafka-configs.sh \
-          --bootstrap-server $kafka  --alter \
-          --topic $topic \
-          --add-config {{ $.Values.kafka.topics.config }}
+          /opt/bitnami/kafka/bin/kafka-configs.sh \
+            --bootstrap-server $kafka  --alter \
+            --topic ${topic[0]} \
+            --add-config ${topic[1]}
 
-      /opt/bitnami/kafka/bin/kafka-topics.sh \
-          --bootstrap-server $kafka --describe  --topic $topic
+          /opt/bitnami/kafka/bin/kafka-topics.sh \
+            --bootstrap-server $kafka --describe  --topic ${topic[0]}
+      done <"$input"
 
-    done
+    else
+      echo "topics configuration is not found"
+    fi
