@@ -95,6 +95,18 @@ data:
       chown 1000:1000 /snapshot
     fi
 
+  check_job.sh: |-
+    #!/bin/bash
 
+    set -e
 
+    echo "waiting for $job_name job completion"
+    TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
 
+    state="down"
+    while [[ ! $state =~ "1" ]]; do
+      state=`curl -sS -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
+      --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt | jq '.status.succeeded'`
+      echo "$job_name job status.succeeded $state"
+      sleep 3
+    done

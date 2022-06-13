@@ -50,8 +50,20 @@ stringData:
     thread_pool.analyze.queue_size: 1000
     thread_pool.listener.queue_size: 1000
 
-    plugins.security.allow_unsafe_democertificates: true
-    plugins.security.allow_default_init_securityindex: true
+    plugins.security.allow_unsafe_democertificates: false
+    plugins.security.allow_default_init_securityindex: false
+    plugins.security.system_indices.enabled: true
+    plugins.security.system_indices.indices:
+    - ".opendistro-alerting-config"
+    - ".opendistro-alerting-alert*"
+    - ".opendistro-anomaly-results*"
+    - ".opendistro-anomaly-detector*"
+    - ".opendistro-anomaly-checkpoints"
+    - ".opendistro-anomaly-detection-state"
+    - ".opendistro-reports-*"
+    - ".opendistro-notifications-*"
+    - ".opendistro-notebooks"
+    - ".opendistro-asynchronous-search-response*"
     # plugins.security.audit.type: internal_opensearch
     # plugins.security.enable_snapshot_restore_privilege: true
     # plugins.security.check_snapshot_restore_write_privileges: true

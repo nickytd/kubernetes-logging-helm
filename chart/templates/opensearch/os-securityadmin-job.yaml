@@ -26,10 +26,10 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_host_port.sh $os_master 9300 && /init/init_os_node.sh -only-keys"]
+        command: ["sh", "-c", "/init/check_host_port.sh $os_node 9300 && /init/init_os_node.sh -only-keys"]
         env:
-          - name: os_master
-            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
+          - name: os_node
+            value: {{ printf "%s-data-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.data.replicas | int) 1) .Release.Namespace}}
         volumeMounts:
         - mountPath: "/init"
           name: init
@@ -53,7 +53,7 @@ spec:
         - name: os_url
           value: {{ include "os_url" . }}
         - name: os_node
-          value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
+          value: {{ printf "%s-data-%d.%s.svc.cluster.local" .Release.Name (sub (.Values.data.replicas | int) 1) .Release.Namespace}}
         - name: os_user
           valueFrom:
             secretKeyRef:
@@ -117,7 +117,7 @@ spec:
           mountPath: /usr/share/opensearch/config/admin-key.key
           subPath: admin-key.key
         - name: securityconfig
-          mountPath: /usr/share/opensearch/plugins/opensearch-security/securityconfig
+          mountPath: /usr/share/opensearch/config/opensearch-security
       volumes:
       - name: certificates
         secret:

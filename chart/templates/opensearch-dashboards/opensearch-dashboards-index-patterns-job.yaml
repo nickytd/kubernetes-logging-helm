@@ -41,6 +41,16 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
+        - name: opensearch_dashboards_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
+              key: username
+        - name: opensearch_dashboards_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
+              key: password
         volumeMounts:
         - name: config
           mountPath: "/config"
