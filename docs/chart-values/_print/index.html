@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.9f49d2923d02e6ecadd369e0a7a1d6b0.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.d2bc5f3ab3c382bf17e89075f1b9143b.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -71,7 +71,7 @@ This is the multi-page printable view of this section.
 </ul>
 <div class=content>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-3.7.1-informational?style=flat-square" alt="Version: 3.7.1"></p>
+<p><img src="https://img.shields.io/badge/Version-4.0.0-informational?style=flat-square" alt="Version: 4.0.0"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -338,7 +338,7 @@ This is the multi-page printable view of this section.
 <tr>
 <td>fluentbit.imageTag</td>
 <td>string</td>
-<td><code>"1.9.3"</code></td>
+<td><code>"1.9.4"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -361,14 +361,14 @@ This is the multi-page printable view of this section.
 </tr>
 <tr>
 <td>fluentbit.metrics.namespace</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>string</td>
+<td><code>""</code></td>
 <td></td>
 </tr>
 <tr>
 <td>fluentbit.priorityClass</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>string</td>
+<td><code>""</code></td>
 <td></td>
 </tr>
 <tr>
@@ -404,7 +404,7 @@ This is the multi-page printable view of this section.
 <tr>
 <td>fluentbitConfigWatcher.imageTag</td>
 <td>string</td>
-<td><code>"0.1.0"</code></td>
+<td><code>"0.2.0"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -488,7 +488,7 @@ This is the multi-page printable view of this section.
 <tr>
 <td>kafka.storage</td>
 <td>string</td>
-<td><code>"1Gi"</code></td>
+<td><code>"10Gi"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -504,15 +504,21 @@ This is the multi-page printable view of this section.
 <td></td>
 </tr>
 <tr>
-<td>kafka.topics.config</td>
+<td>kafka.topics[0].config</td>
 <td>string</td>
-<td><code>"max.message.bytes=10000000,retention.bytes=134217728,retention.ms=3600000,message.timestamp.difference.max.ms=3600000,message.timestamp.type=LogAppendTime"</code></td>
+<td><code>"max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"</code></td>
 <td></td>
 </tr>
 <tr>
-<td>kafka.topics.name[0]</td>
+<td>kafka.topics[0].name</td>
 <td>string</td>
 <td><code>"containers"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.topics[0].partitions</td>
+<td>int</td>
+<td><code>10</code></td>
 <td></td>
 </tr>
 <tr>
@@ -710,7 +716,7 @@ This is the multi-page printable view of this section.
 <tr>
 <td>opensearch.imageTag</td>
 <td>string</td>
-<td><code>"1.3.2"</code></td>
+<td><code>"2.0.0"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -792,6 +798,12 @@ This is the multi-page printable view of this section.
 <td></td>
 </tr>
 <tr>
+<td>opensearch_dashboards.branding</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
 <td>opensearch_dashboards.developer.password</td>
 <td>string</td>
 <td><code>"develop"</code></td>
@@ -824,7 +836,7 @@ This is the multi-page printable view of this section.
 <tr>
 <td>opensearch_dashboards.imageTag</td>
 <td>string</td>
-<td><code>"1.3.2"</code></td>
+<td><code>"2.0.0"</code></td>
 <td></td>
 </tr>
 <tr>
