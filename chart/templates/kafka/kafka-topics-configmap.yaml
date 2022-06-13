@@ -32,16 +32,35 @@ data:
 
           echo "Setting up kafka topic name: ${topic[0]}, partitions: ${topic[2]},replication factor: $replicas, brokers: $brokers"
 
-          /opt/bitnami/kafka/bin/kafka-topics.sh \
-            --bootstrap-server $kafka --create --topic ${topic[0]} \
-            --partitions ${topic[2]} \
-            --replication-factor $replicas \
-            --if-not-exists
+          # current kafka topic partitions count if exists
+          partitions=$(/opt/bitnami/kafka/bin/kafka-topics.sh \
+            --describe --bootstrap-server $kafka \
+            --topic ${topic[0]} --if-exists | head -n 1 | awk '{print $6}')
 
-          /opt/bitnami/kafka/bin/kafka-topics.sh \
-            --bootstrap-server $kafka --alter --topic ${topic[0]} \
-            --partitions ${topic[2]} \
-            --if-exists
+          # create kafka topic if does not exist
+          if [[ "$replicas" -gt "0" ]]; then
+            /opt/bitnami/kafka/bin/kafka-topics.sh \
+              --bootstrap-server $kafka --create --topic ${topic[0]} \
+              --partitions ${topic[2]} \
+              --replication-factor $replicas \
+              --if-not-exists
+          else
+            /opt/bitnami/kafka/bin/kafka-topics.sh \
+              --bootstrap-server $kafka --create --topic ${topic[0]} \
+              --partitions ${topic[2]} \
+              --if-not-exists
+          fi
+
+          # update kafka topic partitions if needed
+          if [[ "${topic[2]}" -gt "$partitions" ]]; then
+            echo "updating topic partitions count from $partitions to ${topic[2]}"
+            /opt/bitnami/kafka/bin/kafka-topics.sh \
+              --bootstrap-server $kafka --alter --topic ${topic[0]} \
+              --partitions ${topic[2]} \
+              --if-exists
+          else
+            echo "reducing kafka partitions is not allowed, current partitions count is $partitions"
+          fi
 
           if [[ "$replicas" -gt "0" ]]; then
             echo '{"version":1,
@@ -63,6 +82,7 @@ data:
               --execute
           fi
 
+          # propagate kafka topic configuration
           /opt/bitnami/kafka/bin/kafka-configs.sh \
             --bootstrap-server $kafka  --alter \
             --topic ${topic[0]} \
