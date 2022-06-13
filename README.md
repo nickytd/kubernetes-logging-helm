@@ -21,3 +21,5 @@ Pages: https://nickytd.github.io/kubernetes-logging-helm
 
 Uprgade Notes 2.x to 3.0.0:
 Since version 3.0.0, the chart values are renamed and follow camel case recommendation.
+
+Chart version 4.0.0 now features Opensearch & Dashboards 2.0.0 - [Release Notes](https://github.com/opensearch-project/OpenSearch/blob/main/release-notes/opensearch.release-notes-2.0.0.md)
