@@ -212,7 +212,7 @@ data_prepper:
 
 fluentbit:
   image: "fluent/fluent-bit"
-  imageTag: "1.9.3"
+  imageTag: "1.9.4"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
@@ -223,14 +223,14 @@ fluentbit:
       memory: "50Mi"
     limits:
       memory: "100Mi"
-  priorityClass: {}
+  priorityClass: ""
   tolerations:
   - operator: Exists
   affinity: {}
   metrics:
     enabled: false
     interval: "30s"
-    namespace: {}
+    namespace: ""
   extraEnvs: {}
 
 fluentbitConfigWatcher:
@@ -263,7 +263,6 @@ logstash:
     serviceMonitor:
       enabled: false
       namespace: ""
-
   topologySpreadConstraints: {}
   #- maxSkew: 1
   #  topologyKey: kubernetes.io/hostname
