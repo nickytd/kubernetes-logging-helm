@@ -1,4 +1,4 @@
-{{- if and .Values.opensearch.inCluster .Values.client.ingress.enabled -}}
+{{- if and .Values.opensearch.externalOpensearch.disabled .Values.client.ingress.enabled -}}
 {{- if and .Values.client.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.client.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.client.ingress.annotations "kubernetes.io/ingress.class" .Values.client.ingress.className}}

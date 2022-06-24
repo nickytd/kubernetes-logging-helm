@@ -1,4 +1,4 @@
-{{- if and .Values.opensearch.inCluster (not $.Values.opensearch.singleNode) }}
+{{- if and (.Values.opensearch.externalOpensearch.disabled) (not $.Values.opensearch.singleNode) }}
 {{ range $masterId := until (.Values.master.replicas | int) }}
 ---
 apiVersion: v1

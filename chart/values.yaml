@@ -9,30 +9,26 @@ clusterName: "logging"
 # -- Secrets containing credentials for pulling images from private registers
 imagePullSecrets: []
 # -- TODO
-priorityClass: "logging"
+priorityClass: ""
 # -- Defautl Storage Class for used by Persistence Volume Claims. Can be overwritten by workloads
 storageClass: {}
 
-### OFD configuration
-
-# A complete OFD setup is provisioned when "inCluster" is set to true. It can
-# be scaled accordingly to the environment needs with the concrete
-# configurations of the nodes that follow. In case "inCluster" is set to false,
-# logs are pushed to an external OS.
+### OFD configuration ###
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 2.0.0
+  imageTag: 2.0.1
   imagePullPolicy: IfNotPresent
   singleNode: false
-  inCluster: true
+  # externalOpensearch.disabled designates an external managed opensearch stack.
+  externalOpensearch:
+    disabled: true
+    url: ""
   snapshot:
     enabled: false
     storageClass: {}
     size: "5Gi"
   retentionDays: 7
   additionalJvmParams: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
-  url: {}
-  port: 9200
   user: "osadmin"
   password: "osadmin"
   certManager:
@@ -141,21 +137,20 @@ data:
   tolerations: []
   affinity: {}
 
-# When inCluster is set to false it determines an external
-# opensearch-dashboards instance. In this case only jobs creating index
-# templates and opensearch-dashboards objects are executed.
 opensearch_dashboards:
   # dashboards custom branding configuration
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.0.0
-  inCluster: true
-  url: {}
+  imageTag: 2.0.1
+  # When externalOpensearchDashboards.disabled designates an external
+  # opensearch-dashboards instance. Only jobs for creating index
+  # templates and opensearch-dashboards objects are executed.
+  externalOpensearchDashboards:
+    disabled: true
+    url: ""
   replicas: 1
-  extraEnvs:
-  - name: "NODE_OPTIONS"
-    value: "--max-old-space-size=350"
+  extraEnvs: {}
   user: "opensearch"
   password: "opensearch"
   readonly:
@@ -211,6 +206,7 @@ data_prepper:
   #      type: data-prepper
 
 fluentbit:
+  enabled: true
   image: "fluent/fluent-bit"
   imageTag: "1.9.4"
   imagePullPolicy: IfNotPresent
@@ -218,6 +214,7 @@ fluentbit:
   journalsLogsHostPath: /var/log
   #define container runtime: docker or containerd
   containersRuntime: docker
+  caCertificateSecret: ""
   resources:
     requests:
       memory: "50Mi"

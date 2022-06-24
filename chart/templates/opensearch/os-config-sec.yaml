@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.inCluster }}
+{{- if .Values.opensearch.externalOpensearch.disabled }}
 {{ $root := . }}
 apiVersion: v1
 kind: Secret

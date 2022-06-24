@@ -1,3 +1,4 @@
+{{- if .Values.opensearch_dashboards.externalOpensearchDashboards.disabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -105,3 +106,4 @@ spec:
         configMap:
           name: {{ .Release.Name}}-init
           defaultMode: 0755
+{{- end }}

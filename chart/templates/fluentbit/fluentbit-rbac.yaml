@@ -1,3 +1,4 @@
+{{- if .Values.fluentbit.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -55,3 +56,4 @@ subjects:
 - kind: ServiceAccount
   name: {{ .Release.Name}}-fluentbit
   namespace: {{ .Release.Namespace }}
+{{- end }}

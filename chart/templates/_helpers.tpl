@@ -56,34 +56,44 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "os_url" -}}
-{{- if .Values.opensearch.inCluster -}}
+{{- if .Values.opensearch.externalOpensearch.disabled -}}
 {{ printf "https://%s-client.%s.%s:9200" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
-{{- printf "%s" .Values.opensearch.url -}}
+{{- printf "%s" .Values.opensearch.externalOpensearch.url -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "os_host" -}}
-{{- if .Values.opensearch.inCluster -}}
+{{- if .Values.opensearch.externalOpensearch.disabled -}}
 {{ printf "%s-client.%s.%s" .Release.Name .Release.Namespace "svc.cluster.local" }}
 {{- else -}}
-{{- printf "%s" .Values.opensearch.url -}}
+{{- $url := urlParse .Values.opensearch.externalOpensearch.url }}
+{{- $host := last (regexSplit ":" $url.host 1) }}
+{{- printf "%s" $host -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "os_port" -}}
-{{- if .Values.opensearch.inCluster -}}
+{{- if .Values.opensearch.externalOpensearch.disabled -}}
 {{ printf "%d" 9200 }}
 {{- else -}}
-{{- printf "%d" .Values.opensearch.port -}}
+{{- $url := urlParse .Values.opensearch.externalOpensearch.url }}
+{{- $port := last (regexSplit ":" $url.host -1) | int }}
+{{- if and ( eq $port 0 ) ( eq $url.scheme "http" ) }}
+{{- printf "%d" 80 }}
+{{- else if and ( eq $port 0 ) ( eq $url.scheme "https" ) }}
+{{- printf "%d" 443 }}
+{{- else -}}
+{{- printf "%d" $port -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "opensearch-dashboards_url" -}}
-{{- if $.Values.opensearch_dashboards.inCluster -}}
+{{- if $.Values.opensearch_dashboards.externalOpensearchDashboards.disabled -}}
 {{ printf "http://%s-opensearch-dashboards.%s.svc.cluster.local:5601" .Release.Name .Release.Namespace }}
 {{- else -}}
-{{- printf "%s" .Values.opensearch_dashboards.url -}}
+{{- printf "%s" .Values.opensearch_dashboards.externalOpensearchDashboards.url -}}
 {{- end -}}
 {{- end -}}	
 

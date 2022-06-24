@@ -1,4 +1,4 @@
-{{- if .Values.opensearch.inCluster }}
+{{- if .Values.opensearch.externalOpensearch.disabled }}
 {{ range $dataId := until (.Values.data.replicas | int) }}
 ---
 apiVersion: v1

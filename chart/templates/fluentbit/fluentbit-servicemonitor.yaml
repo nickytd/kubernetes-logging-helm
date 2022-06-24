@@ -1,3 +1,4 @@
+{{- if .Values.fluentbit.enabled }}
 {{- if and .Values.fluentbit.metrics.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1") }}
 apiVersion: v1
 kind: Service
@@ -31,4 +32,5 @@ spec:
   selector:
     matchLabels:  {{ include "logging.selectorLabels" . | indent 6 }} 
       k8s-app: fluentbit
+{{- end }}
 {{- end }}

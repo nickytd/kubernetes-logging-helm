@@ -1,3 +1,4 @@
+{{- if .Values.fluentbit.enabled }}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -23,19 +24,11 @@ spec:
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
-      - name: init
+      - name: check-os
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
         image: {{ include "init_container.image" . }}
-        {{- if .Values.kafka.enabled }}
-        command: ["sh","-c",'/init/check_os.sh && /init/check_job.sh && /init/check_host_port.sh $kafka 9092']
-        {{ else }}
-        command: ["sh","-c",'/init/check_os.sh && /init/check_job.sh']
-        {{- end }}
+        command: ["sh","-c",'/init/check_os.sh']
         env:
-          - name: job_name
-            value: {{ .Release.Name }}-index-templates
-          - name: job_namespace
-            value: {{ .Release.Namespace }}
           - name: os_url
             value: {{ include "os_url" . }}
           - name: os_user
@@ -48,11 +41,35 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-opensearch-credentials-admin
                 key: password
+        volumeMounts:
+        - mountPath: "/init"
+          name: init
+      {{- if .Values.kafka.enabled }}
+      - name: check-kafka
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        command: ["sh","-c",'/init/check_host_port.sh $kafka 9092']
+        env:
           - name: kafka
             value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}
         volumeMounts:
         - mountPath: "/init"
           name: init
+      {{- end }}
+      {{- if .Values.opensearch.externalOpensearch.disabled }}
+      - name: check-job
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        image: {{ include "init_container.image" . }}
+        command: ["sh","-c",'/init/check_job.sh']
+        env:
+          - name: job_name
+            value: {{ .Release.Name }}-index-templates
+          - name: job_namespace
+            value: {{ .Release.Namespace }}
+        volumeMounts:
+        - mountPath: "/init"
+          name: init
+      {{- end }}
       containers:
       - name: fluentbit
         image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.imageTag }}
@@ -136,7 +153,11 @@ spec:
           name: {{ .Release.Name}}-fluentbit
       - name: certificates
         secret:
+          {{- if .Values.fluentbit.caCertificateSecret }}
+          secretName: {{ .Values.fluentbit.caCertificateSecret }}
+          {{- else }}
           secretName: {{ .Release.Name }}-opensearch-certificates
+          {{- end }}
       - name: admin-certificate
         secret:
           secretName: {{ .Release.Name }}-opensearch-admin-certificate
@@ -146,3 +167,4 @@ spec:
       {{- with .Values.fluentbit.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

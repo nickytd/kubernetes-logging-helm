@@ -1,4 +1,4 @@
-{{- if and (.Values.opensearch.inCluster) (not .Values.opensearch.singleNode) }}
+{{- if and (.Values.opensearch.externalOpensearch.disabled) (not .Values.opensearch.singleNode) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
