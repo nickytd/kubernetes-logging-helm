@@ -45,7 +45,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.7e0eac4a4ced2f5a6c73827d90602871.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.e729b4dc8dc1d6fadba7f2230aa6f6e3.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -193,7 +193,7 @@ Kafka and Logstash needs to be enabled as well!.
 <h1 id=pg-4553fe28b20f652961f013e3fc49ad6a>3 - Helm chart values</h1>
 <div class=lead>Helm chart values description</div>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-4.0.1-informational?style=flat-square" alt="Version: 4.0.1"></p>
+<p><img src="https://img.shields.io/badge/Version-4.0.2-informational?style=flat-square" alt="Version: 4.0.2"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -209,7 +209,19 @@ Kafka and Logstash needs to be enabled as well!.
 <td>additionalJobAnnotations</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td>Additional annotations for chart jobs.</td>
+<td>Additional annotations for jobs pods</td>
+</tr>
+<tr>
+<td>additionalJobPodAnnotations</td>
+<td>string</td>
+<td><code>nil</code></td>
+<td>Additional annotations for job pods</td>
+</tr>
+<tr>
+<td>additionalJobPodLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td>Additional labels for job pods</td>
 </tr>
 <tr>
 <td>client.affinity</td>
@@ -257,6 +269,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td>client.ingress.tls</td>
 <td>list</td>
 <td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>client.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -311,6 +329,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td>data.heapSize</td>
 <td>string</td>
 <td><code>"512M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -383,6 +407,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td>data_prepper.imageTag</td>
 <td>string</td>
 <td><code>"1.4.0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>data_prepper.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -500,6 +530,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td></td>
 </tr>
 <tr>
+<td>fluentbit.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
 <td>fluentbit.priorityClass</td>
 <td>string</td>
 <td><code>""</code></td>
@@ -593,6 +629,18 @@ Kafka and Logstash needs to be enabled as well!.
 <td>kafka.imageTag</td>
 <td>string</td>
 <td><code>"3.1.0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>kafka.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -722,6 +770,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td></td>
 </tr>
 <tr>
+<td>logstash.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
 <td>logstash.priorityClass</td>
 <td>object</td>
 <td><code>{}</code></td>
@@ -767,6 +821,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td>master.heapSize</td>
 <td>string</td>
 <td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>master.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
@@ -1040,6 +1100,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td></td>
 </tr>
 <tr>
+<td>opensearch_dashboards.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
 <td>opensearch_dashboards.priorityClass</td>
 <td>object</td>
 <td><code>{}</code></td>
@@ -1151,6 +1217,12 @@ Kafka and Logstash needs to be enabled as well!.
 <td>zookeeper.imageTag</td>
 <td>string</td>
 <td><code>"3.8.0"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>zookeeper.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
 <td></td>
 </tr>
 <tr>
