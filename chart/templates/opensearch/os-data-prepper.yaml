@@ -16,6 +16,9 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/opensearch/os-data-prepper-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: data-prepper
+        {{- with .Values.data_prepper.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       priorityClassName: {{ default .Values.priorityClass .Values.data_prepper.priorityClass }}
       {{- with .Values.data_prepper.affinity }}

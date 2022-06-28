@@ -15,6 +15,9 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/opensearch-dashboards/opensearch-dashboards-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: opensearch-dashboards
+        {{- with .Values.opensearch_dashboards.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       priorityClassName: {{ default .Values.priorityClass .Values.opensearch_dashboards.priorityClass }}
       {{- with .Values.opensearch_dashboards.affinity }}
@@ -37,12 +40,12 @@ spec:
         - name: os_user
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-opensearch-credentials-admin
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
               key: username
         - name: os_pass
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-opensearch-credentials-admin
+              name: {{ .Release.Name }}-opensearch-dashboards-credentials-admin
               key: password
         volumeMounts:
         - mountPath: "/init"

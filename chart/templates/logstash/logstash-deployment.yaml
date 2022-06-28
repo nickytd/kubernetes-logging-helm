@@ -13,6 +13,9 @@ spec:
     metadata:
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: logstash
+        {{- with .Values.logstash.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/logstash/logstash-configmap.yaml") . | sha256sum }}
     spec:

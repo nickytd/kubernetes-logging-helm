@@ -22,7 +22,9 @@ spec:
         checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: master
-        node: os
+        {{- with .Values.master.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       priorityClassName: {{ default .Values.priorityClass .Values.master.priorityClass }}
       {{- with .Values.master.affinity }}

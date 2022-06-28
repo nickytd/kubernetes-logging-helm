@@ -19,7 +19,9 @@ spec:
         checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         type: client
-        node: os
+        {{- with .Values.client.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       priorityClassName: {{ default .Values.priorityClass .Values.client.priorityClass }}
       {{- with .Values.client.affinity }}
@@ -123,7 +125,8 @@ spec:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xms{{ .Values.client.heapSize }} -Xmx{{ .Values.client.heapSize }} {{ .Values.opensearch.additionalJvmParams }} \
+          value: "-Xms{{ .Values.client.heapSize }} -Xmx{{ .Values.client.heapSize }} \
+                  {{ .Values.opensearch.additionalJvmParams }} \
                   -Djava.util.logging.config.file=/usr/share/opensearch/config/logging.properties"
         - name: NAMESPACE
           valueFrom:

@@ -14,10 +14,14 @@ spec:
     spec:
       template:
         metadata:
-          annotations:
-            "sidecar.istio.io/inject": "false"
-          labels: {{ include "logging.labels" . | indent 12 }}
-            type: es-curator
+          {{- with .Values.additionalJobPodAnnotations }}
+          annotations: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels: {{ include "logging.selectorLabels" . | indent 12 }}
+            type: os-curator-cronjob
+            {{- with .Values.additionalJobPodLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
         spec:
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets: {{ toYaml . | nindent 10 }}

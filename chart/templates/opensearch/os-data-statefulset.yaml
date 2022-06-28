@@ -11,11 +11,13 @@ spec:
   replicas: {{ .Values.data.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      node: os
       {{- if .Values.opensearch.singleNode }}
       type: single
       {{- else }}
       type: data
+      {{- end }}
+      {{- with .Values.data.podLabels }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
   template:
     metadata:
@@ -24,7 +26,6 @@ spec:
         checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
         checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        node: os
         {{- if .Values.opensearch.singleNode }}
         type: single
         {{- else }}

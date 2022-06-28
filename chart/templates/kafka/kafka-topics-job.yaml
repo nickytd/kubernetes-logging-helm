@@ -12,8 +12,14 @@ spec:
   backoffLimit: 10
   template:
     metadata:
-      annotations:
-        "sidecar.istio.io/inject": "false"
+      {{- with .Values.additionalJobPodAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        type: kafka-topics
+        {{- with .Values.additionalJobPodLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}

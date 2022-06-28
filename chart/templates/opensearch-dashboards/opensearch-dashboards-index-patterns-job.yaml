@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:   {{ .Release.Name }}-opensearch-dashboards-index-pattern-job
+  name:   {{ .Release.Name }}-index-pattern-job
   labels: {{ include "logging.labels" . | indent 4 }}
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
@@ -15,21 +15,25 @@ spec:
   backoffLimit: 3
   template:
     metadata:
-      annotations:
-        "sidecar.istio.io/inject": "false"
+      {{- with .Values.additionalJobPodAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels: {{ include "logging.selectorLabels" . | indent 8 }}
+        type: os-dashboars-index-patterns
+        {{- with .Values.additionalJobPodLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       restartPolicy: Never
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
       initContainers:
-      - name: init
+      - name: check-os
         image: {{ include "init_container.image" .}}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_os.sh && /config/check_opensearch-dashboards.sh"]
+        command: ["sh", "-c", "/init/check_os.sh"]
         env:
-        - name: opensearch_dashboards_URL
-          value: {{ include "opensearch-dashboards_url" . }}
         - name: os_url
           value: {{ include "os_url" . }}
         - name: os_user
@@ -42,6 +46,16 @@ spec:
             secretKeyRef:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
+        volumeMounts:
+        - name: init
+          mountPath: "/init"
+      - name: check-opensearch-dashboards
+        image: {{ include "init_container.image" .}}
+        imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
+        command: ["sh", "-c", "/config/check_opensearch-dashboards.sh"]
+        env:
+        - name: opensearch_dashboards_URL
+          value: {{ include "opensearch-dashboards_url" . }}
         - name: opensearch_dashboards_USER
           valueFrom:
             secretKeyRef:
@@ -55,8 +69,6 @@ spec:
         volumeMounts:
         - name: config
           mountPath: "/config"
-        - name: init
-          mountPath: "/init"
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
