@@ -118,9 +118,11 @@ spec:
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc
+        {{- if or .Values.fluentbit.caCertificateSecret .Values.opensearch.externalOpensearch.disabled }}  
         - name: certificates
           mountPath: /fluent-bit/ssl/root-ca.pem
           subPath: ca.crt
+        {{- end }}  
         - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin.pem
           subPath: tls.crt

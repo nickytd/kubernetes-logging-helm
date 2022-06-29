@@ -63,7 +63,7 @@ data:
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
         Refresh_Interval  10
-        Read_from_Head    False
+        Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         multiline.parser  cri, go, java
 
   _input-systemd.conf: |-
@@ -110,7 +110,11 @@ data:
         HTTP_User           ${FLUENT_opensearch_USER}
         HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
         Logstash_Format     On
+        {{- if .Values.fluentbit.indexPrefix }}
+        Logstash_Prefix     {{ printf "%s-systemd" .Values.fluentbit.indexPrefix }}
+        {{- else }}
         Logstash_Prefix     systemd
+        {{- end }}
         Replace_Dots        On
         Retry_Limit         False
         Trace_Error         On
@@ -120,7 +124,9 @@ data:
         Generate_ID         On
         tls                 On
         tls.Verify          On
+        {{- if .Values.fluentbit.caCertificateSecret }}
         tls.ca_file         /fluent-bit/ssl/root-ca.pem
+        {{- end }}
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
 
@@ -133,7 +139,11 @@ data:
         HTTP_User           ${FLUENT_opensearch_USER}
         HTTP_Passwd         ${FLUENT_opensearch_PASSWORD}
         Logstash_Format     On
+        {{- if .Values.fluentbit.indexPrefix }}
+        Logstash_Prefix     {{ printf "%s-containers" .Values.fluentbit.indexPrefix }}
+        {{- else }}
         Logstash_Prefix     containers
+        {{- end }}
         Replace_Dots        On
         Retry_Limit         False
         Trace_Error         On
@@ -143,7 +153,9 @@ data:
         Generate_ID         On
         tls                 On
         tls.Verify          On
+        {{- if .Values.fluentbit.caCertificateSecret }}
         tls.ca_file         /fluent-bit/ssl/root-ca.pem
+        {{- end }}
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
         Buffer_Size         1024kb
