@@ -12,8 +12,7 @@ spec:
   replicas: {{ .Values.master.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      type: master
-      node: os
+      type: master      
   template:
     metadata:
       annotations:

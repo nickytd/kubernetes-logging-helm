@@ -214,7 +214,7 @@ data_prepper:
 fluentbit:
   enabled: true
   image: "fluent/fluent-bit"
-  imageTag: "1.9.4"
+  imageTag: "1.9.5"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
@@ -284,13 +284,13 @@ kafka:
   enabled: true
   replicas: 1
   image: "bitnami/kafka"
-  imageTag: "3.1.0"
+  imageTag: "3.2.0"
   heapSize: "256M"
   storage: "10Gi"
   topics:
     - name: "containers"
       config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
-      partitions: 10
+      partitions: 2
   resources:
     requests:
       memory: "600Mi"
@@ -301,7 +301,6 @@ kafka:
   priorityClass: {}
   tolerations: []
   affinity: {}
-  podLabels: {}
 
 # Zookeeper is a dependency of kafka
 zookeeper:

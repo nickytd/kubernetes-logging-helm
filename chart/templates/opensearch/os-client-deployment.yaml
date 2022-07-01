@@ -9,8 +9,7 @@ spec:
   replicas: {{ .Values.client.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      type: client
-      node: os
+      type: client      
   template:
     metadata:
       annotations:
@@ -18,7 +17,7 @@ spec:
         checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
         checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        type: client
+        type: client        
         {{- with .Values.client.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
