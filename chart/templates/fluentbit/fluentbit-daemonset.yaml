@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: fluentbit
         {{- with .Values.fluentbit.podLabels }}
@@ -154,8 +154,8 @@ spec:
           path: /var/lib/docker/containers
       {{- end }}
       - name: fluent-bit-config
-        configMap:
-          name: {{ .Release.Name}}-fluentbit
+        secret:
+          secretName: {{ .Release.Name}}-fluentbit
       - name: certificates
         secret:
           {{- if .Values.fluentbit.caCertificateSecret }}

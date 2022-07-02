@@ -1,14 +1,16 @@
 {{- if .Values.fluentbit.enabled }}
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: {{ .Release.Name}}-fluentbit
   labels: {{ include "logging.labels" . | indent 4 }}
     k8s-app: fluent-bit
-data:
+stringData:
   # Configuration files: server, input, filters and output
-  # ======================================================
+  # ======================================================  
   fluent-bit.conf: |-
+    # Provides the configuraiton data plane skeleton following Inputs -> Filter(s) -> Output(s) pattern
+    # Adding custom Filters and Outputs plugin configurations are supported by the helm chart    
     [SERVICE]
         Flush                         1
         Log_Level                     info
@@ -25,28 +27,41 @@ data:
         storage.max_chunks_up         1000
         storage.metrics               on
 
+    # Standard input tail plugin fo reading containers logs
     @INCLUDE _input-tail.conf
+
+    # Standard input systemd plugin fo reading systemd logs (containerd, kubelet service logs)
     @INCLUDE _input-systemd.conf
 
+    # Read any additional input plugin configurations supplied by the helm chart 
+    # File names follow a naming convention with "input" prefix and ".conf" extension
     {{- $inputconf := .Files.Glob "fluentbit-configs/input-*.conf" }}
     {{ if $inputconf }}
     @INCLUDE input-*.conf
     {{- end }}
 
     # Filter order does matter
+    # Standar kubernetes filter adding kubernetes metadata(lables,namespace, pod, container names ...) to logs
     @INCLUDE _filter-kubernetes.conf
+
+    # Replace dots with _ in the keys in all logs
     @INCLUDE _filter-de_dot.conf
 
+    # Read any additional filter plugin configuration supplied by the helm chart
+    # File names follow a naming convention with "filter" prefix and ".conf" extension
     {{- $filterconf := .Files.Glob "fluentbit-configs/filter-*.conf" }}
     {{ if $filterconf }}
     @INCLUDE filter-*.conf
     {{- end }}
 
+    # kafka output plugin configuration in case kafka is enabled in the helm chart
     {{- if .Values.kafka.enabled }}
     @INCLUDE _output-kafka.conf
     {{- else }}
+    # the default opensearch output plugin configuration in case kafka is not enabled in the helm chart
     @INCLUDE _output-opensearch-*.conf
-
+    
+    # Read any additional output plugin configurations in case kafka is not enabled in the helm chart
     {{- $outputconf := .Files.Glob "fluentbit-configs/output-*.conf" }}
     {{ if $outputconf }}
     @INCLUDE output-*.conf
@@ -226,16 +241,19 @@ data:
 
 {{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
 {{- if $path | regexMatch ".*parser.*" }}
-{{ printf "" | nindent 4 }}
 {{ printf "#%s" $path | nindent 4 }}
 {{ tpl ($.Files.Get $path) $ | indent 4 }}
 {{- end }}
 {{- end }}
 
+# Adds helm chart supplied plugin configurations to the fluent-bit secret
 {{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
 {{- if not ($path | regexMatch ".*parser.*") }}
+
+{{ printf "#%s" $path | nindent 2 }}
 {{ regexReplaceAll "(.*)/" $path "" | indent 2 }}: |-
 {{ tpl ($.Files.Get $path) $ | indent 4 }}
 {{- end }}
 {{- end }}
+
 {{- end }}
