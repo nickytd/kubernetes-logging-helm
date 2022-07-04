@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name}}-logstash
+  name: {{ .Release.Name }}-logstash
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
-  replicas: {{ .Values.logstash.replicas}}
+  replicas: {{ .Values.logstash.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
       type: logstash
@@ -20,7 +20,7 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/logstash/logstash-configmap.yaml") . | sha256sum }}
     spec:
       priorityClassName: {{ default .Values.priorityClass .Values.logstash.priorityClass }}
-      serviceAccountName: {{ .Release.Name}}-logstash
+      serviceAccountName: {{ .Release.Name }}-logstash
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
@@ -113,14 +113,14 @@ spec:
       volumes:
       - name: init
         configMap:
-          name: {{ .Release.Name}}-init
+          name: {{ .Release.Name }}-init
           defaultMode: 0755
       - name: config
         configMap:
-          name: {{ .Release.Name}}-logstash
+          name: {{ .Release.Name }}-logstash
       - name: pipelines
         configMap:
-          name: {{ .Release.Name}}-logstash-pipelines
+          name: {{ .Release.Name }}-logstash-pipelines
       - name: certificates
         secret:
           secretName: {{ .Release.Name }}-opensearch-certificates

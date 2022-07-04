@@ -28,7 +28,7 @@ spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
-      initContainers:      
+      initContainers:
       - name: check-os
         image: {{ include "init_container.image" .}}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
