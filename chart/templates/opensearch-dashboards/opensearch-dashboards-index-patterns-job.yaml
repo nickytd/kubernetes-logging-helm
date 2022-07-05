@@ -69,6 +69,11 @@ spec:
         volumeMounts:
         - name: config
           mountPath: "/config"
+        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}  
+        - name: certificates
+          mountPath: "/ssl/ca.crt"
+          subPath: ca.crt
+        {{- end }}     
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
@@ -106,6 +111,11 @@ spec:
           mountPath: "/config"
         - name: saved-objects
           mountPath: "/saved_objects"
+        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}  
+        - name: certificates
+          mountPath: "/ssl/ca.crt"
+          subPath: ca.crt
+        {{- end }}   
       volumes:
       - name: config
         configMap:
@@ -118,4 +128,9 @@ spec:
         configMap:
           name: {{ .Release.Name}}-init
           defaultMode: 0755
+      {{- with .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}    
+      - name: certificates
+        secret:          
+          secretName: {{ . }}
+      {{- end }}        
 {{- end }}

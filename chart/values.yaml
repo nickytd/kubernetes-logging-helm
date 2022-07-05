@@ -152,6 +152,7 @@ opensearch_dashboards:
   externalOpensearchDashboards:
     disabled: true
     runJob: false
+    caCertificateSecret: ""
     url: ""
   replicas: 1
   extraEnvs: {}
