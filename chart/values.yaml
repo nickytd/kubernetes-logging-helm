@@ -291,7 +291,8 @@ kafka:
   topics:
     - name: "containers"
       config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
-      partitions: 2
+      # If not set, partitions default to the number of brokers
+      # partitions: 1
   resources:
     requests:
       memory: "600Mi"
