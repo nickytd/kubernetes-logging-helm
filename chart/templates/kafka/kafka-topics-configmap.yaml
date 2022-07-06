@@ -6,7 +6,7 @@ metadata:
 data:
   topics.conf: |
     {{- range .Values.kafka.topics }}
-      {{ printf "%s;%s;%d" .name .config ( .partitions | int) }}
+      {{ printf "%s;%s;%d" .name .config ( (default $.Values.kafka.replicas .partitions ) | int) }}
     {{ end }}
 
   setup.sh: |-
