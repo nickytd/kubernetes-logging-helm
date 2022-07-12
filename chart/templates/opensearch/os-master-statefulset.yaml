@@ -115,6 +115,10 @@ spec:
           value: "false"
         - name: NODE_MASTER
           value: "true"
+        - name: NODE_PROCESSORS
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.cpu  
       volumes:
       - name: init
         configMap:
