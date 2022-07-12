@@ -44,6 +44,8 @@ stringData:
 
     node.name: ${HOSTNAME}
 
+    node.processors: ${NODE_PROCESSORS:2}
+
     thread_pool.write.queue_size: 1000
     thread_pool.search.queue_size: 1000
     thread_pool.get.queue_size: 1000
