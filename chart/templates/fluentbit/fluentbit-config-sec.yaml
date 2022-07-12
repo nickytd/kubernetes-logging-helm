@@ -20,7 +20,7 @@ stringData:
         HTTP_Listen                   0.0.0.0
         HTTP_Port                     2020
         storage.type                  filesystem
-        storage.path                  /var/log/flb-storage/
+        storage.path                  /var/fluent-bit/state/flb-storage/
         storage.sync                  normal
         storage.checksum              off
         storage.backlog.mem_limit     50M
@@ -74,7 +74,7 @@ stringData:
         Tag               kube.<pod_id>.<namespace_name>.<pod_name>.<container_name>
         Tag_Regex         /var/log/pods/(?<namespace_name>[^_/]+)_(?<pod_name>[^_/]+)_(?<pod_id>[^_/]+)/(?<container_name>[^/]+)/.*
         Path              /var/log/pods/*/*/*.log
-        DB                /var/log/flb_kube.db
+        DB                /var/fluent-bit/state/flb_kube.db
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
         Refresh_Interval  10

@@ -106,6 +106,8 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
         volumeMounts:
+        - name: fluentbitstate
+          mountPath: /var/fluent-bit/state
         - name: containerslog
           mountPath: /var/log/pods
           readOnly: true
@@ -138,6 +140,9 @@ spec:
       terminationGracePeriodSeconds: 10
       shareProcessNamespace: true
       volumes:
+      - name: fluentbitstate
+        hostPath:
+          path: /var/fluent-bit/state
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
