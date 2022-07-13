@@ -160,7 +160,7 @@ stringData:
         Logstash_Prefix     containers
         {{- end }}
         Replace_Dots        On
-        Retry_Limit         False
+        Retry_Limit         10
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     Off

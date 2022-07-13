@@ -16,7 +16,7 @@ storageClass: {}
 ### OFD configuration ###
 opensearch:
   image: "opensearchproject/opensearch"
-  imageTag: 2.0.1
+  imageTag: 2.1.0
   imagePullPolicy: IfNotPresent
   singleNode: false
   # externalOpensearch.disabled designates an external managed opensearch stack.
@@ -145,7 +145,7 @@ opensearch_dashboards:
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.0.1
+  imageTag: 2.1.0
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
