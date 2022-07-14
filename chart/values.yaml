@@ -222,6 +222,7 @@ fluentbit:
   #define container runtime: docker or containerd
   containersRuntime: docker
   indexPrefix: ""
+  mergeLog: On
   caCertificateSecret: ""
   readFromHead: false
   resources:

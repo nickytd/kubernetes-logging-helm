@@ -79,7 +79,8 @@ stringData:
         Skip_Long_Lines   Off
         Buffer_Chunk_Size 32k
         Buffer_Max_Size   128k        
-        Refresh_Interval  10
+        Refresh_Interval  30
+        Rotate_Wait       10
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         multiline.parser  cri, go, java
 
@@ -103,7 +104,7 @@ stringData:
         Kube_URL            https://kubernetes.default.svc:443
         Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
-        Merge_Log           On
+        Merge_Log           {{ .Values.fluentbit.mergeLog }}
         Keep_Log            On
         K8S-Logging.Parser  On
         K8S-Logging.Exclude On
@@ -175,8 +176,7 @@ stringData:
         {{- end }}
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
-        Buffer_Size         1024kb
-        Workers             10        
+        Buffer_Size         1024kb        
 
   _output-kafka.conf: |-
     [OUTPUT]
