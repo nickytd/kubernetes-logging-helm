@@ -23,7 +23,7 @@ stringData:
         storage.path                  /var/fluent-bit/state/flb-storage/
         storage.sync                  normal
         storage.checksum              off
-        storage.backlog.mem_limit     50M
+        storage.backlog.mem_limit     100M
         storage.max_chunks_up         1000
         storage.metrics               on
 
@@ -77,6 +77,8 @@ stringData:
         DB                /var/fluent-bit/state/flb_kube.db
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
+        Buffer_Chunk_Size 32k
+        Buffer_Max_Size   128k        
         Refresh_Interval  10
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         multiline.parser  cri, go, java
@@ -131,7 +133,7 @@ stringData:
         Logstash_Prefix     systemd
         {{- end }}
         Replace_Dots        On
-        Retry_Limit         False
+        Retry_Limit         25
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     Off
@@ -160,7 +162,7 @@ stringData:
         Logstash_Prefix     containers
         {{- end }}
         Replace_Dots        On
-        Retry_Limit         10
+        Retry_Limit         25
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     Off
@@ -174,6 +176,7 @@ stringData:
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
         Buffer_Size         1024kb
+        Workers             10        
 
   _output-kafka.conf: |-
     [OUTPUT]
