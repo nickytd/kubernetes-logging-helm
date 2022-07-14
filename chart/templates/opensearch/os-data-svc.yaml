@@ -15,6 +15,7 @@ spec:
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
     {{- if $.Values.opensearch.singleNode }}
     type: single
+    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-data-{{ $dataId }}
     {{- else }}
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-data-{{ $dataId }}
     type: data
