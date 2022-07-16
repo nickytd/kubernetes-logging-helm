@@ -43,7 +43,7 @@ spec:
         - name: kafka
           value: {{ printf "%s-kafka-0.%s.svc.cluster.local:9092" .Release.Name .Release.Namespace }}
         - name: replicas
-          value: "{{ (sub ($.Values.kafka.replicas | int) 1) }}"
+          value: "{{ .Values.kafka.replicas }}"
         volumeMounts:
         - name: setup
           mountPath: /topics-conf/setup.sh
