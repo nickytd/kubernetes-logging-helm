@@ -14,7 +14,7 @@ data:
 
     input="$(dirname $0)/topics.conf"
 
-    repfactor=$((--replicas))
+    repfactor=$((replicas-1))
     if [[ $repfactor -lt 1 ]]; then
       # The replication factor must be between 1 and 32767 inclusive
       repfactor=1
@@ -99,17 +99,17 @@ data:
           echo "INFO: Changing replication factor from $replicationfactor to $repfactor"
 
           if [[ $repfactor == 1 ]]; then
+            brokers=1
 
-            brokers=0
             for (( i=0; i<${topicparitions}; i++ )); do
               set="$set{\"topic\":\"$topicname\",\"partition\":$i,\"replicas\":[$brokers]}"
               if (( $i != $topicparitions-1 )); then
                 set="$set,"
               fi
-              if [[ $brokers == $topicparitions-1 ]]; then
-                brokers=0
+              if [[ $brokers == 0 ]]; then
+                brokers=2
               fi
-              brokers=$((brokers++))
+              ((--brokers))
             done
 
           else
