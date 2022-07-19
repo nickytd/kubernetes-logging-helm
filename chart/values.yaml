@@ -220,8 +220,9 @@ fluentbit:
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
   #define container runtime: docker or containerd
-  containersRuntime: docker
+  containersRuntime: containerd  
   indexPrefix: ""
+  disableTailInput: false
   mergeLog: On
   caCertificateSecret: ""
   readFromHead: false

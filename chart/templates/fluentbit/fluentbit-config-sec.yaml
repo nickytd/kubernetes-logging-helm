@@ -28,7 +28,9 @@ stringData:
         storage.metrics               on
 
     # Standard input tail plugin fo reading containers logs
+    {{- if not .Values.fluentbit.disableTailInput }}
     @INCLUDE _input-tail.conf
+    {{- end }}
 
     # Standard input systemd plugin fo reading systemd logs (containerd, kubelet service logs)
     @INCLUDE _input-systemd.conf
