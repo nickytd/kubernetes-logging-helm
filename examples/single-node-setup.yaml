@@ -35,6 +35,17 @@ opensearch_dashboards:
           - opensearch.local.dev
         secretName: opensearch-dashboards-tls  
 
+fluentbit:
+  containersLogsHostPath: /var/log/pods
+  #adjust host path if needed
+  journalsLogsHostPath: /run/log
+  #change to containerd if needed
+  containersRuntime: containerd
+  tolerations:
+    - operator: Exists
+  metrics:
+    enabled: true
+
 # Kafka should be enabled in scaled out configuration
 kafka:
   enabled: false
@@ -42,15 +53,5 @@ kafka:
 logstash:
   enabled: false
 
-fluend:
+data_prepper:
   enabled: false
-
-fluentbit:
-  containersLogsHostPath: /var/log/pods
-  #adjust host path if needed
-  journalsLogsHostPath: /run/log
-  #change to containerd if needed
-  containersRuntime: docker
-  metrics:
-    enabled: true
-    

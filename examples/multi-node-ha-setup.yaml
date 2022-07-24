@@ -111,5 +111,5 @@ logstash:
       matchLabels:
         type: logstash
 
-fluentd:
+data_prepper:
   enabled: false

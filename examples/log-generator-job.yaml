@@ -6,9 +6,9 @@ metadata:
   name: logger
 spec:
   completions: 10
-  completionMode: "Indexed"
-  ttlSecondsAfterFinished: 100
   parallelism: 2
+  completionMode: "Indexed"
+  ttlSecondsAfterFinished: 600
   template:
     metadata:      
       labels:
@@ -23,15 +23,15 @@ spec:
             app: logger
       restartPolicy: Never  
       containers:
-      - image: nickytd/log-generator
+      - image: gcr.io/google_containers/logs-generator:v0.1.1
         name: log-generator
-        args:
-          - -wait 
-          - "-1"
-          - -count 
-          - "100000"
+        env:
+        - name: "LOGS_GENERATOR_LINES_TOTAL"
+          value: "1000"
+        - name: "LOGS_GENERATOR_DURATION"
+          value: "1m"
         resources:
           requests:
-            cpu: 100m
+            cpu: 10m
           limits:
-            cpu: 1000m
+            cpu: 500m

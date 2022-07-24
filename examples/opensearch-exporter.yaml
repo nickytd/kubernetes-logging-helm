@@ -7,8 +7,8 @@ replicaCount: 1
 restartPolicy: Always
 
 image:
-  repository: justwatch/elasticsearch_exporter
-  tag: 1.1.0
+  repository: quay.io/prometheuscommunity/elasticsearch-exporter
+  tag: v1.4.0
   pullPolicy: IfNotPresent
   pullSecret: ""
 
@@ -33,7 +33,7 @@ dnsConfig: {}
 #   - name: edns0
 
 log:
-  format: json
+  format: text
   level: info
 
 resources:
@@ -88,7 +88,7 @@ extraEnvSecrets: {}
 # This is useful for mounting certificates for security
 secretMounts:
 - name: opensearch-certs
-  secretName: opensearch-certs
+  secretName: ofd-opensearch-certificates
   path: /ssl
 
 # A list of additional Volume to add to the deployment
@@ -168,7 +168,7 @@ es:
       # pem:
 
       # Path of ca pem file which should match a secretMount path
-      path: /ssl/ca.pem
+      path: /ssl/ca.crt
     client:
       ## if true, client SSL certificate is used for authentication
       ##

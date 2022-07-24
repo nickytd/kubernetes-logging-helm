@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-opensearch
+spec:
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: kubernetes-logging
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: kubernetes-logging    
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: kubernetes-logging
+  policyTypes:
+  - Egress
+  - Ingress

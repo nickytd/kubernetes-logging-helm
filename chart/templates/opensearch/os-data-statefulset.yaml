@@ -39,7 +39,7 @@ spec:
       {{- with .Values.data.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ .Release.Name }}-priv
+      serviceAccountName: {{ .Release.Name }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}

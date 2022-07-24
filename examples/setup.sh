@@ -27,8 +27,8 @@ if [ -d "$sourcedir/ssl" ]; then
   certs=("opensearch-dashboards" "os")
   for c in ${certs[@]}; do
     kubectl create secret tls "$c-tls" -n logging \
-      --cert=$sourcedir/ssl/wildcard.crt \
-      --key=$sourcedir/ssl/wildcard.key \
+      --cert=$sourcedir/ssl/_wildcard.local.dev.pem \
+      --key=$sourcedir/ssl/_wildcard.local.dev-key.pem \
       --dry-run=client -o yaml | kubectl apply -f - 
   done 
 fi 
@@ -43,7 +43,7 @@ done
 
 helm upgrade ofd \
     -n logging --create-namespace \
-    -f "$sourcedir/$values" $sourcedir/../charts \
+    -f "$sourcedir/$values" $sourcedir/../chart \
     --install --wait-for-jobs --timeout=30m
 
 for var in "$@"
@@ -53,18 +53,14 @@ do
       echo " generating helm templates"
       
       helm template ofd -n logging \
-        -f "$sourcedir/$values" $sourcedir/../charts \
+        -f "$sourcedir/$values" $sourcedir/../chart \
         > $sourcedir/templates.yaml 
     fi
     
     if [[ "$var" = "--with-exporter" ]]; then
       echo " installing opensearch prometheus exporter"
 
-      kubectl create secret generic opensearch-certs -n logging \
-        --from-file=ca.pem=$sourcedir/../charts/certificates/ca/root-ca/root-ca.pem \
-        --dry-run=client -o yaml | kubectl apply -f -
-
-      helm upgrade ofd-exporter \
+      helm upgrade exporter \
         -n logging --create-namespace  -f "$sourcedir/opensearch-exporter.yaml" \
         prometheus-community/prometheus-elasticsearch-exporter \
         --install

@@ -116,7 +116,7 @@ client:
   priorityClass: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: {}
+  topologySpreadConstraints: []
   #- maxSkew: 1
   #  topologyKey: kubernetes.io/hostname
   #  whenUnsatisfiable: ScheduleAnyway
@@ -273,7 +273,7 @@ logstash:
     serviceMonitor:
       enabled: false
       namespace: ""
-  topologySpreadConstraints: {}
+  topologySpreadConstraints: []
   #- maxSkew: 1
   #  topologyKey: kubernetes.io/hostname
   #  whenUnsatisfiable: ScheduleAnyway
