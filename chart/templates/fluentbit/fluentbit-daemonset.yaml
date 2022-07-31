@@ -131,14 +131,7 @@ spec:
         - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin-key.pem
           subPath: tls.key
-      - name: fluentbit-config-watcher
-        image: {{ .Values.fluentbitConfigWatcher.image }}:{{ .Values.fluentbitConfigWatcher.imageTag }}
-        imagePullPolicy: {{ .Values.fluentbitConfigWatcher.imagePullPolicy }}
-        volumeMounts:
-        - name: fluent-bit-config
-          mountPath: /fluent-bit/etc
-      terminationGracePeriodSeconds: 10
-      shareProcessNamespace: true
+      terminationGracePeriodSeconds: 10      
       volumes:
       - name: fluentbitstate
         hostPath:
