@@ -12,6 +12,8 @@ spec:
   - name: http
     port: 2020
     targetPort: http
+  - name: cfgw
+    port: 8888  
   selector: {{ include "logging.selectorLabels" . | indent 4 }}    
     k8s-app: fluentbit
 ---
@@ -25,7 +27,10 @@ spec:
   endpoints:
     - port: http
       path: /api/v1/metrics/prometheus
-      interval: {{ default "30s" .Values.fluentbit.metrics.interval }}      
+      interval: {{ default "30s" .Values.fluentbit.metrics.interval }}  
+    - port: cfgw
+      path: /metrics
+      interval: {{ default "30s" .Values.fluentbit.metrics.interval }}       
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace }}

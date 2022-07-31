@@ -81,6 +81,8 @@ spec:
         ports:
           - name: http
             containerPort: 2020
+          - name: cfgw
+            containerPort: 8888  
         env:
         - name: FLUENT_opensearch_HOST
           value: "{{ include "os_host" . }}"
