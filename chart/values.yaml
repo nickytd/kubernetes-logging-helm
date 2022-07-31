@@ -242,11 +242,6 @@ fluentbit:
     namespace: ""
   extraEnvs: {}
 
-fluentbitConfigWatcher:
-  image: "nickytd/config-watcher"
-  imageTag: "0.2.2"
-  imagePullPolicy: IfNotPresent
-
 ## Logstash is the recommended approach for delivering log stream to opensearch
 ## kafka -> logstash -> opensearch
 ## Note: kafka needs to be enabled as well
