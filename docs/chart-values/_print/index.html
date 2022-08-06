@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.214214f0c2050695d65f843935b6a958.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.eaa4afe3e012e3e177cd115cb752f9e7.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -71,7 +71,7 @@ This is the multi-page printable view of this section.
 </ul>
 <div class=content>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-4.0.15-informational?style=flat-square" alt="Version: 4.0.15"></p>
+<p><img src="https://img.shields.io/badge/Version-4.0.17-informational?style=flat-square" alt="Version: 4.0.17"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -1078,6 +1078,12 @@ This is the multi-page printable view of this section.
 <td>object</td>
 <td><code>{}</code></td>
 <td>Defautl Storage Class for used by Persistence Volume Claims. Can be overwritten by workloads</td>
+</tr>
+<tr>
+<td>withNetworkPolicy</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td>Default networkpolicy for ingress and egress traffic</td>
 </tr>
 <tr>
 <td>zookeeper.affinity</td>
