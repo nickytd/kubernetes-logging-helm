@@ -4,6 +4,19 @@ metadata:
   name: allow-opensearch
 spec:
   egress:
+  # allow dns traffic to kube-dns
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+    - port: 443
+      protocol: TCP
+    - port: 8053
+      protocol: TCP
+    - port: 8053
+      protocol: UDP
+  # allow in cluster traffic    
   - to:
     - podSelector:
         matchLabels:
