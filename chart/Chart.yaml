@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubernetes logging stack with Opensearch
 name: kubernetes-logging
-version: 4.0.15
+version: 4.0.16
 maintainers:
   - name: Niki Dokovski
     email: nickytd@gmail.com
