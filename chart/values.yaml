@@ -12,6 +12,8 @@ imagePullSecrets: []
 priorityClass: ""
 # -- Defautl Storage Class for used by Persistence Volume Claims. Can be overwritten by workloads
 storageClass: {}
+# -- Default networkpolicy for ingress and egress traffic
+withNetworkPolicy: false
 
 ### OFD configuration ###
 opensearch:

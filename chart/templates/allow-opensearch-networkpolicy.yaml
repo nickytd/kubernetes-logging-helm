@@ -1,3 +1,4 @@
+{{- if .Values.withNetworkPolicy }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -25,10 +26,19 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          app.kubernetes.io/name: kubernetes-logging    
+          app.kubernetes.io/name: kubernetes-logging
+  # allow ingress traffic from ingress controller            
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx        
   podSelector:
     matchLabels:
       app.kubernetes.io/name: kubernetes-logging
   policyTypes:
   - Egress
   - Ingress
+{{- end }}
