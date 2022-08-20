@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.995539c36382e34acf91fe11c0b799c5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5f8192dafd8c45610f336793aa8956eb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -59,7 +59,7 @@
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <div id=content-mobile>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.995539c36382e34acf91fe11c0b799c5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5f8192dafd8c45610f336793aa8956eb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -112,7 +112,7 @@
 <header class=article-meta>
 </header>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-4.1.0-informational?style=flat-square" alt="Version: 4.1.0"></p>
+<p><img src="https://img.shields.io/badge/Version-4.2.0-informational?style=flat-square" alt="Version: 4.2.0"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -228,6 +228,66 @@
 </tr>
 <tr>
 <td>client.topologySpreadConstraints</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.resources.limits.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.resources.requests.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.tolerations</td>
 <td>list</td>
 <td><code>[]</code></td>
 <td></td>
@@ -427,7 +487,7 @@
 <tr>
 <td>fluentbit.imageTag</td>
 <td>string</td>
-<td><code>"1.9.6"</code></td>
+<td><code>"1.9.7"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -720,66 +780,6 @@
 </tr>
 <tr>
 <td>logstash.topologySpreadConstraints</td>
-<td>list</td>
-<td><code>[]</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.affinity</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.heapSize</td>
-<td>string</td>
-<td><code>"256M"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.podLabels</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.priorityClass</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.replicas</td>
-<td>int</td>
-<td><code>1</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.resources.limits.memory</td>
-<td>string</td>
-<td><code>"700Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.resources.requests.memory</td>
-<td>string</td>
-<td><code>"700Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.storage</td>
-<td>string</td>
-<td><code>"1Gi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.storageClass</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.tolerations</td>
 <td>list</td>
 <td><code>[]</code></td>
 <td></td>

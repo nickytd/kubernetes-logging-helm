@@ -45,7 +45,7 @@ This helm chart deploys a scalable containerized logging stack with the main pur
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.995539c36382e34acf91fe11c0b799c5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5f8192dafd8c45610f336793aa8956eb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -121,7 +121,7 @@ At minimum the ingress annotations for the OpenSearch rest endpoint and OpenSear
 </blockquote>
 <h2 id=multi-node-opensearch>Multi node OpenSearch</h2>
 <p><img src=./kubernetes-logging-multi-node.png alt=multi-node></p>
-<p>OpenSearch supports dedicated <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node types</a> based on specific functions in the cluster. A <em>coordination node</em>, <em>data node</em> and <em>master node</em> forming an OpenSearch cluster can be deployed when <code>single_node</code> option is disabled.</p>
+<p>OpenSearch supports dedicated <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node types</a> based on specific functions in the cluster. A <em>coordination node</em>, <em>data node</em> and <em>cluster manager node</em> forming an OpenSearch cluster can be deployed when <code>single_node</code> option is disabled.</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>opensearch</span>:
   <span style=color:#ff79c6>single_node</span>: <span style=color:#ff79c6>false</span>
 </code></pre></div><h2 id=scaled-multi-node-opensearch-in-production>Scaled multi node OpenSearch in production</h2>
@@ -141,7 +141,7 @@ Kafka and Logstash needs to be enabled as well!.
 <span style=color:#ff79c6>data</span>:
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
-<span style=color:#ff79c6>master</span>:
+<span style=color:#ff79c6>clusterManager</span>:
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
 <span style=color:#ff79c6>client</span>:
@@ -193,7 +193,7 @@ Kafka and Logstash needs to be enabled as well!.
 <h1 id=pg-4553fe28b20f652961f013e3fc49ad6a>3 - Helm chart values</h1>
 <div class=lead>Helm chart values description</div>
 <p>Bellow you can find <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/values.yaml>helm chart values</a> usage with description.</p>
-<p><img src="https://img.shields.io/badge/Version-4.1.0-informational?style=flat-square" alt="Version: 4.1.0"></p>
+<p><img src="https://img.shields.io/badge/Version-4.2.0-informational?style=flat-square" alt="Version: 4.2.0"></p>
 <h2 id=values>Values</h2>
 <table>
 <thead>
@@ -309,6 +309,66 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>client.topologySpreadConstraints</td>
+<td>list</td>
+<td><code>[]</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.affinity</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.heapSize</td>
+<td>string</td>
+<td><code>"256M"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.podLabels</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.priorityClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.replicas</td>
+<td>int</td>
+<td><code>1</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.resources.limits.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.resources.requests.memory</td>
+<td>string</td>
+<td><code>"700Mi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.storage</td>
+<td>string</td>
+<td><code>"1Gi"</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.storageClass</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td></td>
+</tr>
+<tr>
+<td>clusterManager.tolerations</td>
 <td>list</td>
 <td><code>[]</code></td>
 <td></td>
@@ -508,7 +568,7 @@ Kafka and Logstash needs to be enabled as well!.
 <tr>
 <td>fluentbit.imageTag</td>
 <td>string</td>
-<td><code>"1.9.6"</code></td>
+<td><code>"1.9.7"</code></td>
 <td></td>
 </tr>
 <tr>
@@ -801,66 +861,6 @@ Kafka and Logstash needs to be enabled as well!.
 </tr>
 <tr>
 <td>logstash.topologySpreadConstraints</td>
-<td>list</td>
-<td><code>[]</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.affinity</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.heapSize</td>
-<td>string</td>
-<td><code>"256M"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.podLabels</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.priorityClass</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.replicas</td>
-<td>int</td>
-<td><code>1</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.resources.limits.memory</td>
-<td>string</td>
-<td><code>"700Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.resources.requests.memory</td>
-<td>string</td>
-<td><code>"700Mi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.storage</td>
-<td>string</td>
-<td><code>"1Gi"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.storageClass</td>
-<td>object</td>
-<td><code>{}</code></td>
-<td></td>
-</tr>
-<tr>
-<td>master.tolerations</td>
 <td>list</td>
 <td><code>[]</code></td>
 <td></td>

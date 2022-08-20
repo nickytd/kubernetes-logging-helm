@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.995539c36382e34acf91fe11c0b799c5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5f8192dafd8c45610f336793aa8956eb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -59,7 +59,7 @@
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <div id=content-mobile>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.995539c36382e34acf91fe11c0b799c5.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.5f8192dafd8c45610f336793aa8956eb.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -137,7 +137,7 @@
 </blockquote>
 <h2 id=multi-node-opensearch>Multi node OpenSearch</h2>
 <p><img src=./kubernetes-logging-multi-node.png alt=multi-node></p>
-<p>OpenSearch supports dedicated <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node types</a> based on specific functions in the cluster. A <em>coordination node</em>, <em>data node</em> and <em>master node</em> forming an OpenSearch cluster can be deployed when <code>single_node</code> option is disabled.</p>
+<p>OpenSearch supports dedicated <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node types</a> based on specific functions in the cluster. A <em>coordination node</em>, <em>data node</em> and <em>cluster manager node</em> forming an OpenSearch cluster can be deployed when <code>single_node</code> option is disabled.</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#ff79c6>opensearch</span>:
   <span style=color:#ff79c6>single_node</span>: <span style=color:#ff79c6>false</span>
 </code></pre></div><h2 id=scaled-multi-node-opensearch-in-production>Scaled multi node OpenSearch in production</h2>
@@ -157,7 +157,7 @@ Kafka and Logstash needs to be enabled as well!.
 <span style=color:#ff79c6>data</span>:
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
-<span style=color:#ff79c6>master</span>:
+<span style=color:#ff79c6>clusterManager</span>:
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
 <span style=color:#ff79c6>client</span>:
@@ -202,7 +202,7 @@ Kafka and Logstash needs to be enabled as well!.
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified March 2, 2022: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/381f7f7b81a0dcd62b56188214516cfbf094522d>switch to hugo generated gh-pages (381f7f7)</a>
+Last modified August 20, 2022: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/b6b7ac2bfddb7300eaf3aa192e46e9dd1d2dc5c1>adopt cluster-manager nomenclature in opensearch (b6b7ac2)</a>
 </div>
 </div>
 </main>
