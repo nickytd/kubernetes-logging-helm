@@ -2,19 +2,19 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name}}-fluentbit
+  name: {{ .Release.Name}}-fluent-bit
   labels: {{ include "logging.selectorLabels" . | indent 4 }}
-    k8s-app: fluentbit
+    k8s-app: fluent-bit
 spec:
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      k8s-app: fluentbit
+      k8s-app: fluent-bit
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        k8s-app: fluentbit
+        k8s-app: fluent-bit
         {{- with .Values.fluentbit.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -74,7 +74,7 @@ spec:
           name: init
       {{- end }}
       containers:
-      - name: fluentbit
+      - name: fluent-bit
         image: {{ .Values.fluentbit.image }}:{{ .Values.fluentbit.imageTag }}
         imagePullPolicy: {{ .Values.fluentbit.imagePullPolicy }}
         resources: {{ toYaml .Values.fluentbit.resources | nindent 10 }}
