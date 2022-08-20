@@ -1,17 +1,17 @@
 {{- if and (.Values.opensearch.externalOpensearch.disabled) (not $.Values.opensearch.singleNode) }}
-{{ range $masterId := until (.Values.master.replicas | int) }}
+{{ range $id := until (.Values.clusterManager.replicas | int) }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $.Release.Name }}-master-{{ $masterId }}
+  name: {{ $.Release.Name }}-cluster-manager-{{ $id }}
   labels: {{ include "logging.labels" $ | indent 4 }}
 spec:
   ports:
     - port: 9300
       name: transport
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
-    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-master-{{ $masterId }}
-    type: master
+    statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-cluster-manager-{{ $id }}
+    type: cluster-manager
 {{- end }}
 {{- end }}

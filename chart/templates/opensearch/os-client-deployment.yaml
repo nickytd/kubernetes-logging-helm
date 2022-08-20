@@ -40,10 +40,10 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command: ["sh", "-c", "/init/check_host_port.sh $os_master 9300 && /init/init_os_node.sh "]
+        command: ["sh", "-c", "/init/check_host_port.sh $os_cluster_manager 9300 && /init/init_os_node.sh "]
         env:
-          - name: os_master
-            value: {{ .Release.Name }}-master-{{ (sub (.Values.master.replicas | int) 1) }}
+          - name: os_cluster_manager
+            value: {{ .Release.Name }}-cluster-manager-{{ (sub (.Values.clusterManager.replicas | int) 1) }}
         volumeMounts:
         - name: shared
           mountPath: /shared
@@ -85,7 +85,7 @@ spec:
           subPath: livenessProbe.sh
         - name: opensearchsecret
           mountPath: /usr/share/opensearch/config/opensearch.yml
-          subPath: opensearch.yml
+          subPath: opensearch-client.yml
         - name: opensearch
           mountPath: /usr/share/opensearch/config/log4j2.properties
           subPath: log4j2.properties
@@ -130,13 +130,7 @@ spec:
         - name: NAMESPACE
           valueFrom:
             fieldRef:
-              fieldPath: metadata.namespace
-        - name: NODE_MASTER
-          value: "false"
-        - name: NODE_DATA
-          value: "false"
-        - name: NODE_INGEST
-          value: "false"
+              fieldPath: metadata.namespace        
         - name: NODE_PROCESSORS
           valueFrom:
             resourceFieldRef:

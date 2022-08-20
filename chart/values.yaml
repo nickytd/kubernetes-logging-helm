@@ -82,8 +82,8 @@ init_container:
   imageTag: "1.0.3"
   imagePullPolicy: IfNotPresent
 
-# Configuration of OS master node if "inCluster" is true
-master:
+# Configuration of OS cluster manager node
+clusterManager:
   replicas: 1
   storage: "1Gi"
   heapSize: "256M"
@@ -217,7 +217,7 @@ data_prepper:
 fluentbit:
   enabled: true
   image: "nickytd/fluent-bit"
-  imageTag: "1.9.6"
+  imageTag: "1.9.7"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log

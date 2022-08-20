@@ -1,6 +1,6 @@
 # opensearch general configuration
 # Single type node deploys only one ALL type opensearch node
-# Otherwise it deploys coordination, data and master nodes
+# Otherwise it deploys coordination, data and cluster managers nodes
 # The recommended configuration in scaled out setups is to disable single_node and enable kafka
 opensearch:
   singleNode: true
@@ -39,7 +39,7 @@ fluentbit:
   containersLogsHostPath: /var/log/pods
   #adjust host path if needed
   journalsLogsHostPath: /run/log
-  #change to containerd if needed
+  #change to docker if needed
   containersRuntime: containerd
   tolerations:
     - operator: Exists

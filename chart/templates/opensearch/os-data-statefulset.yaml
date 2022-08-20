@@ -103,7 +103,7 @@ spec:
         {{- end }}
         - name: opensearchsecret
           mountPath: /usr/share/opensearch/config/opensearch.yml
-          subPath: opensearch.yml
+          subPath: opensearch-data.yml
         - name: opensearch
           mountPath: /usr/share/opensearch/config/log4j2.properties
           subPath: log4j2.properties
@@ -140,13 +140,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xms{{ .Values.data.heapSize }} -Xmx{{ .Values.data.heapSize }} {{ .Values.opensearch.additionalJvmParams }}"
-        {{- if not .Values.opensearch.singleNode }}
-        - name: NODE_MASTER
-          value: "false"
-        {{- end }}
-        - name: NODE_DATA
-          value: "true"
+          value: "-Xms{{ .Values.data.heapSize }} -Xmx{{ .Values.data.heapSize }} {{ .Values.opensearch.additionalJvmParams }}"        
         - name: NODE_PROCESSORS
           valueFrom:
             resourceFieldRef:

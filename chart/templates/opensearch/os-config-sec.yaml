@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}
   labels: {{ include "logging.labels" . | indent 4 }}
 stringData:
-  opensearch.yml: |-
+  opensearch-client.yml: |-
     cluster.name: {{ .Values.clusterName | quote }}
     path.data: /data
 
@@ -22,28 +22,191 @@ stringData:
       - {{ $root.Release.Name }}-data-{{$k}}
     {{- end }}
     {{- else }}
-    {{- range $k := (int .Values.master.replicas | until ) }}
-      - {{ $root.Release.Name }}-master-{{$k}}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
     {{- end }}
-    {{- end }}
+    {{- end }}    
 
     cluster.initial_master_nodes:
     {{- if .Values.opensearch.singleNode }}
     {{- range $k := (int .Values.data.replicas | until ) }}
       - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }} 
+    {{- else }}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
+    {{- end }}
+    {{- end }}
+
+    node.roles: []
+    node.name: ${HOSTNAME}
+    node.processors: ${NODE_PROCESSORS:2}
+
+    thread_pool.write.queue_size: 1000
+    thread_pool.search.queue_size: 1000
+    thread_pool.get.queue_size: 1000
+    thread_pool.analyze.queue_size: 1000
+    thread_pool.listener.queue_size: 1000
+
+    plugins.security.allow_unsafe_democertificates: false
+    plugins.security.allow_default_init_securityindex: false
+    plugins.security.system_indices.enabled: true
+    plugins.security.system_indices.indices:
+    - ".opendistro-alerting-config"
+    - ".opendistro-alerting-alert*"
+    - ".opendistro-anomaly-results*"
+    - ".opendistro-anomaly-detector*"
+    - ".opendistro-anomaly-checkpoints"
+    - ".opendistro-anomaly-detection-state"
+    - ".opendistro-reports-*"
+    - ".opendistro-notifications-*"
+    - ".opendistro-notebooks"
+    - ".opendistro-asynchronous-search-response*"
+    # plugins.security.audit.type: internal_opensearch
+    # plugins.security.enable_snapshot_restore_privilege: true
+    # plugins.security.check_snapshot_restore_write_privileges: true
+    # cluster.routing.allocation.disk.threshold_enabled: false
+    # plugins.security.audit.config.disabled_rest_categories: NONE
+    # plugins.security.audit.config.disabled_transport_categories: NONE
+
+    # TLS Configuration Transport Layer
+    plugins.security.nodes_dn:
+      - 'CN=*.{{ .Release.Namespace }}.svc.cluster.local'
+    plugins.security.authcz.admin_dn:
+      - 'CN=admin'
+    plugins.security.ssl.transport.pemcert_filepath: node.pem
+    plugins.security.ssl.transport.pemkey_filepath: node-key.key
+    plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.ssl.transport.enforce_hostname_verification: false
+
+
+    # TLS Configuration REST Layer
+    plugins.security.ssl.http.enabled: true
+    plugins.security.ssl.http.pemcert_filepath: ofd-rest.pem
+    plugins.security.ssl.http.pemkey_filepath: ofd-rest-key.key
+    plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.restapi.roles_enabled: ["all_access", "administrator"]
+
+  opensearch-cluster-manager.yml: |-
+    cluster.name: {{ .Values.clusterName | quote }}
+    path.data: /data
+
+    {{- if .Values.opensearch.snapshot.enabled }}
+    path.repo: /snapshot
+    {{- end }}
+
+    network.host: 0.0.0.0
+
+    discovery.seed_hosts:
+    {{- if .Values.opensearch.singleNode }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
     {{- end }}
     {{- else }}
-    {{- range $k := (int .Values.master.replicas | until ) }}
-      - {{ $root.Release.Name }}-master-{{$k}}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
+    {{- end }}
+    {{- end }}    
+
+    cluster.initial_master_nodes:
+    {{- if .Values.opensearch.singleNode }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }} 
+    {{- else }}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
     {{- end }}
     {{- end }}
 
-    node.master: ${NODE_MASTER:true}
-    node.data: ${NODE_DATA:true}
-    node.ingest: ${NODE_INGEST:true}
+    node.roles: [ cluster_manager ]
+    node.name: ${HOSTNAME}
+    node.processors: ${NODE_PROCESSORS:2}
+
+    thread_pool.write.queue_size: 1000
+    thread_pool.search.queue_size: 1000
+    thread_pool.get.queue_size: 1000
+    thread_pool.analyze.queue_size: 1000
+    thread_pool.listener.queue_size: 1000
+
+    plugins.security.allow_unsafe_democertificates: false
+    plugins.security.allow_default_init_securityindex: false
+    plugins.security.system_indices.enabled: true
+    plugins.security.system_indices.indices:
+    - ".opendistro-alerting-config"
+    - ".opendistro-alerting-alert*"
+    - ".opendistro-anomaly-results*"
+    - ".opendistro-anomaly-detector*"
+    - ".opendistro-anomaly-checkpoints"
+    - ".opendistro-anomaly-detection-state"
+    - ".opendistro-reports-*"
+    - ".opendistro-notifications-*"
+    - ".opendistro-notebooks"
+    - ".opendistro-asynchronous-search-response*"
+    # plugins.security.audit.type: internal_opensearch
+    # plugins.security.enable_snapshot_restore_privilege: true
+    # plugins.security.check_snapshot_restore_write_privileges: true
+    # cluster.routing.allocation.disk.threshold_enabled: false
+    # plugins.security.audit.config.disabled_rest_categories: NONE
+    # plugins.security.audit.config.disabled_transport_categories: NONE
+
+    # TLS Configuration Transport Layer
+    plugins.security.nodes_dn:
+      - 'CN=*.{{ .Release.Namespace }}.svc.cluster.local'
+    plugins.security.authcz.admin_dn:
+      - 'CN=admin'
+    plugins.security.ssl.transport.pemcert_filepath: node.pem
+    plugins.security.ssl.transport.pemkey_filepath: node-key.key
+    plugins.security.ssl.transport.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.ssl.transport.enforce_hostname_verification: false
+
+
+    # TLS Configuration REST Layer
+    plugins.security.ssl.http.enabled: true
+    plugins.security.ssl.http.pemcert_filepath: ofd-rest.pem
+    plugins.security.ssl.http.pemkey_filepath: ofd-rest-key.key
+    plugins.security.ssl.http.pemtrustedcas_filepath: root-ca.pem
+    plugins.security.restapi.roles_enabled: ["all_access", "administrator"]
+
+  opensearch-data.yml: |-
+    cluster.name: {{ .Values.clusterName | quote }}
+    path.data: /data
+
+    {{- if .Values.opensearch.snapshot.enabled }}
+    path.repo: /snapshot
+    {{- end }}
+
+    network.host: 0.0.0.0
+
+    discovery.seed_hosts:
+    {{- if .Values.opensearch.singleNode }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }}
+    {{- else }}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
+    {{- end }}
+    {{- end }}    
+
+    cluster.initial_master_nodes:
+    {{- if .Values.opensearch.singleNode }}
+    {{- range $k := (int .Values.data.replicas | until ) }}
+      - {{ $root.Release.Name }}-data-{{$k}}
+    {{- end }} 
+    {{- else }}
+    {{- range $k := (int .Values.clusterManager.replicas | until ) }}
+      - {{ $root.Release.Name }}-cluster-manager-{{$k}}
+    {{- end }}
+    {{- end }}
+
+    {{- if .Values.opensearch.singleNode }}
+    node.roles: [ cluster_manager, data, ingest ]
+    {{- else }}
+    node.roles: [ data, ingest ]
+    {{- end }}
 
     node.name: ${HOSTNAME}
-
     node.processors: ${NODE_PROCESSORS:2}
 
     thread_pool.write.queue_size: 1000

@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name:  {{ .Release.Name }}-master
+  name:  {{ .Release.Name }}-cluster-manager
   labels: {{ include "logging.labels" . | indent 4 }}
     node: os
 spec:
   updateStrategy:
     type: RollingUpdate
-  serviceName: {{ .Release.Name }}-master
-  replicas: {{ .Values.master.replicas }}
+  serviceName: {{ .Release.Name }}-cluster-manager
+  replicas: {{ .Values.clusterManager.replicas }}
   selector:
     matchLabels: {{ include "logging.selectorLabels" . | indent 6 }}
-      type: master      
+      type: cluster-manager      
   template:
     metadata:
       annotations:
@@ -20,16 +20,16 @@ spec:
         checksum/secret1: {{ include (print $.Template.BasePath "/opensearch/os-in-certificates-sec.yaml") . | sha256sum }}
         checksum/secret2: {{ include (print $.Template.BasePath "/opensearch/os-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        type: master
-        {{- with .Values.master.podLabels }}
+        type: cluster-manager
+        {{- with .Values.clusterManager.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      priorityClassName: {{ default .Values.priorityClass .Values.master.priorityClass }}
-      {{- with .Values.master.affinity }}
+      priorityClassName: {{ default .Values.priorityClass .Values.clusterManager.priorityClass }}
+      {{- with .Values.clusterManager.affinity }}
       affinity: {{ toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.master.tolerations }}
+      {{- with .Values.clusterManager.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ .Release.Name }}
@@ -65,7 +65,7 @@ spec:
       - name: main
         image: {{ .Values.opensearch.image }}:{{ .Values.opensearch.imageTag }}
         imagePullPolicy: {{ .Values.opensearch.imagePullPolicy }}
-        resources: {{ toYaml .Values.master.resources | nindent 10 }}
+        resources: {{ toYaml .Values.clusterManager.resources | nindent 10 }}
         livenessProbe:
           tcpSocket:
             port: transport
@@ -83,7 +83,7 @@ spec:
         {{- end }}
         - name: opensearchsecret
           mountPath: /usr/share/opensearch/config/opensearch.yml
-          subPath: opensearch.yml
+          subPath: opensearch-cluster-manager.yml
         - name: opensearch
           mountPath: /usr/share/opensearch/config/log4j2.properties
           subPath: log4j2.properties
@@ -108,13 +108,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xms{{ .Values.master.heapSize }} -Xmx{{ .Values.master.heapSize }} {{ .Values.opensearch.additionalJvmParams }}"
-        - name: NODE_DATA
-          value: "false"
-        - name: NODE_INGEST
-          value: "false"
-        - name: NODE_MASTER
-          value: "true"
+          value: "-Xms{{ .Values.clusterManager.heapSize }} -Xmx{{ .Values.clusterManager.heapSize }} {{ .Values.opensearch.additionalJvmParams }}"
         - name: NODE_PROCESSORS
           valueFrom:
             resourceFieldRef:
@@ -147,12 +141,12 @@ spec:
   - metadata:
       name: os-data
     spec:
-      {{- if or .Values.storageClass .Values.master.storageClass }}
-      storageClassName: {{ default .Values.storageClass .Values.master.storageClass | quote }}
+      {{- if or .Values.storageClass .Values.clusterManager.storageClass }}
+      storageClassName: {{ default .Values.storageClass .Values.clusterManager.storageClass | quote }}
       {{- end }}
       accessModes:
       - ReadWriteOnce
       resources:
         requests:
-          storage: {{ .Values.master.storage }}
+          storage: {{ .Values.clusterManager.storage }}
 {{- end }}

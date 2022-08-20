@@ -34,7 +34,7 @@ This layout is the simplest possible requiring the least compute and memory reso
 
 ![multi-node](./kubernetes-logging-multi-node.png)
 
-OpenSearch supports dedicated [node types](https://opensearch.org/docs/latest/opensearch/cluster/) based on specific functions in the cluster. A *coordination node*, *data node* and *master node* forming an OpenSearch cluster can be deployed when `single_node` option is disabled.
+OpenSearch supports dedicated [node types](https://opensearch.org/docs/latest/opensearch/cluster/) based on specific functions in the cluster. A *coordination node*, *data node* and *cluster manager node* forming an OpenSearch cluster can be deployed when `single_node` option is disabled.
 
 ``` yaml
 opensearch:
@@ -60,7 +60,7 @@ opensearch:
 data:
   replicas: 3
 
-master:
+clusterManager:
   replicas: 3
 
 client:

@@ -20,7 +20,7 @@ data:
               values:
               - data
           topologyKey: kubernetes.io/hostname
-master:
+clusterManager:
   replicas: 2
   affinity:
     podAntiAffinity:
@@ -32,7 +32,7 @@ master:
             - key: type
               operator: In
               values:
-              - master
+              - cluster-manager
           topologyKey: kubernetes.io/hostname  
 client:
   replicas: 2

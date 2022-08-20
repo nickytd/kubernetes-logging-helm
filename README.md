@@ -23,3 +23,6 @@ Uprgade Notes 2.x to 3.0.0:
 Since version 3.0.0, the chart values are renamed and follow camel case recommendation.
 
 Chart version 4.0.0 now features Opensearch & Dashboards 2.0.0 - [Release Notes](https://github.com/opensearch-project/OpenSearch/blob/main/release-notes/opensearch.release-notes-2.0.0.md)
+
+Uprgade Notes 4.x to 4.2.0:
+Chart version 4.2.0 delivers Opensearch [2.2.0](https://github.com/opensearch-project/opensearch-build/blob/main/release-notes/opensearch-release-notes-2.2.0.md). In this release the nomenclature is changed for the [master node](https://opensearch.org/docs/latest/opensearch/cluster/). Now it is called "cluster-manager". As a result the chart values.yaml is adapted as well reflecting the naming convention in opensearch. The "master" in values.yaml is renamed to "clusterManager".
