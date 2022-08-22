@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Release.Name}}-fluentbit
+  name: {{ .Release.Name}}-fluent-bit
   labels: {{ include "logging.labels" . | indent 4 }}
-    k8s-app: fluentbit
+    k8s-app: fluent-bit
 spec:
   type: ClusterIP
   ports:
@@ -15,12 +15,12 @@ spec:
   - name: cfgw
     port: 8888  
   selector: {{ include "logging.selectorLabels" . | indent 4 }}    
-    k8s-app: fluentbit
+    k8s-app: fluent-bit
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:  
-  name: {{ .Release.Name}}-fluentbit
+  name: {{ .Release.Name}}-fluent-bit
   namespace: {{ default .Release.Namespace .Values.fluentbit.metrics.namespace }}
   labels:  {{ include "logging.selectorLabels" . | indent 4 }}
 spec:
@@ -36,6 +36,6 @@ spec:
       - {{ .Release.Namespace }}
   selector:
     matchLabels:  {{ include "logging.selectorLabels" . | indent 6 }} 
-      k8s-app: fluentbit
+      k8s-app: fluent-bit
 {{- end }}
 {{- end }}
