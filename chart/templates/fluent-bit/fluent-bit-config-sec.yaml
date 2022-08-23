@@ -37,7 +37,7 @@ stringData:
 
     # Read any additional input plugin configurations supplied by the helm chart 
     # File names follow a naming convention with "input" prefix and ".conf" extension
-    {{- $inputconf := .Files.Glob "fluentbit-configs/input-*.conf" }}
+    {{- $inputconf := .Files.Glob "fluent-bit-configs/input-*.conf" }}
     {{ if $inputconf }}
     @INCLUDE input-*.conf
     {{- end }}
@@ -51,7 +51,7 @@ stringData:
 
     # Read any additional filter plugin configuration supplied by the helm chart
     # File names follow a naming convention with "filter" prefix and ".conf" extension
-    {{- $filterconf := .Files.Glob "fluentbit-configs/filter-*.conf" }}
+    {{- $filterconf := .Files.Glob "fluent-bit-configs/filter-*.conf" }}
     {{ if $filterconf }}
     @INCLUDE filter-*.conf
     {{- end }}
@@ -64,7 +64,7 @@ stringData:
     @INCLUDE _output-opensearch-*.conf
     
     # Read any additional output plugin configurations in case kafka is not enabled in the helm chart
-    {{- $outputconf := .Files.Glob "fluentbit-configs/output-*.conf" }}
+    {{- $outputconf := .Files.Glob "fluent-bit-configs/output-*.conf" }}
     {{ if $outputconf }}
     @INCLUDE output-*.conf
     {{- end }}
@@ -244,7 +244,7 @@ stringData:
     #
     # Using regexMatch (and others) from https://github.com/Masterminds/sprig/blob/master/regex.go
 
-{{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
+{{- range $path, $_ := .Files.Glob "fluent-bit-configs/*" }}
 {{- if $path | regexMatch ".*parser.*" }}
 {{ printf "#%s" $path | nindent 4 }}
 {{ tpl ($.Files.Get $path) $ | indent 4 }}
@@ -252,7 +252,7 @@ stringData:
 {{- end }}
 
 # Adds helm chart supplied plugin configurations to the fluent-bit secret
-{{- range $path, $_ := .Files.Glob "fluentbit-configs/*" }}
+{{- range $path, $_ := .Files.Glob "fluent-bit-configs/*" }}
 {{- if not ($path | regexMatch ".*parser.*") }}
 
 {{ printf "#%s" $path | nindent 2 }}

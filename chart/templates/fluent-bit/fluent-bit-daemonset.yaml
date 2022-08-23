@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/fluentbit/fluentbit-config-sec.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/fluent-bit/fluent-bit-config-sec.yaml") . | sha256sum }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
         k8s-app: fluent-bit
         {{- with .Values.fluentbit.podLabels }}
