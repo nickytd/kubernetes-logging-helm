@@ -4,41 +4,51 @@ kind: NetworkPolicy
 metadata:
   name: allow-opensearch
 spec:
-  egress:
-  # allow dns traffic to kube-dns
-  - ports:
-    - port: 53
-      protocol: UDP
-    - port: 53
-      protocol: TCP
-    - port: 443
-      protocol: TCP
-    - port: 8053
-      protocol: TCP
-    - port: 8053
-      protocol: UDP
-  # allow in cluster traffic    
-  - to:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: kubernetes-logging
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: kubernetes-logging
-  # allow ingress traffic from ingress controller            
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: ingress-nginx
-      podSelector:
-        matchLabels:
-          app.kubernetes.io/name: ingress-nginx        
+  # target all workloads in kubernetes logging helm chart
   podSelector:
     matchLabels:
       app.kubernetes.io/name: kubernetes-logging
+  egress:
+    # allow dns traffic to kube-dns
+    # allow https egress traffic
+    - ports:
+      - port: 53
+        protocol: UDP
+      - port: 53
+        protocol: TCP
+      - port: 443
+        protocol: TCP
+      - port: 8053
+        protocol: TCP
+      - port: 8053
+        protocol: UDP
+    # allow in cluster traffic
+    - to:
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: kubernetes-logging
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: kubernetes-logging
+    # allow ingress traffic from ingress controller and ingress-nginx namespace
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: ingress-nginx
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/name: ingress-nginx
+    # allow ingress traffic from prometheus and monitoring namespace
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: monitoring
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/name: prometheus
   policyTypes:
-  - Egress
-  - Ingress
+    - Egress
+    - Ingress
 {{- end }}
