@@ -25,13 +25,13 @@ stringData:
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}
     {{- end }}
-    {{- end }}    
+    {{- end }}
 
     cluster.initial_master_nodes:
     {{- if .Values.opensearch.singleNode }}
     {{- range $k := (int .Values.data.replicas | until ) }}
       - {{ $root.Release.Name }}-data-{{$k}}
-    {{- end }} 
+    {{- end }}
     {{- else }}
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}
@@ -106,13 +106,13 @@ stringData:
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}
     {{- end }}
-    {{- end }}    
+    {{- end }}
 
     cluster.initial_master_nodes:
     {{- if .Values.opensearch.singleNode }}
     {{- range $k := (int .Values.data.replicas | until ) }}
       - {{ $root.Release.Name }}-data-{{$k}}
-    {{- end }} 
+    {{- end }}
     {{- else }}
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}
@@ -187,13 +187,13 @@ stringData:
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}
     {{- end }}
-    {{- end }}    
+    {{- end }}
 
     cluster.initial_master_nodes:
     {{- if .Values.opensearch.singleNode }}
     {{- range $k := (int .Values.data.replicas | until ) }}
       - {{ $root.Release.Name }}-data-{{$k}}
-    {{- end }} 
+    {{- end }}
     {{- else }}
     {{- range $k := (int .Values.clusterManager.replicas | until ) }}
       - {{ $root.Release.Name }}-cluster-manager-{{$k}}

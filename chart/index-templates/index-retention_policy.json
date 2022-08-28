@@ -1,0 +1,31 @@
+{
+   "policy":{
+      "description":"Default index retention policy",
+      "default_state":"hot",
+      "ism_template":{
+         "index_patterns":["*-*.*.*"],
+         "priority":100
+      },
+      "states":[
+         {
+            "name":"hot",
+            "transitions":[
+               {
+                  "state_name":"delete",
+                  "conditions":{
+                     "min_index_age": {{ printf "%dd" (int .Values.opensearch.retentionDays) | quote }}
+                  }
+               }
+            ]
+         },
+         {
+            "name":"delete",
+            "actions":[
+               {
+                  "delete":{}
+               }
+            ]
+         }
+      ]
+   }
+}

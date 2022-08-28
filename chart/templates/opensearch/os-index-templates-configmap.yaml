@@ -43,3 +43,29 @@ data:
         echo
       done
     done
+
+    echo "creating ISM policies"
+    for file in `find /templates/ -name "*_policy.json" -type f`; do
+        name="$(basename -- $file)"
+        template=$(echo $name| cut -d'_' -f 1| cut -d'/' -f 3)
+
+        echo "setup ISM policy $template"
+        exists=$(curl -sk -w "%{http_code}" -o /dev/null -X GET \
+          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")
+
+        echo "$template exists $exists"
+
+        if [ "$exists" -eq "200" ]; then
+           echo "removing $template policy"
+           curl -sk -w "%{http_code}" -X DELETE \
+            -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template"
+        fi
+
+        curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
+          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template" -d @$file
+
+        curl -sk -w "%{http_code}" -o /dev/null -X POST \
+          -u$os_user:$os_pass "$os_url/_plugins/_ism/add/*-*.*.*" -d "{\"policy_id\": \"$template\"}"
+
+    done
+
