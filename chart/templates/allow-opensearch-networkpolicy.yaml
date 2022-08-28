@@ -18,6 +18,8 @@ spec:
         protocol: TCP
       - port: 443
         protocol: TCP
+      - port: 6443
+        protocol: TCP
       - port: 8053
         protocol: TCP
       - port: 8053
