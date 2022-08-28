@@ -107,6 +107,7 @@ data:
     while [[ ! $state =~ "1" ]]; do
       state=`curl -sS -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
       --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt | jq '.status.succeeded'`
-      echo "$job_name job status.succeeded $state"
       sleep 3
     done
+
+    echo "$job_name job status.succeeded $state"
