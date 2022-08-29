@@ -57,15 +57,20 @@ data:
 
         if [ "$exists" -eq "200" ]; then
            echo "removing $template policy"
-           curl -sk -w "%{http_code}" -X DELETE \
-            -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template"
+           response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X DELETE \
+            -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")
+           echo "response code: $response_code"
         fi
 
-        curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
-          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template" -d @$file
+        echo "creating $template policy"
+        response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X PUT -H "Content-Type: application/json" \
+          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template" -d @$file)
+        echo "response code: $response_code"
 
-        curl -sk -w "%{http_code}" -o /dev/null -X POST \
-          -u$os_user:$os_pass "$os_url/_plugins/_ism/add/*-*.*.*" -d "{\"policy_id\": \"$template\"}"
+        echo "attaching $template policy to indices"
+        response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X POST -H "content-type: application/json" \
+          -u$os_user:$os_pass "$os_url/_plugins/_ism/add/*-*.*.*" -d "{\"policy_id\": \"$template\"}")
+        echo "response code: $response_code"
 
     done
 
