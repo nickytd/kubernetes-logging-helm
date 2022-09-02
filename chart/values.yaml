@@ -70,12 +70,6 @@ opensearch:
   #  verifyHostnames: true
   #  logoutUrl:
 
-#Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
-os_curator:
-  image: "nickytd/os-curator"
-  imageTag: "5.8.4"
-  imagePullPolicy: IfNotPresent
-
 #Init container configuration. Used for multiple application startup checks
 init_container:
   image: "nickytd/init-container"
@@ -222,7 +216,7 @@ fluentbit:
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
   #define container runtime: docker or containerd
-  containersRuntime: containerd  
+  containersRuntime: containerd
   indexPrefix: ""
   disableTailInput: false
   mergeLog: On
