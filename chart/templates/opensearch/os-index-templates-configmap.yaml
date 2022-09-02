@@ -13,64 +13,93 @@ data:
 
     set -e
 
-    if [ -z ${os_url+x} ]; then
-      echo "opensearch url env variable (os_url) is expected but not found";
+    echo "INFO: --=== Prefly checking ===--"
+
+    # Check input parameters
+    if [[ -z ${os_url+x} ]]; then
+      echo "ERROR: OpenSearch url env variable (os_url) is expected but not found!"
       exit -1
-    elif [ -z ${os_user+x} ]; then
-      echo "opensearch user env variable (os_user) is expected but not found";
+    elif [[ -z ${os_user+x} ]]; then
+      echo "ERROR: OpenSearch user env variable (os_user) is expected but not found!"
       exit -1
-    elif [ -z ${os_pass+x} ]; then
-      echo "opensearch password env variable (os_pass) is expected but not found";
+    elif [[ -z ${os_pass+x} ]]; then
+      echo "ERROR: OpenSearch password env variable (os_pass) is expected but not found!"
       exit -1
     fi
+    echo "INFO: Input parameters found."
 
+    # Check cluster health
+    echo -e "INFO: Checking cluster health ..."
+    health=$(curl -sk -X GET -u$os_user:$os_pass "$os_url/_cat/health" | awk '{print $4}')
+    if [[ $health = "green" ]]; then
+      echo "INFO: Cluster health is green."
+    elif [[ $health = "yellow" ]]; then
+      echo "WARN: Cluster health is yellow."
+    elif [[ $health = "red" ]]; then
+      echo "ERROR: Cluster health is red!!!"
+      exit 1
+    elif [[ -z $health ]]; then
+      echo "ERROR: It isnt possible to communicate with OpenSearch cluster!!!"
+      exit 1
+    fi
+    echo "INFO: --=== Prefly checking done ===--"
+
+    echo "INFO: --=== Processing indices templates ===--"
 
     templates=("component" "index")
     for type in ${templates[@]}; do
-      echo
-      echo "### seting up $type templates ###"
-      for file in `find /templates/ -name "*_${type}_template.json" -type f`; do
+      echo "INFO: Seting up $type templates type ..."
+      for file in $(find /templates/ -name "*_${type}_template.json" -type f); do
+        echo "INFO: Processing file $file:"
         name="$(basename -- $file)"
-        template=$(echo $name| cut -d'_' -f 1| cut -d'/' -f 3)
-
-        echo "cleanup depricated cluster _template: $template"
-        curl -sk -w "%{http_code}" -X DELETE -H "Content-Type: application/json" \
-          -u$os_user:$os_pass "$os_url/_template/$template"
-        echo
-        echo "creating $type template: $template"
-        curl -sk -w "%{http_code}" -X PUT -H "Content-Type: application/json" \
-          -u$os_user:$os_pass "$os_url/_${type}_template/$template" -d @$file
-        echo
+        template=$(echo $name | cut -d'_' -f 1 | cut -d'/' -f 3)
+        echo -e "INFO: ... creating / updating $type template: $template"
+        curl -sk -X PUT -H "Content-Type: application/json" \
+          -u$os_user:$os_pass "$os_url/_${type}_template/$template?pretty=true" -d @$file
+        echo -e "INFO: ... done."
       done
     done
+    echo "INFO: --===--"
 
-    echo "creating ISM policies"
-    for file in `find /templates/ -name "*_policy.json" -type f`; do
-        name="$(basename -- $file)"
-        template=$(echo $name| cut -d'_' -f 1| cut -d'/' -f 3)
+    echo "INFO: --=== Processing indices policies ===--"
+    for file in $(find /templates/ -name "*_policy.json" -type f); do
+      echo -e "INFO: Processing file $file:"
+      name="$(basename -- $file)"
+      template=$(echo $name | cut -d'_' -f 1 | cut -d'/' -f 3)
 
-        echo "setup ISM policy $template"
-        exists=$(curl -sk -w "%{http_code}" -o /dev/null -X GET \
-          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")
+      # Get indices selector
+      indices=$(grep "index_patterns" $file | grep -o -E '\[\".*\"\]' | tr -d '"[]')
+      echo -e "INFO: Selecting indices by pattern: $indices"
 
-        echo "$template exists $exists"
-
-        if [ "$exists" -eq "200" ]; then
-           echo "removing $template policy"
-           response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X DELETE \
-            -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")
-           echo "response code: $response_code"
-        fi
-
-        echo "creating $template policy"
-        response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X PUT -H "Content-Type: application/json" \
-          -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template" -d @$file)
-        echo "response code: $response_code"
-
-        echo "attaching $template policy to indices"
-        response_code=$(curl -sk -w "%{http_code}" -o /dev/null -X POST -H "content-type: application/json" \
-          -u$os_user:$os_pass "$os_url/_plugins/_ism/add/*-*.*.*" -d "{\"policy_id\": \"$template\"}")
-        echo "response code: $response_code"
-
+      echo -en "INFO: Ckecking ISM policy $template: "
+      exists=$(curl -sk -w "%{http_code}" -o /dev/null -X GET \
+        -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")
+      if [[ $exists -eq 200 ]]; then
+        echo -e "exists.\nINFO: Removing old policy implementation from cluster ..."
+        # Remove existing ISM policy
+        echo "INFO: Removing policy $template:"
+        curl -sk -X DELETE -u$os_user:$os_pass \
+          "$os_url/_plugins/_ism/policies/$template?pretty=true"
+        echo "INFO: Removing policy done."
+        # Unassign policy from all selected indices
+        echo "INFO: Unassigning policy $template from indices:"
+        curl -sk -X POST -u$os_user:$os_pass \
+          "$os_url/_plugins/_ism/remove/$indices?pretty=true"
+        echo "INFO: Unassigning policy done."
+      else
+        echo -e "not exist."
+      fi
+      # Add ISM policy
+      echo "INFO: Adding new policy $template:"
+      curl -sk -X PUT -H "Content-Type: application/json" -u$os_user:$os_pass \
+        "$os_url/_plugins/_ism/policies/$template?pretty=true" -d @$file
+      echo "INFO: Adding policy done."
+      # Assign policy to all selected indices
+      echo "INFO: Assigning policy $template to selected indices:"
+      curl -sk -X POST -H "Content-Type: application/json" -u$os_user:$os_pass \
+        "$os_url/_plugins/_ism/add/$indices?pretty=true" -d "{\"policy_id\": \"$template\"}"
+      echo "INFO: Assigning policy done."
+      echo "INFO: Processing file $file done."
     done
-
+    echo -e "INFO: --===--"
+    exit 0
