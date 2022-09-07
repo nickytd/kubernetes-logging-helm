@@ -20,7 +20,7 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: 2.2.0
+  imageTag: 2.2.1
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   singleNode: false
@@ -146,7 +146,7 @@ opensearch_dashboards:
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.2.0
+  imageTag: 2.2.1
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
