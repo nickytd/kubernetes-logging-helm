@@ -7,10 +7,10 @@ metadata:
     k8s-app: fluent-bit
 stringData:
   # Configuration files: server, input, filters and output
-  # ======================================================  
+  # ======================================================
   fluent-bit.conf: |-
     # Provides the configuraiton data plane skeleton following Inputs -> Filter(s) -> Output(s) pattern
-    # Adding custom Filters and Outputs plugin configurations are supported by the helm chart    
+    # Adding custom Filters and Outputs plugin configurations are supported by the helm chart
     [SERVICE]
         Flush                         1
         Log_Level                     info
@@ -35,7 +35,7 @@ stringData:
     # Standard input systemd plugin fo reading systemd logs (containerd, kubelet service logs)
     @INCLUDE _input-systemd.conf
 
-    # Read any additional input plugin configurations supplied by the helm chart 
+    # Read any additional input plugin configurations supplied by the helm chart
     # File names follow a naming convention with "input" prefix and ".conf" extension
     {{- $inputconf := .Files.Glob "fluent-bit-configs/input-*.conf" }}
     {{ if $inputconf }}
@@ -62,7 +62,7 @@ stringData:
     {{- else }}
     # the default opensearch output plugin configuration in case kafka is not enabled in the helm chart
     @INCLUDE _output-opensearch-*.conf
-    
+
     # Read any additional output plugin configurations in case kafka is not enabled in the helm chart
     {{- $outputconf := .Files.Glob "fluent-bit-configs/output-*.conf" }}
     {{ if $outputconf }}
@@ -79,12 +79,10 @@ stringData:
         DB                /var/fluent-bit/state/flb_kube.db
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
-        Buffer_Chunk_Size 32k
-        Buffer_Max_Size   128k        
         Refresh_Interval  30
         Rotate_Wait       10
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
-        multiline.parser  cri, go, java
+        Static_Batch_Size 100M
 
   _input-systemd.conf: |-
     [INPUT]
@@ -178,7 +176,7 @@ stringData:
         {{- end }}
         tls.crt_file        /fluent-bit/ssl/admin.pem
         tls.key_file        /fluent-bit/ssl/admin-key.pem
-        Buffer_Size         1024kb        
+        Buffer_Size         1024kb
 
   _output-kafka.conf: |-
     [OUTPUT]
@@ -239,7 +237,7 @@ stringData:
         Time_Format %b %d %H:%M:%S
 
     # Appending any additional parsers from fluentbit-custom-files
-    # parsers.conf must be the LAST file as parsers.conf 
+    # parsers.conf must be the LAST file as parsers.conf
     # does NOT support the @INCLUDE syntax to append more.
     #
     # Using regexMatch (and others) from https://github.com/Masterminds/sprig/blob/master/regex.go
