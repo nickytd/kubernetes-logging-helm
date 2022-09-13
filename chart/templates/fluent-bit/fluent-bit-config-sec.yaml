@@ -123,6 +123,7 @@ stringData:
     [OUTPUT]
         Name                opensearch
         Match               systemd.*
+        Alias               systemd
         Host                ${FLUENT_opensearch_HOST}
         Port                ${FLUENT_opensearch_PORT}
         HTTP_User           ${FLUENT_opensearch_USER}
@@ -152,6 +153,7 @@ stringData:
     [OUTPUT]
         Name                opensearch
         Match               kube.*
+        Alias               containers
         Host                ${FLUENT_opensearch_HOST}
         Port                ${FLUENT_opensearch_PORT}
         HTTP_User           ${FLUENT_opensearch_USER}
@@ -182,6 +184,7 @@ stringData:
     [OUTPUT]
         Name                             kafka
         Match                            *
+        Alias                            kafka
         Brokers                          {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
         Topics                           containers
         Retry_Limit                      False
