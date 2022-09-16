@@ -79,7 +79,7 @@ stringData:
         DB                /var/fluent-bit/state/flb_kube.db
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
-        Refresh_Interval  30
+        Refresh_Interval  10
         Rotate_Wait       10
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         Static_Batch_Size 100M
