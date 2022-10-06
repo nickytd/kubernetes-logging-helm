@@ -20,7 +20,7 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: 2.2.1
+  imageTag: 2.3.0
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   singleNode: false
@@ -146,7 +146,7 @@ opensearch_dashboards:
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.2.1
+  imageTag: 2.3.0
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -216,7 +216,7 @@ data_prepper:
 fluentbit:
   enabled: true
   image: "nickytd/fluent-bit"
-  imageTag: "1.9.8"
+  imageTag: "1.9.9"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
@@ -249,7 +249,7 @@ fluentbit:
 logstash:
   enabled: true
   image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
-  imageTag: "7.16.3"
+  imageTag: "8.4.0"
   replicas: 1
   heapSize: "256M"
   resources:

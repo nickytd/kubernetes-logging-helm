@@ -80,7 +80,7 @@ stringData:
         Exclude_Path      /var/log/pods/*/*/*.gz,/var/log/pods/*/*/*.zip
         Skip_Long_Lines   Off
         Refresh_Interval  30
-        Rotate_Wait       10
+        Rotate_Wait       15
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         Static_Batch_Size 100M
 
@@ -202,7 +202,7 @@ stringData:
       end
       dedot_keys(record["kubernetes"]["annotations"])
       dedot_keys(record["kubernetes"]["labels"])
-      return 1, timestamp, record
+      return 2, timestamp, record
     end
 
     function dedot_keys(map)
