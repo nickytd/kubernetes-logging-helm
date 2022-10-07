@@ -60,7 +60,7 @@ data:
 
     echo "checking opensearch $os_url"
 
-    check="curl -sk -w "%{http_code}" -u$os_user:$os_pass $os_url -o /dev/null"
+    check="curl -s --cacert /ssl/root-ca.pem -w "%{http_code}" -u$os_user:$os_pass $os_url -o /dev/null"
 
     until [[ $($check) == "200" ]]; do
       echo "retrying $os_url"

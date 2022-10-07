@@ -47,6 +47,9 @@ spec:
                 name: {{ .Release.Name }}-opensearch-credentials-admin
                 key: password
         volumeMounts:
+        - name: certificates
+          mountPath: /ssl/root-ca.pem
+          subPath: ca.crt
         - name: init
           mountPath: "/init"
       containers:
@@ -71,6 +74,9 @@ spec:
         - name: templates
           mountPath: /templates
       volumes:
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-certificates
       - name: init
         configMap:
           name: {{ .Release.Name}}-init
