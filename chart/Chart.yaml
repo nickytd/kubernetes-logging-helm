@@ -1,5 +1,5 @@
 apiVersion: v2
-description: Kubernetes logging stack with Opensearch
+description: Kubernetes logging stack with OpenSearch
 name: kubernetes-logging
 version: 4.3.2
 maintainers:
