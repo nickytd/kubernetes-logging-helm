@@ -60,6 +60,8 @@ spec:
         env:
           - name: os_url
             value: {{ include "os_url" . }}
+          - name: os_cacert_file
+            value: /etc/ssl/certs/open_search_ca.crt
           - name: os_user
             valueFrom:
               secretKeyRef:
@@ -70,19 +72,29 @@ spec:
               secretKeyRef:
                 name: {{ .Release.Name }}-opensearch-credentials-admin
                 key: password
+          - name: os_data_nodes
+            value: "{{ .Values.data.replicas }}"
         volumeMounts:
         - name: templates
           mountPath: /templates
+        - name: certificates
+          mountPath: /etc/ssl/certs/open_search_ca.crt
+          subPath: ca.crt
+          readOnly: true
       volumes:
       - name: certificates
         secret:
           secretName: {{ .Release.Name }}-opensearch-certificates
       - name: init
         configMap:
-          name: {{ .Release.Name}}-init
+          name: {{ .Release.Name }}-init
           defaultMode: 0755
       - name: templates
         configMap:
-          name: {{ .Release.Name}}-index-templates
+          name: {{ .Release.Name }}-index-templates
           defaultMode: 0755
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-certificates
+          defaultMode: 0444
 {{- end }}
