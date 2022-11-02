@@ -1,6 +1,6 @@
 {
    "policy":{
-      "description":"Default index retention policy",
+      "description":"Retention policy for logging indices",
       "default_state":"hot",
       "ism_template":{
          "index_patterns":["*-*.*.*"],
