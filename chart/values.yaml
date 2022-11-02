@@ -17,8 +17,11 @@ withNetworkPolicy: false
 
 ### OFD configuration ###
 opensearch:
+  # -- Used image name.
   image: "opensearchproject/opensearch"
-  imageTag: 2.2.0
+  # -- Used component version.
+  imageTag: 2.3.0
+  # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   singleNode: false
   # externalOpensearch.disabled designates an external managed opensearch stack.
@@ -31,7 +34,9 @@ opensearch:
     size: "5Gi"
   retentionDays: 7
   additionalJvmParams: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
+  # -- User name with admin rights
   user: "osadmin"
+  # -- Password for account with admin rights
   password: "osadmin"
   certManager:
     enabled: false
@@ -69,12 +74,6 @@ opensearch:
   #  scope: "openid"
   #  verifyHostnames: true
   #  logoutUrl:
-
-#Opensearch Curator job configuration. It is a build of es-curator 5.8.4 /APL 2.0 license/ with a modified es version check 
-os_curator:
-  image: "nickytd/os-curator"
-  imageTag: "5.8.4"
-  imagePullPolicy: IfNotPresent
 
 #Init container configuration. Used for multiple application startup checks
 init_container:
@@ -147,7 +146,7 @@ opensearch_dashboards:
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.2.0
+  imageTag: 2.3.0
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -217,12 +216,12 @@ data_prepper:
 fluentbit:
   enabled: true
   image: "nickytd/fluent-bit"
-  imageTag: "1.9.7"
+  imageTag: "2.0.0"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
   #define container runtime: docker or containerd
-  containersRuntime: containerd  
+  containersRuntime: containerd
   indexPrefix: ""
   disableTailInput: false
   mergeLog: On
@@ -250,7 +249,7 @@ fluentbit:
 logstash:
   enabled: true
   image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
-  imageTag: "7.16.3"
+  imageTag: "8.4.0"
   replicas: 1
   heapSize: "256M"
   resources:

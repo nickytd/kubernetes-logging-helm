@@ -52,6 +52,9 @@ spec:
         - name: kafka
           value: {{ .Release.Name }}-kafka-{{ (sub (.Values.kafka.replicas | int) 1) }}
         volumeMounts:
+        - name: certificates
+          mountPath: /ssl/root-ca.pem
+          subPath: ca.crt
         - mountPath: "/init"
           name: init
       containers:

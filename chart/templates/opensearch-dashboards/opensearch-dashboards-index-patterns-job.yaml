@@ -47,6 +47,9 @@ spec:
               name: {{ .Release.Name }}-opensearch-credentials-admin
               key: password
         volumeMounts:
+        - name: certificates
+          mountPath: /ssl/root-ca.pem
+          subPath: ca.crt
         - name: init
           mountPath: "/init"
       - name: check-opensearch-dashboards
@@ -69,11 +72,11 @@ spec:
         volumeMounts:
         - name: config
           mountPath: "/config"
-        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}  
+        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}
         - name: certificates
           mountPath: "/ssl/ca.crt"
           subPath: ca.crt
-        {{- end }}     
+        {{- end }}
       containers:
       - name: main
         image: {{ include "init_container.image" .}}
@@ -111,11 +114,11 @@ spec:
           mountPath: "/config"
         - name: saved-objects
           mountPath: "/saved_objects"
-        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}  
+        {{- if .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}
         - name: certificates
           mountPath: "/ssl/ca.crt"
           subPath: ca.crt
-        {{- end }}   
+        {{- end }}
       volumes:
       - name: config
         configMap:
@@ -128,9 +131,13 @@ spec:
         configMap:
           name: {{ .Release.Name}}-init
           defaultMode: 0755
-      {{- with .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}    
+      {{- with .Values.opensearch_dashboards.externalOpensearchDashboards.caCertificateSecret }}
       - name: certificates
-        secret:          
+        secret:
           secretName: {{ . }}
-      {{- end }}        
+      {{- else }}
+      - name: certificates
+        secret:
+          secretName: {{ .Release.Name }}-opensearch-certificates
+      {{- end }}
 {{- end }}

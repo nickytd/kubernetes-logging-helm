@@ -130,7 +130,6 @@ data:
       # Get indices selector
       indices=$(grep "index_patterns" $file | grep -o -E '\[\".*\"\]' | tr -d '"[]')
       echo -e "INFO: Selecting indices by pattern: $indices"
-
       echo -en "INFO: Ckecking ISM policy $template: "
       exists=$(curl -s --cacert $os_cacert_file -w "%{http_code}" -o /dev/null \
         -X GET -u$os_user:$os_pass "$os_url/_plugins/_ism/policies/$template")

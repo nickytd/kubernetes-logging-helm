@@ -45,6 +45,9 @@ spec:
                 name: {{ .Release.Name }}-opensearch-credentials-admin
                 key: password
         volumeMounts:
+        - name: certificates
+          mountPath: /ssl/root-ca.pem
+          subPath: ca.crt
         - mountPath: "/init"
           name: init
       {{- if .Values.kafka.enabled }}
@@ -82,7 +85,7 @@ spec:
           - name: http
             containerPort: 2020
           - name: cfgw
-            containerPort: 8888  
+            containerPort: 8888
         env:
         - name: FLUENT_opensearch_HOST
           value: "{{ include "os_host" . }}"
@@ -122,18 +125,18 @@ spec:
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc
-        {{- if or .Values.fluentbit.caCertificateSecret .Values.opensearch.externalOpensearch.disabled }}  
+        {{- if or .Values.fluentbit.caCertificateSecret .Values.opensearch.externalOpensearch.disabled }}
         - name: certificates
           mountPath: /fluent-bit/ssl/root-ca.pem
           subPath: ca.crt
-        {{- end }}  
+        {{- end }}
         - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin.pem
           subPath: tls.crt
         - name: admin-certificate
           mountPath: /fluent-bit/ssl/admin-key.pem
           subPath: tls.key
-      terminationGracePeriodSeconds: 10      
+      terminationGracePeriodSeconds: 10
       volumes:
       - name: fluentbitstate
         hostPath:
