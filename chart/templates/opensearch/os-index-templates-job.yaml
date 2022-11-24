@@ -82,9 +82,6 @@ spec:
           subPath: ca.crt
           readOnly: true
       volumes:
-      - name: certificates
-        secret:
-          secretName: {{ .Release.Name }}-opensearch-certificates
       - name: init
         configMap:
           name: {{ .Release.Name }}-init
