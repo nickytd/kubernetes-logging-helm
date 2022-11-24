@@ -48,7 +48,7 @@ spec:
           name: otlp
         volumeMounts:
         - name: data-prepper-pipelines
-          mountPath: /usr/share/data-prepper/pipelines.yaml
+          mountPath: /usr/share/data-prepper/pipelines/pipelines.yaml
           subPath: pipelines.yaml
         - name: data-prepper-config
           mountPath: /usr/share/data-prepper/data-prepper-config.yaml
