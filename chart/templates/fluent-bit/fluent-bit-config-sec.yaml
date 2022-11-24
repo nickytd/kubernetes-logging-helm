@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Release.Name}}-fluent-bit
+  name: {{ .Release.Name }}-fluent-bit
   labels: {{ include "logging.labels" . | indent 4 }}
     k8s-app: fluent-bit
 stringData:
@@ -89,7 +89,7 @@ stringData:
         Name                systemd
         Tag                 systemd.*
         Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
-        Systemd_Filter      _SYSTEMD_UNIT={{.Values.fluentbit.containersRuntime}}.service
+        Systemd_Filter      _SYSTEMD_UNIT={{ .Values.fluentbit.containersRuntime }}.service
         Systemd_Filter_Type Or
         Read_From_Tail      On
         Path                /run/log/journal
@@ -169,7 +169,7 @@ stringData:
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     Off
-        Time_Key_Nanos      Off
+        Time_Key_Nanos      On
         Generate_ID         On
         tls                 On
         tls.Verify          On
@@ -231,6 +231,7 @@ stringData:
         Name        kube-tag
         Format      regex
         Regex       ^(?<pod_id>[^_/]+)\.(?<namespace_name>[^_/]+)\.(?<pod_name>[^_/]+)\.(?<container_name>[^/]+)$
+        Time_Format %Y-%m-%dT%H:%M:%S.%L%Z
 
     [PARSER]
         Name        syslog

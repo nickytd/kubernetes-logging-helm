@@ -23,6 +23,9 @@
             "enabled":true
          },
          "properties":{
+            "@timestamp":{
+              "type":"date_nanos"
+            },
             "level":{
                "type":"keyword"
             },

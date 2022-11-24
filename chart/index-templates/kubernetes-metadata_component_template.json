@@ -32,9 +32,6 @@
             }
          ],
          "properties":{
-            "@timestamp":{
-               "type":"date"
-            },
             "location":{
                "type":"keyword"
             },
