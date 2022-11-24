@@ -83,6 +83,7 @@ stringData:
         Rotate_Wait       10
         Read_from_Head    {{ .Values.fluentbit.readFromHead }}
         Static_Batch_Size 100M
+        Threaded          On
 
   _input-systemd.conf: |-
     [INPUT]
