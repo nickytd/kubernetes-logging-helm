@@ -2,15 +2,15 @@ apiVersion: v1
 entries:
   kubernetes-logging:
   - apiVersion: v2
-    created: "2022-11-24T09:10:45.899451933Z"
+    created: "2022-11-24T09:16:42.868297684Z"
     description: Kubernetes logging stack with OpenSearch
-    digest: 528b3cb27fc395447fa4fb5bfdd0127b6b32926515a49b3b973d4543efa403c0
+    digest: 4a5e4c0f92ff2faa016511196dc0038577eb6056f44d9aa4b2e6c24f5c82b20c
     maintainers:
     - email: nickytd@gmail.com
       name: Niki Dokovski
       url: https://github.com/nickytd
     name: kubernetes-logging
     urls:
-    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-4.5.1/kubernetes-logging-4.5.1.tgz
-    version: 4.5.1
-generated: "2022-11-24T09:10:45.899832032Z"
+    - https://github.com/nickytd/kubernetes-logging-helm/releases/download/kubernetes-logging-4.5.2/kubernetes-logging-4.5.2.tgz
+    version: 4.5.2
+generated: "2022-11-24T09:16:42.868307584Z"
