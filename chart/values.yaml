@@ -215,8 +215,8 @@ data_prepper:
 
 fluentbit:
   enabled: true
-  image: "nickytd/fluent-bit"
-  imageTag: "2.0.6"
+  image: "fluent/fluent-bit"
+  imageTag: "2.0.8"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
