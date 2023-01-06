@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name}}-fluent-bit
+  name: {{ .Release.Name }}-fluent-bit
   labels: {{ include "logging.selectorLabels" . | indent 4 }}
     k8s-app: fluent-bit
 spec:
@@ -22,7 +22,7 @@ spec:
       priorityClassName: {{ default .Values.priorityClass .Values.fluentbit.priorityClass }}
       securityContext:
         runAsUser: 0
-      serviceAccountName: {{ .Release.Name}}-fluent-bit
+      serviceAccountName: {{ .Release.Name }}-fluent-bit
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets: {{ toYaml . | nindent 6 }}
       {{- end }}
@@ -143,7 +143,7 @@ spec:
           path: /var/fluent-bit/state
       - name: init
         configMap:
-          name: {{ .Release.Name}}-init
+          name: {{ .Release.Name }}-init
           defaultMode: 0755
       - name: journallog
         hostPath:
@@ -158,7 +158,7 @@ spec:
       {{- end }}
       - name: fluent-bit-config
         secret:
-          secretName: {{ .Release.Name}}-fluent-bit
+          secretName: {{ .Release.Name }}-fluent-bit
       - name: certificates
         secret:
           {{- if .Values.fluentbit.caCertificateSecret }}
