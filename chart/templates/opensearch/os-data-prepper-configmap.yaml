@@ -7,4 +7,155 @@ metadata:
 data:
   data-prepper-config.yaml: |-
     ssl: false
-{{- end   }}
+
+  otel-span-ism-policy.json: |-
+    {
+      "policy": {
+        "policy_id": "otel-span",
+        "description": "Managing raw spans for trace analytics",
+        "default_state": "current_write_index",
+        "states": [
+          {
+            "name": "current_write_index",
+            "actions": [
+                {
+                    "rollover": {
+                        "min_size": "{{ .Values.data_prepper.retention.slotSize }}gb",
+                        "min_index_age": "24h"
+                    }
+                }
+            ],
+            "transitions": [
+                {
+                    "state_name": "delete",
+                    "conditions": {
+                        "min_index_age": "{{ .Values.data_prepper.retention.purge }}d"
+                    }
+                }
+            ]
+          },
+          {
+            "name": "delete",
+            "actions": [
+              {
+                "delete": {}
+              }
+            ]
+          }
+        ],
+        "ism_template": [
+          {
+            "index_patterns": ["otel-v1-apm-span-*"]
+          }
+        ]
+      }
+    }
+
+  otel-span-index-template.json: |-
+    {
+      "index_patterns": ["otel-v1-apm-span-*"],
+      "version": 1,
+      "template": {
+        "settings": {
+          "plugins.index_state_management.rollover_alias": "otel-v1-apm-span"
+        }
+      },
+      "mappings": {
+        "date_detection": false,
+        "dynamic_templates": [
+          {
+            "resource_attributes_map": {
+              "mapping": {
+                "type":"keyword"
+              },
+              "path_match":"resource.attributes.*"
+            }
+          },
+          {
+            "span_attributes_map": {
+              "mapping": {
+                "type":"keyword"
+              },
+              "path_match":"span.attributes.*"
+            }
+          }
+        ],
+        "_source": {
+          "enabled": true
+        },
+        "properties": {
+          "traceId": {
+            "ignore_above": 256,
+            "type": "keyword"
+          },
+          "spanId": {
+            "ignore_above": 256,
+            "type": "keyword"
+          },
+          "parentSpanId": {
+            "ignore_above": 256,
+            "type": "keyword"
+          },
+          "name": {
+            "ignore_above": 1024,
+            "type": "keyword"
+          },
+          "traceGroup": {
+            "ignore_above": 1024,
+            "type": "keyword"
+          },
+          "traceGroupFields": {
+            "properties": {
+              "endTime": {
+                "type": "date_nanos"
+              },
+              "durationInNanos": {
+                "type": "long"
+              },
+              "statusCode": {
+                "type": "integer"
+              }
+            }
+          },
+          "kind": {
+            "ignore_above": 128,
+            "type": "keyword"
+          },
+          "startTime": {
+            "type": "date_nanos"
+          },
+          "endTime": {
+            "type": "date_nanos"
+          },
+          "status": {
+            "properties": {
+              "code": {
+                "type": "integer"
+              },
+              "message": {
+                "type": "keyword"
+              }
+            }
+          },
+          "serviceName": {
+            "type": "keyword"
+          },
+          "durationInNanos": {
+            "type": "long"
+          },
+          "events": {
+            "type": "nested",
+            "properties": {
+              "time": {
+                "type": "date_nanos"
+              }
+            }
+          },
+          "links": {
+            "type": "nested"
+          }
+        }
+      }
+    }
+
+{{- end }}

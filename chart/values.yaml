@@ -201,6 +201,9 @@ data_prepper:
       memory: "600Mi"
     limits:
       memory: "600Mi"
+  retention:
+    slotSize: 10 # Slot size in GB
+    purge: 3 # Days to hold oldest slot
   podLabels: {}
   priorityClass: {}
   tolerations: []

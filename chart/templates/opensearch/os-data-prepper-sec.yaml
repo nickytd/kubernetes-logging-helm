@@ -43,11 +43,14 @@ stringData:
         - otel_trace_raw:
       sink:
         - opensearch:
+            index_type: custom
+            index: otel-v1-apm-span
             hosts: [ {{ include "os_url" . }} ]
             cert: "/usr/share/data-prepper/root-ca.pem"
+            template_file: "/usr/share/data-prepper/otel-span-index-template.json"
+            ism_policy_file: "/usr/share/data-prepper/otel-span-ism-policy.json"
             username: {{ .Values.opensearch.user }}
             password: {{ .Values.opensearch.password }}
-            index_type: trace-analytics-raw
     service-map-pipeline:
       delay: "100"
       source:
@@ -76,4 +79,4 @@ stringData:
             username: {{ .Values.opensearch.user }}
             password: {{ .Values.opensearch.password }}
             index_type: trace-analytics-service-map
-{{- end   }}
+{{- end }}
