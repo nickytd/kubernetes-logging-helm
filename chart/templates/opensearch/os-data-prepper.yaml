@@ -53,6 +53,12 @@ spec:
         - name: data-prepper-config
           mountPath: /usr/share/data-prepper/data-prepper-config.yaml
           subPath: data-prepper-config.yaml
+        - name: data-prepper-config
+          mountPath: /usr/share/data-prepper/otel-span-ism-policy.json
+          subPath: otel-span-ism-policy.json
+        - name: data-prepper-config
+          mountPath: /usr/share/data-prepper/otel-span-index-template.json
+          subPath: otel-span-index-template.json
         - name: certificates
           mountPath: /usr/share/data-prepper/root-ca.pem
           subPath: ca.crt
@@ -111,7 +117,7 @@ spec:
           secretName: {{ .Release.Name }}-data-prepper
       - name: init
         configMap:
-          name: {{ .Release.Name}}-init
+          name: {{ .Release.Name }}-init
           defaultMode: 0755
       - name: certificates
         secret:
