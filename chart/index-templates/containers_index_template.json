@@ -24,7 +24,7 @@
          },
          "properties":{
             "@timestamp":{
-              "type":"date_nanos"
+              "type":"{{- if .Values.opensearch.timeNanoSeconds }}date_nanos{{ else }}date{{- end }}"
             },
             "level":{
                "type":"keyword"

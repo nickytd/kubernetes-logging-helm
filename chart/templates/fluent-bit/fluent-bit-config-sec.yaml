@@ -170,7 +170,9 @@ stringData:
         Trace_Error         On
         Suppress_Type_Name  On
         Include_Tag_Key     Off
+        {{- if .Values.opensearch.timeNanoSeconds }}
         Time_Key_Nanos      On
+        {{- end }}
         Generate_ID         On
         tls                 On
         tls.Verify          On
@@ -189,7 +191,9 @@ stringData:
         Brokers                          {{ include "kafkaBrokers" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
         Topics                           containers
         Retry_Limit                      False
+        {{- if .Values.opensearch.timeNanoSeconds }}
         timestamp_format                 iso8601_ns
+        {{- end }}
         rdkafka.log.connection.close     false
         rdkafka.request.required.acks    all
         rdkafka.message.max.bytes        10000000

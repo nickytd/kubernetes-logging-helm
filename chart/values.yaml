@@ -20,10 +20,11 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: 2.4.0
+  imageTag: 2.5.0
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   singleNode: false
+  timeNanoSeconds: false
   # externalOpensearch.disabled designates an external managed opensearch stack.
   externalOpensearch:
     disabled: true
@@ -78,7 +79,7 @@ opensearch:
 #Init container configuration. Used for multiple application startup checks
 init_container:
   image: "nickytd/init-container"
-  imageTag: "1.0.3"
+  imageTag: "1.0.5"
   imagePullPolicy: IfNotPresent
 
 # Configuration of OS cluster manager node
@@ -146,7 +147,7 @@ opensearch_dashboards:
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.4.0
+  imageTag: 2.5.0
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -219,7 +220,7 @@ data_prepper:
 fluentbit:
   enabled: true
   image: "fluent/fluent-bit"
-  imageTag: "2.0.8"
+  imageTag: "2.0.9"
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
@@ -286,7 +287,7 @@ kafka:
   enabled: true
   replicas: 1
   image: "bitnami/kafka"
-  imageTag: "3.2.0"
+  imageTag: "3.4.0"
   heapSize: "256M"
   storage: "10Gi"
   topics:
@@ -309,7 +310,7 @@ kafka:
 zookeeper:
   replicas: 1
   image: "zookeeper"
-  imageTag: "3.8.0"
+  imageTag: "3.8.1"
   heapSize: "128M"
   storage: 1Gi
   resources:
