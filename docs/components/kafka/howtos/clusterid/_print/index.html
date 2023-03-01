@@ -3,7 +3,9 @@
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <meta name=generator content="Hugo 0.91.2">
-<meta name=robots content="index, follow">
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/index.xml>
+<meta name=robots content="noindex, nofollow">
 <link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
 <link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
@@ -14,22 +16,26 @@
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
-<title>404 Page not found | OFD Logging helm chart</title>
-<meta name=description content>
-<meta property="og:title" content="404 Page not found">
-<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<title>How to generating cluster ID | OFD Logging helm chart</title>
+<meta name=description content="How to generating cluster ID
+">
+<meta property="og:title" content="How to generating cluster ID">
+<meta property="og:description" content="How to generating cluster ID
+">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/404.html"><meta property="og:site_name" content="OFD Logging helm chart">
-<meta itemprop=name content="404 Page not found">
-<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="404 Page not found">
-<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="How to generating cluster ID">
+<meta itemprop=description content="How to generating cluster ID
+"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="How to generating cluster ID">
+<meta name=twitter:description content="How to generating cluster ID
+">
 <link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
 <link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
 <script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
 </head>
-<body class=td-404>
+<body class=td-section>
 <header>
 <nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
 <a class=navbar-brand href=/kubernetes-logging-helm/>
@@ -46,15 +52,38 @@
 </div>
 </nav>
 </header>
-<div class="container-fluid td-default td-outer">
-<main role=main class=td-main>
-<main id=main>
-<div>
-<h1 id=title>Not found</h1>
-<p>Oops! This page doesn't exist. Try going back to our <a href=/kubernetes-logging-helm/>home page</a>.</p>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>How to generating cluster ID</h1>
+<div class=lead>How to generating cluster ID</div>
+<ul>
+</ul>
+<div class=content>
+<p>Cluster ID is required for each Kafka instance to know, to which instance it must to connect and make cluster. It is also used to <a href=https://kafka.apache.org/documentation/#kraft_storage>preparing storage space</a>. We need to set all Kafka instance same cluster ID. If you omit this settings, all Kafka instance generate their own ID and reject make cluster.</p>
+<p>There is many ways, how to generate the ID, but I recommend use this chain of Bash command:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat /proc/sys/kernel/random/uuid | tr -d <span style=color:#f1fa8c>&#39;-&#39;</span> | base64 | cut -b 1-22
+</code></pre></div><p>You can also use <a href=https://kafka.apache.org/33/documentation.html#quickstart_startserver>built-in script</a>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ bin/kafka-storage.sh random-uuid
+</code></pre></div><p>Or just start one Kafka instance without the cluster ID settings and it will be generated to the logs.</p>
+<p><em>Sources</em>:</p>
+<p><a href=https://sleeplessbeastie.eu/2021/10/22/how-to-generate-kafka-cluster-id/>Blog sleeplessbeastie.eu</a><br>
+<a href=https://kafka.apache.org/33/documentation.html>Apache Kafka Documentation</a></p>
+</div>
 </div>
 </main>
-</main>
+</div>
+</div>
 <footer class="bg-dark py-5 row d-print-none">
 <div class="container-fluid mx-sm-5">
 <div class=row>

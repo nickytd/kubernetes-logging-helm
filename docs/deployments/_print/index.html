@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.81ced3d8fa0fd71b97ab51b82f69a872.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.a602b3bb7fc9344910348d8f57fcdf60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -119,10 +119,8 @@ Kafka and Logstash needs to be enabled as well!.
   <span style=color:#ff79c6>enabled</span>: <span style=color:#ff79c6>true</span>
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
-<span style=color:#ff79c6>zookeeper</span>:
-  <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
-
-<span style=color:#ff79c6>fluentd</span>:
+<span style=color:#ff79c6>logstash</span>:
+  <span style=color:#ff79c6>enabled</span>: <span style=color:#ff79c6>true</span>
   <span style=color:#ff79c6>replicas</span>: <span style=color:#bd93f9>3</span>
 
 <span style=color:#6272a4>#and so on</span>

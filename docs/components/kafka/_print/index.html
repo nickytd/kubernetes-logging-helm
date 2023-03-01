@@ -3,8 +3,8 @@
 <meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
 <meta name=generator content="Hugo 0.91.2">
-<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/faq/>
-<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/faq/index.xml>
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/index.xml>
 <meta name=robots content="noindex, nofollow">
 <link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
 <link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
@@ -16,17 +16,20 @@
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
 <link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
-<title>Frequently asked questions | OFD Logging helm chart</title>
-<meta name=description content="#TODO
+<title>Kafka | OFD Logging helm chart</title>
+<meta name=description content="Configuration settings for Kafka
 ">
-<meta property="og:title" content="Frequently asked questions">
-<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:title" content="Kafka">
+<meta property="og:description" content="Configuration settings for Kafka
+">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/faq/"><meta property="og:site_name" content="OFD Logging helm chart">
-<meta itemprop=name content="Frequently asked questions">
-<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
-<meta name=twitter:title content="Frequently asked questions">
-<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="Kafka">
+<meta itemprop=description content="Configuration settings for Kafka
+"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Kafka">
+<meta name=twitter:description content="Configuration settings for Kafka
+">
 <link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
 <link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
 <script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
@@ -59,15 +62,41 @@
 This is the multi-page printable view of this section.
 <a href=# onclick="return print(),!1">Click here to print</a>.
 </p><p>
-<a href=/kubernetes-logging-helm/docs/faq/>Return to the regular view of this page</a>.
+<a href=/kubernetes-logging-helm/docs/components/kafka/>Return to the regular view of this page</a>.
 </p>
 </div>
-<h1 class=title>Frequently asked questions</h1>
+<h1 class=title>Kafka</h1>
+<div class=lead>Configuration settings for Kafka</div>
+<ul>
+<li>1: <a href=#pg-febfba28b8eb6627e21e996fb64a46f8>Howtos</a></li>
+<ul>
+<li>1.1: <a href=#pg-d2aa4f1d32e931ed2096133d7d8c74c8>How to generating cluster ID</a></li>
 <ul>
 </ul>
+</ul>
+</ul>
 <div class=content>
-<p>#TODO</p>
+<p>Kubernetes logging helm chart deploys <a href=https://kafka.apache.org/>Apache Kafka</a> as a message broker between FluentBit and Logstash for improving stability and loadbalance in big deployments.</p>
+<p>From helm chart version <strong>4.6.0</strong> we omited <a href=https://zookeeper.apache.org/>Apache ZooKeeper</a> as Kafka dependency. Kafka from version <a href=https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum><strong>2.8.0</strong></a> introduced <a href=https://developer.confluent.io/learn/kraft/><em>KRaft</em></a> aka ZooKeeper-less mode. From Kafka version <a href=https://cwiki.apache.org/confluence/display/KAFKA/KIP-833%3A+Mark+KRaft+as+Production+Ready><strong>3.3.0</strong></a> is KRaft marked as production ready, so, we decide to adopt it in the logging helm chart to save some resources and deploying time. Kafka in Raft mode need to have generated cluster ID. Please check <a href=https://pages.github.tools.sap/cs-devops/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>how to generating cluster ID</a>.</p>
 </div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-febfba28b8eb6627e21e996fb64a46f8>1 - Howtos</h1>
+<div class=lead>How to achieve &mldr;</div>
+<p>Here you can find guidelines, how to manipulate with Kafka in context of logging helm chart.</p>
+</div>
+<div class=td-content>
+<h1 id=pg-d2aa4f1d32e931ed2096133d7d8c74c8>1.1 - How to generating cluster ID</h1>
+<div class=lead>How to generating cluster ID</div>
+<p>Cluster ID is required for each Kafka instance to know, to which instance it must to connect and make cluster. It is also used to <a href=https://kafka.apache.org/documentation/#kraft_storage>preparing storage space</a>. We need to set all Kafka instance same cluster ID. If you omit this settings, all Kafka instance generate their own ID and reject make cluster.</p>
+<p>There is many ways, how to generate the ID, but I recommend use this chain of Bash command:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat /proc/sys/kernel/random/uuid | tr -d <span style=color:#f1fa8c>&#39;-&#39;</span> | base64 | cut -b 1-22
+</code></pre></div><p>You can also use <a href=https://kafka.apache.org/33/documentation.html#quickstart_startserver>built-in script</a>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ bin/kafka-storage.sh random-uuid
+</code></pre></div><p>Or just start one Kafka instance without the cluster ID settings and it will be generated to the logs.</p>
+<p><em>Sources</em>:</p>
+<p><a href=https://sleeplessbeastie.eu/2021/10/22/how-to-generate-kafka-cluster-id/>Blog sleeplessbeastie.eu</a><br>
+<a href=https://kafka.apache.org/33/documentation.html>Apache Kafka Documentation</a></p>
 </div>
 </main>
 </div>

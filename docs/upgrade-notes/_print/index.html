@@ -45,7 +45,7 @@ Since version 3.0.0, the chart values are renamed and follow camel case recommen
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.81ced3d8fa0fd71b97ab51b82f69a872.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.a602b3bb7fc9344910348d8f57fcdf60.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -68,6 +68,19 @@ This is the multi-page printable view of this section.
 <div class=content>
 <h1 id=2x---300>2.x -> 3.0.0</h1>
 <p>Since version 3.0.0, the chart values are renamed and follow <a href=https://helm.sh/docs/chart_best_practices/values/>camel case recommendation</a>. This is a backward <strong>incompatibility change</strong> and helm chart values for releases needs first to be migrated to the recommended camel case format.</p>
+<h1 id=454---460>4.5.4 -> 4.6.0</h1>
+<p>In the version <strong>4.6.0</strong> we omited <a href=https://zookeeper.apache.org/>Apache ZooKeeper</a> as Kafka dependency. In Raft mode Kafka cluster need to have generated cluster ID. Please check <a href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>how to generating cluster ID</a> and change your <code>values.yaml</code> file accordingly.</p>
+<p>If you dont want lost any of your log data in upgrading, here is a safe procedure:</p>
+<ul>
+<li>delete FluentBit daemonset (this stop feeding Kafka with new log data)</li>
+<li>wait, until Logstash process all cached log records from Kafka to OpenSearch (checking is possible via monitoring API or in Grafana Dashboard)</li>
+<li>scale down Kafka StatefulSet to zero (this delete old Kafka implementation)</li>
+<li>delete Kafka StatefulSet</li>
+<li>scale down ZooKeeper StatefulSet to zero</li>
+<li>delete ZooKeeper StatefulSet</li>
+<li>delete PersistantVolumeClaim for Kafka&rsquo;s and for ZooKeeper&rsquo;s instances as well</li>
+<li>do <code>helm upgrade ...</code></li>
+</ul>
 </div>
 </div>
 </main>
