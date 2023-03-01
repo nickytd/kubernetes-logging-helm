@@ -285,11 +285,12 @@ logstash:
 # spiked in the logging stream volumes.
 kafka:
   enabled: true
-  replicas: 1
+  replicas: 3
   image: "bitnami/kafka"
   imageTag: "3.4.0"
   heapSize: "256M"
   storage: "10Gi"
+  kraftId: "M2M5NGQ3ZDA5NWI1NDkxYz" # see HowTos for more information about generating process
   topics:
     - name: "containers"
       config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
@@ -300,24 +301,6 @@ kafka:
       memory: "600Mi"
     limits:
       memory: "600Mi"
-  storageClass: {}
-  podLabels: {}
-  priorityClass: {}
-  tolerations: []
-  affinity: {}
-
-# Zookeeper is a dependency of kafka
-zookeeper:
-  replicas: 1
-  image: "zookeeper"
-  imageTag: "3.8.1"
-  heapSize: "128M"
-  storage: 1Gi
-  resources:
-    requests:
-      memory: "300Mi"
-    limits:
-      memory: "300Mi"
   storageClass: {}
   podLabels: {}
   priorityClass: {}
