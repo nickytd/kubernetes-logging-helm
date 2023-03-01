@@ -253,7 +253,7 @@ fluentbit:
 logstash:
   enabled: true
   image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
-  imageTag: "8.4.0"
+  imageTag: "8.6.1"
   replicas: 1
   heapSize: "256M"
   resources:
@@ -285,7 +285,7 @@ logstash:
 # spiked in the logging stream volumes.
 kafka:
   enabled: true
-  replicas: 3
+  replicas: 1
   image: "bitnami/kafka"
   imageTag: "3.4.0"
   heapSize: "256M"
