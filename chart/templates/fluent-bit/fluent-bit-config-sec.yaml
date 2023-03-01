@@ -193,6 +193,8 @@ stringData:
         Retry_Limit                      False
         {{- if .Values.opensearch.timeNanoSeconds }}
         timestamp_format                 iso8601_ns
+        {{- else }}
+        timestamp_format                 iso8601
         {{- end }}
         rdkafka.log.connection.close     false
         rdkafka.request.required.acks    all
