@@ -5,12 +5,10 @@ metadata:
   name: kafka
   labels: {{ include "logging.labels" . | indent 4 }}
 spec:
-  clusterIP: None  
+  clusterIP: None
   ports:
   - port: 9092
     name: kafka
-  - port: 9093
-    name: broker
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: kafka
 {{ range $kafkaId := until (.Values.kafka.replicas | int) }}

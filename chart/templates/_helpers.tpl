@@ -95,7 +95,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- else -}}
 {{- printf "%s" .Values.opensearch_dashboards.externalOpensearchDashboards.url -}}
 {{- end -}}
-{{- end -}}	
+{{- end -}}
 
 {{/*
 https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templates/utils/_joinListWithComma.tpl
@@ -114,27 +114,13 @@ https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templ
 {{- join "," $kafka.servers -}}
 {{- end -}}
 
-{{- define "zookeeperServers" -}}
+{{- define "kafkaQuorum" -}}
 {{- $rn := .releaseName -}}
-{{- $zk := dict "servers" (list) -}}
+{{- $kafka := dict "servers" (list) -}}
 {{- range int .replicas | until -}}
-{{- $noop := printf "%s-zk-%d:2181/kafka/logging" $rn . | append $zk.servers | set $zk "servers" -}}
+{{- $noop := printf "%d@%s-kafka-%d:9093" . $rn . | append $kafka.servers | set $kafka "servers" -}}
 {{- end -}}
-{{- join "," $zk.servers -}}
-{{- end -}}
-
-{{/*
-Create zookeeper server str
-*/}}
-{{- define "zooServers" -}}
-{{- $zk_size := default 1 .Values.zookeeper.replicas | int -}}
-{{- $global := . -}}
-{{- $str := "" -}}
-
-{{- range $i, $e := until $zk_size -}}
-{{- $str := (printf "server.%d=%s-zk-%d:2888:3888;2181 " $i $global.Release.Name $i ) -}}
-{{- $str -}}
-{{- end -}}
+{{- join "," $kafka.servers -}}
 {{- end -}}
 
 {{/*

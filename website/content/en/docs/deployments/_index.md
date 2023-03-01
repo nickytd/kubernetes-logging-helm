@@ -70,10 +70,8 @@ kafka:
   enabled: true
   replicas: 3
 
-zookeeper:
-  replicas: 3
-
-fluentd:
+logstash:
+  enabled: true
   replicas: 3
 
 #and so on
