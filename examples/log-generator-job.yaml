@@ -1,37 +1,43 @@
 apiVersion: batch/v1
 kind: Job
-metadata:  
+metadata:
   labels:
     app: logger
   name: logger
 spec:
-  completions: 10
-  parallelism: 4
+  completions: 6
+  parallelism: 3
   completionMode: "Indexed"
   ttlSecondsAfterFinished: 600
   template:
-    metadata:      
+    metadata:
       labels:
-        app: logger        
+        app: logger
     spec:
       topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app: logger
-      restartPolicy: Never  
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: logger
+      restartPolicy: Never
       containers:
-      - image: gcr.io/google_containers/logs-generator:v0.1.1
-        name: log-generator
-        env:
-        - name: "LOGS_GENERATOR_LINES_TOTAL"
-          value: "10000"
-        - name: "LOGS_GENERATOR_DURATION"
-          value: "1m"
-        resources:
-          requests:
-            cpu: 10m
-          limits:
-            cpu: 500m
+        - image: nickytd/log-generator:latest
+          name: log-generator
+          env:
+            - name: LOGS_COUNT
+              value: "1000"
+            - name: LOGS_JSON
+              value: "false"
+            - name: LOGS_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: LOGS_WAIT
+              value: "10ms"
+          resources:
+            requests:
+              cpu: 10m
+            limits:
+              cpu: 500m
