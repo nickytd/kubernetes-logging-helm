@@ -1,0 +1,155 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.91.2">
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/fluentbit/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/fluentbit/index.xml>
+<meta name=robots content="noindex, nofollow">
+<link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
+<title>FluentBit | OFD Logging helm chart</title>
+<meta name=description content="Configuration settings for FluentBit log shipper
+">
+<meta property="og:title" content="FluentBit">
+<meta property="og:description" content="Configuration settings for FluentBit log shipper
+">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/components/fluentbit/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="FluentBit">
+<meta itemprop=description content="Configuration settings for FluentBit log shipper
+"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="FluentBit">
+<meta name=twitter:description content="Configuration settings for FluentBit log shipper
+">
+<link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
+<link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/kubernetes-logging-helm/>
+<span class=navbar-logo></span><span class=font-weight-bold>OFD Logging helm chart</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/kubernetes-logging-helm/><span></span></a>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/kubernetes-logging-helm/docs/components/fluentbit/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>FluentBit</h1>
+<div class=lead>Configuration settings for FluentBit log shipper</div>
+<ul>
+</ul>
+<div class=content>
+<p><a href=https://fluentbit.io/>FluentBit</a> is installed as daemon set on each of the k8s nodes by the helm chart. It follows FluentBit <a href=https://docs.fluentbit.io/manual/concepts/data-pipeline>data pipeline</a> setup designed for kubernetes environments.</p>
+<p>The helm chart itself supports different deployment layouts depending on whether a simple or standard model is required. The standard model is recommended in production where various components runs in HA mode. In this case the FluentBit instances send the collected logs to kafka brokers. The kafka brokers are used for buffering and greatly increase the overall reliability and stability of the entire stack.</p>
+<p><img src=./fbt_standard_deployment_layout.png alt="standard layout"></p>
+<p>In the simple case the FluentBit instances communicate directly with OpenSearch nodes.
+<img src=./fbt_simple_deployment_layout.png alt="simple layout"></p>
+<p>In both cases there is a set of FluentBit configurations which is responsible for proper logs collection from the containers and enriching those with the respective kubernetes metadata such as namespace of the origin workload, its labels and so on. The metadata is later used in indexing, searchers and visualisations scenarios. This shared configuration is shown on the diagrams here as &ldquo;kubernetes data pipeline&rdquo;.</p>
+<p>The &ldquo;kubernetes data pipeline&rdquo; uses standard &ldquo;Tail&rdquo; input plugin to read the logs from the mounted node filesystem, &ldquo;Kube-Tag&rdquo; parser plugin to generate FluentBit tag of the events.
+Followed by &ldquo;Kubernetes&rdquo; filter used to add the kubernetes metadata to the events followed by the end by a &ldquo;de_dot&rdquo; filter used to replace dots &ldquo;.&rdquo; with undescores &ldquo;_&rdquo; in event names.</p>
+<p>The &ldquo;kubernetes data pipeline&rdquo; is the foundation of any application specific configurations. For example nginx ingress controller produces unstructured access logs. To parse those logs and transform the lines into structured json formatted messages we shall enrich the pipeline with corresponding filters and parsers.</p>
+<p><img src=./fbt_nginx_layout.png alt=nginx_access_logs></p>
+<p>The nginx access logs parsing example is located at <a href=https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/fluent-bit-configs>fluentbit-configs</a> folder. Any additional application specific configs needs to be saved in the same location following filenames the naming conventions. Aka filters needs to have &ldquo;filter&rdquo; predix, &ldquo;parsers&rdquo; for parsers and so on.</p>
+<p>In the nginx access log example the rewrite_tag filter is used to tag messages originating from containers and which share the <code>app_kubernetes_io/name: ingress-nginx</code> label.</p>
+<pre tabindex=0><code>[FILTER]
+    Name          rewrite_tag
+    Match         kube.*
+    Rule          $kubernetes['labels']['app_kubernetes_io/name'] &quot;^(ingress-nginx)$&quot; nginx false
+[FILTER]
+    Name          parser
+    Match         nginx
+    Key_Name      log
+    Parser        k8s-nginx-ingress
+    Reserve_Data  True
+</code></pre><p>The messages are tagged and re-emitted in the FluentBit data pipeline. Later matched by the nginx parser which uses regex to construct a json formatted structured message</p>
+<pre tabindex=0><code>[PARSER]
+    Name         k8s-nginx-ingress
+    Format       regex
+    Regex        ^(?&lt;host&gt;[^ ]*) - (?&lt;user&gt;[^ ]*) \[(?&lt;time&gt;[^\]]*)\] &quot;(?&lt;method&gt;\S+)(?: +(?&lt;path&gt;[^\&quot;]*?)(?: +\S*)?)?&quot; (?&lt;code&gt;[^ ]*) (?&lt;size&gt;[^ ]*) &quot;(?&lt;referrer&gt;[^\&quot;]*)&quot; &quot;(?&lt;agent&gt;[^\&quot;]*)&quot; (?&lt;request_length&gt;[^ ]*) (?&lt;request_time&gt;[^ ]*) \[(?&lt;proxy_upstream_name&gt;[^ ]*)\] (\[(?&lt;proxy_alternative_upstream_name&gt;[^ ]*)\] )?(?&lt;upstream_addr&gt;[^ ]*) (?&lt;upstream_response_length&gt;[^ ]*) (?&lt;upstream_response_time&gt;[^ ]*) (?&lt;upstream_status&gt;[^ ]*) (?&lt;reg_id&gt;[^ ]*).*$
+    Time_Key     time
+    Time_Format  %d/%b/%Y:%H:%M:%S %z
+</code></pre><p>Additional parsers are supported such as multiline parses allowing to reconstruct java stacktraces into a single message.
+Here is an example of such configuration.<br><br>
+<code>filter-zookeeper.conf</code>:</p>
+<pre tabindex=0><code>    [FILTER]
+        Name                  rewrite_tag
+        Match                 kube.*.logging.*.*
+        Rule                  $kubernetes['labels']['type'] &quot;^(zk)$&quot; zookeeper false
+        Emitter_Storage.type  filesystem
+    [FILTER]
+        Name                  multiline
+        Match                 zookeeper
+        multiline.parser      zookeeper_multiline
+</code></pre><p><code>parser-zookeeper.conf</code></p>
+<pre tabindex=0><code>   [MULTILINE_PARSER]
+       name            zookeeper_multiline
+       type            regex
+       flush_timeout   1000
+       key_content     log
+       # Regex rules for multiline parsing
+       # ---------------------------------
+       #  - first state always has the name: start_state
+       #  - every field in the rule must be inside double quotes
+       #
+       # rules |  state name  | regex pattern                        | next state name
+       # ------|--------------|--------------------------------------|----------------
+       rule     &quot;start_state&quot;  &quot;/^(?&lt;exception&gt;[^ ]+:)(?&lt;rest&gt;.*)$/&quot;  &quot;cont&quot;
+       rule     &quot;cont&quot;         &quot;/\s+at\s.*/&quot;                          &quot;cont&quot;
+</code></pre><blockquote>
+<p><strong>Hint:</strong> For high volume logs producers consider adding: <code>Emmiter_Storage.type filesystem</code> property. It allows additional buffering during re-emitting of the events, details see <a href=https://docs.fluentbit.io/manual/pipeline/filters/rewrite-tag>FluentBit rewrite-tag</a>.</p>
+</blockquote>
+</div>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/kubernetes-logging-helm/js/tabpane-persist.js></script>
+<script src=/kubernetes-logging-helm/js/main.min.8ab8f81ff7e1454d30024cd6f956d4d341c3a97e2a673f988065f2ee4e147922.js integrity="sha256-irj4H/fhRU0wAkzW+VbU00HDqX4qZz+YgGXy7k4UeSI=" crossorigin=anonymous></script>
+</body>
+</html>

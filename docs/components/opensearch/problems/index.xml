@@ -1,0 +1,89 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OFD Logging helm chart – Possible problems</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/</link><description>Recent content in Possible problems on OFD Logging helm chart</description><generator>Hugo -- gohugo.io</generator><atom:link href="https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Missing data node</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/</guid><description>
+&lt;h1 id="prerequisites">Prerequisites&lt;/h1>
+&lt;p>In this guide I expect, that you have access to Kubernetes cluster and have portfoward to some &lt;em>OpenSearch node&lt;/em> (= pod from Kubernetes perspective). I recommend chose one node &lt;em>client&lt;/em> type.&lt;br>
+All API call to OpenSearch cluster beginning: &lt;code>curl -ks https://&amp;lt;Name&amp;gt;:&amp;lt;Password&amp;gt;@localhost:9200/&amp;lt;Source&amp;gt;&lt;/code>, where:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>&amp;lt;Name&amp;gt;&lt;/code> = user name in OpenSearch cluster with admin privileges&lt;/li>
+&lt;li>&lt;code>&amp;lt;Password&amp;gt;&lt;/code> = corespondig password for admin account&lt;/li>
+&lt;li>&lt;code>&amp;lt;Source&amp;gt;&lt;/code> = datapoint from OpenSearch cluster&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>Check current status:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ curl -ks https://&amp;lt;Name&amp;gt;:&amp;lt;Password&amp;gt;@localhost:9200/_cat/health
+&lt;span style="color:#bd93f9">1654179496&lt;/span> 14:18:16 logging yellow &lt;span style="color:#bd93f9">5&lt;/span> &lt;span style="color:#bd93f9">1&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">true&lt;/span> &lt;span style="color:#bd93f9">30&lt;/span> &lt;span style="color:#bd93f9">30&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">27&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> - 52.6%
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>our cluster is in &lt;strong>yellow&lt;/strong> state&lt;/p>
+&lt;/blockquote>
+&lt;ol start="2">
+&lt;li>List all available nodes from OpenSearch perspective:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ curl -ks https://&amp;lt;Name&amp;gt;:&amp;lt;Password&amp;gt;@localhost:9200/_cat/nodes
+100.96.7.5 &lt;span style="color:#bd93f9">72&lt;/span> &lt;span style="color:#bd93f9">97&lt;/span> &lt;span style="color:#bd93f9">1&lt;/span> 0.30 0.36 0.35 mr - ofd-manager-0
+100.96.7.11 &lt;span style="color:#bd93f9">51&lt;/span> &lt;span style="color:#bd93f9">76&lt;/span> &lt;span style="color:#bd93f9">1&lt;/span> 0.30 0.36 0.35 r - ofd-client-56dd9c66fb-bs7hp
+100.96.7.7 &lt;span style="color:#bd93f9">53&lt;/span> &lt;span style="color:#bd93f9">76&lt;/span> &lt;span style="color:#bd93f9">4&lt;/span> 0.30 0.36 0.35 dir - ofd-data-1
+100.96.1.8 &lt;span style="color:#bd93f9">21&lt;/span> &lt;span style="color:#bd93f9">100&lt;/span> &lt;span style="color:#bd93f9">1&lt;/span> 1.73 0.82 0.41 mr * ofd-manager-1
+100.96.7.12 &lt;span style="color:#bd93f9">19&lt;/span> &lt;span style="color:#bd93f9">76&lt;/span> &lt;span style="color:#bd93f9">1&lt;/span> 0.30 0.36 0.35 r - ofd-client-56dd9c66fb-q9tv5
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>here you can see multinode setup, where must exist two nodes from type &lt;em>client&lt;/em>, &lt;em>data&lt;/em> and &lt;em>manager&lt;/em> (6 OpenSearch nodes total)&lt;br>&lt;/p>
+&lt;p>one datanode &amp;ldquo;ofd-data-0&amp;rdquo; is missing&lt;/p>
+&lt;/blockquote>
+&lt;ol start="3">
+&lt;li>Check suspicious pods:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ kubectl -n logging get pods | grep data
+ofd-data-0 1/1 Running &lt;span style="color:#bd93f9">0&lt;/span> 130m
+ofd-data-1 1/1 Running &lt;span style="color:#bd93f9">0&lt;/span> 129m
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>from Kubernetes perspective this pods (OpenSearch node) working fine&lt;/p>
+&lt;/blockquote>
+&lt;ol start="4">
+&lt;li>Check logs from suspicious pod:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ kubectl -n logging logs ofd-data-0
+...
+&lt;span style="color:#f1fa8c">&amp;#34;message&amp;#34;&lt;/span>: &lt;span style="color:#f1fa8c">&amp;#34;failed to join ...
+&lt;/span>&lt;span style="color:#f1fa8c">...
+&lt;/span>&lt;span style="color:#f1fa8c">Caused by: org.opensearch.cluster.coordination.CoordinationStateRejectedException: join validation on cluster state with a different cluster uuid 2UlST0WBQIKEV05cDpuWwQ than local cluster uuid v1vi49Q_RRaaC83iMthBnQ, rejecting
+&lt;/span>&lt;span style="color:#f1fa8c">...
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>it seems, that this node hold old previously used OpenSearch cluster ID and attempt to connect to this old OpenSearch cluster instance&lt;/p>
+&lt;p>&lt;strong>this is reason, why this node is missing&lt;/strong>&lt;/p>
+&lt;/blockquote>
+&lt;ol start="5">
+&lt;li>Reset failed data node:
+&lt;div class="alert alert-warning" role="alert">
+&lt;h4 class="alert-heading">Warning&lt;/h4>
+&lt;strong>Double check, that you have at last half data nodes healthy!&lt;/strong> In our case, we must have 2 data nodes total and 1 is missing. &lt;strong>Double check, that OpenSearch cluster is in yellow state. Proceeding with smaller amount of datanodes come to datalost!&lt;/strong>
+&lt;/div>
+&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>login to this pod:
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ kubectl -n logging &lt;span style="color:#8be9fd;font-style:italic">exec&lt;/span> -i -t ofd-data-0 -- /bin/bash
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>delete datadir in this pod:
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ rm -rf /data/nodes
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>logout from this pod:
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ &lt;span style="color:#8be9fd;font-style:italic">exit&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>delete this pod for restarting:
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ k -n logging delete pod ofd-data-0
+pod &lt;span style="color:#f1fa8c">&amp;#34;ofd-data-0&amp;#34;&lt;/span> deleted
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ul>
+&lt;ol start="6">
+&lt;li>Check OpenSearch cluster health again:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">$ curl -ks https://&amp;lt;Name&amp;gt;:&amp;lt;Password&amp;gt;@localhost:9200/_cat/health
+&lt;span style="color:#bd93f9">1654180648&lt;/span> 14:37:28 logging yellow &lt;span style="color:#bd93f9">6&lt;/span> &lt;span style="color:#bd93f9">2&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">true&lt;/span> &lt;span style="color:#bd93f9">45&lt;/span> &lt;span style="color:#bd93f9">30&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">4&lt;/span> &lt;span style="color:#bd93f9">11&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> - 75.0%
+...
+&lt;span style="color:#bd93f9">1654180664&lt;/span> 14:37:44 logging yellow &lt;span style="color:#bd93f9">6&lt;/span> &lt;span style="color:#bd93f9">2&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">true&lt;/span> &lt;span style="color:#bd93f9">53&lt;/span> &lt;span style="color:#bd93f9">30&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">2&lt;/span> &lt;span style="color:#bd93f9">5&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> - 88.3%
+...
+&lt;span style="color:#bd93f9">1654180852&lt;/span> 14:40:52 logging green &lt;span style="color:#bd93f9">6&lt;/span> &lt;span style="color:#bd93f9">2&lt;/span> &lt;span style="color:#8be9fd;font-style:italic">true&lt;/span> &lt;span style="color:#bd93f9">60&lt;/span> &lt;span style="color:#bd93f9">30&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> &lt;span style="color:#bd93f9">0&lt;/span> - 100.0%
+&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>our cluster is still in yellow state&lt;/p>
+&lt;p>running &lt;code>curl&lt;/code> command over time give information, that cluster regenerating&lt;/p>
+&lt;p>wait some time and if this problem was solved, you can see cluster again healthy in &lt;em>green&lt;/em> state&lt;/p>
+&lt;/blockquote></description></item></channel></rss>

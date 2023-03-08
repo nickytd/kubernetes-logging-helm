@@ -1,0 +1,181 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.91.2">
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/index.xml>
+<meta name=robots content="noindex, nofollow">
+<link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
+<title>Missing data node | OFD Logging helm chart</title>
+<meta name=description content="Prerequisites
+In this guide I expect, that you have access to Kubernetes cluster and have portfoward to some OpenSearch node (= pod from Kubernetes …">
+<meta property="og:title" content="Missing data node">
+<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="Missing data node">
+<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Missing data node">
+<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
+<link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/kubernetes-logging-helm/>
+<span class=navbar-logo></span><span class=font-weight-bold>OFD Logging helm chart</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/kubernetes-logging-helm/><span></span></a>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/kubernetes-logging-helm/docs/components/opensearch/problems/missing-data-node/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>Missing data node</h1>
+<ul>
+</ul>
+<div class=content>
+<h1 id=prerequisites>Prerequisites</h1>
+<p>In this guide I expect, that you have access to Kubernetes cluster and have portfoward to some <em>OpenSearch node</em> (= pod from Kubernetes perspective). I recommend chose one node <em>client</em> type.<br>
+All API call to OpenSearch cluster beginning: <code>curl -ks https://&lt;Name>:&lt;Password>@localhost:9200/&lt;Source></code>, where:</p>
+<ul>
+<li><code>&lt;Name></code> = user name in OpenSearch cluster with admin privileges</li>
+<li><code>&lt;Password></code> = corespondig password for admin account</li>
+<li><code>&lt;Source></code> = datapoint from OpenSearch cluster</li>
+</ul>
+<ol>
+<li>Check current status:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/health
+
+<span style=color:#bd93f9>1654179496</span> 14:18:16 logging yellow <span style=color:#bd93f9>5</span> <span style=color:#bd93f9>1</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>27</span> <span style=color:#bd93f9>0</span> - 52.6%
+</code></pre></div><blockquote>
+<p>our cluster is in <strong>yellow</strong> state</p>
+</blockquote>
+<ol start=2>
+<li>List all available nodes from OpenSearch perspective:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/nodes
+100.96.7.5  <span style=color:#bd93f9>72</span>  <span style=color:#bd93f9>97</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 mr  - ofd-manager-0
+100.96.7.11 <span style=color:#bd93f9>51</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 r   - ofd-client-56dd9c66fb-bs7hp
+100.96.7.7  <span style=color:#bd93f9>53</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>4</span> 0.30 0.36 0.35 dir - ofd-data-1
+100.96.1.8  <span style=color:#bd93f9>21</span> <span style=color:#bd93f9>100</span> <span style=color:#bd93f9>1</span> 1.73 0.82 0.41 mr  * ofd-manager-1
+100.96.7.12 <span style=color:#bd93f9>19</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 r   - ofd-client-56dd9c66fb-q9tv5
+</code></pre></div><blockquote>
+<p>here you can see multinode setup, where must exist two nodes from type <em>client</em>, <em>data</em> and <em>manager</em> (6 OpenSearch nodes total)<br></p>
+<p>one datanode &ldquo;ofd-data-0&rdquo; is missing</p>
+</blockquote>
+<ol start=3>
+<li>Check suspicious pods:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging get pods | grep data
+ofd-data-0    1/1    Running    <span style=color:#bd93f9>0</span>    130m
+ofd-data-1    1/1    Running    <span style=color:#bd93f9>0</span>    129m
+</code></pre></div><blockquote>
+<p>from Kubernetes perspective this pods (OpenSearch node) working fine</p>
+</blockquote>
+<ol start=4>
+<li>Check logs from suspicious pod:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging logs ofd-data-0
+...
+<span style=color:#f1fa8c>&#34;message&#34;</span>: <span style=color:#f1fa8c>&#34;failed to join ...
+</span><span style=color:#f1fa8c>...
+</span><span style=color:#f1fa8c>Caused by: org.opensearch.cluster.coordination.CoordinationStateRejectedException: join validation on cluster state with a different cluster uuid 2UlST0WBQIKEV05cDpuWwQ than local cluster uuid v1vi49Q_RRaaC83iMthBnQ, rejecting
+</span><span style=color:#f1fa8c>...
+</span></code></pre></div><blockquote>
+<p>it seems, that this node hold old previously used OpenSearch cluster ID and attempt to connect to this old OpenSearch cluster instance</p>
+<p><strong>this is reason, why this node is missing</strong></p>
+</blockquote>
+<ol start=5>
+<li>Reset failed data node:
+<div class="alert alert-warning" role=alert>
+<h4 class=alert-heading>Warning</h4>
+<strong>Double check, that you have at last half data nodes healthy!</strong> In our case, we must have 2 data nodes total and 1 is missing. <strong>Double check, that OpenSearch cluster is in yellow state. Proceeding with smaller amount of datanodes come to datalost!</strong>
+</div>
+</li>
+</ol>
+<ul>
+<li>login to this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging <span style=color:#8be9fd;font-style:italic>exec</span> -i -t ofd-data-0 -- /bin/bash
+</code></pre></div></li>
+<li>delete datadir in this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ rm -rf /data/nodes
+</code></pre></div></li>
+<li>logout from this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#8be9fd;font-style:italic>exit</span>
+</code></pre></div></li>
+<li>delete this pod for restarting:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ k -n logging delete pod ofd-data-0
+pod <span style=color:#f1fa8c>&#34;ofd-data-0&#34;</span> deleted
+</code></pre></div></li>
+</ul>
+<ol start=6>
+<li>Check OpenSearch cluster health again:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/health
+<span style=color:#bd93f9>1654180648</span> 14:37:28 logging yellow <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>45</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>4</span> <span style=color:#bd93f9>11</span> <span style=color:#bd93f9>0</span> - 75.0%
+...
+<span style=color:#bd93f9>1654180664</span> 14:37:44 logging yellow <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>53</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>2</span> <span style=color:#bd93f9>5</span> <span style=color:#bd93f9>0</span> - 88.3%
+...
+<span style=color:#bd93f9>1654180852</span> 14:40:52 logging green <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>60</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> - 100.0%
+</code></pre></div><blockquote>
+<p>our cluster is still in yellow state</p>
+<p>running <code>curl</code> command over time give information, that cluster regenerating</p>
+<p>wait some time and if this problem was solved, you can see cluster again healthy in <em>green</em> state</p>
+</blockquote>
+</div>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/kubernetes-logging-helm/js/tabpane-persist.js></script>
+<script src=/kubernetes-logging-helm/js/main.min.8ab8f81ff7e1454d30024cd6f956d4d341c3a97e2a673f988065f2ee4e147922.js integrity="sha256-irj4H/fhRU0wAkzW+VbU00HDqX4qZz+YgGXy7k4UeSI=" crossorigin=anonymous></script>
+</body>
+</html>

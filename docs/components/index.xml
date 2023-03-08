@@ -1,0 +1,158 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OFD Logging helm chart – Logging Stack Components</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/</link><description>Recent content in Logging Stack Components on OFD Logging helm chart</description><generator>Hugo -- gohugo.io</generator><atom:link href="https://nickytd.github.io/kubernetes-logging-helm/docs/components/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: FluentBit</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/fluentbit/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://nickytd.github.io/kubernetes-logging-helm/docs/components/fluentbit/</guid><description>
+&lt;p>&lt;a href="https://fluentbit.io/">FluentBit&lt;/a> is installed as daemon set on each of the k8s nodes by the helm chart. It follows FluentBit &lt;a href="https://docs.fluentbit.io/manual/concepts/data-pipeline">data pipeline&lt;/a> setup designed for kubernetes environments.&lt;/p>
+&lt;p>The helm chart itself supports different deployment layouts depending on whether a simple or standard model is required. The standard model is recommended in production where various components runs in HA mode. In this case the FluentBit instances send the collected logs to kafka brokers. The kafka brokers are used for buffering and greatly increase the overall reliability and stability of the entire stack.&lt;/p>
+&lt;p>&lt;img src="./fbt_standard_deployment_layout.png" alt="standard layout">&lt;/p>
+&lt;p>In the simple case the FluentBit instances communicate directly with OpenSearch nodes.
+&lt;img src="./fbt_simple_deployment_layout.png" alt="simple layout">&lt;/p>
+&lt;p>In both cases there is a set of FluentBit configurations which is responsible for proper logs collection from the containers and enriching those with the respective kubernetes metadata such as namespace of the origin workload, its labels and so on. The metadata is later used in indexing, searchers and visualisations scenarios. This shared configuration is shown on the diagrams here as &amp;ldquo;kubernetes data pipeline&amp;rdquo;.&lt;/p>
+&lt;p>The &amp;ldquo;kubernetes data pipeline&amp;rdquo; uses standard &amp;ldquo;Tail&amp;rdquo; input plugin to read the logs from the mounted node filesystem, &amp;ldquo;Kube-Tag&amp;rdquo; parser plugin to generate FluentBit tag of the events.
+Followed by &amp;ldquo;Kubernetes&amp;rdquo; filter used to add the kubernetes metadata to the events followed by the end by a &amp;ldquo;de_dot&amp;rdquo; filter used to replace dots &amp;ldquo;.&amp;rdquo; with undescores &amp;ldquo;_&amp;rdquo; in event names.&lt;/p>
+&lt;p>The &amp;ldquo;kubernetes data pipeline&amp;rdquo; is the foundation of any application specific configurations. For example nginx ingress controller produces unstructured access logs. To parse those logs and transform the lines into structured json formatted messages we shall enrich the pipeline with corresponding filters and parsers.&lt;/p>
+&lt;p>&lt;img src="./fbt_nginx_layout.png" alt="nginx_access_logs">&lt;/p>
+&lt;p>The nginx access logs parsing example is located at &lt;a href="https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/fluent-bit-configs">fluentbit-configs&lt;/a> folder. Any additional application specific configs needs to be saved in the same location following filenames the naming conventions. Aka filters needs to have &amp;ldquo;filter&amp;rdquo; predix, &amp;ldquo;parsers&amp;rdquo; for parsers and so on.&lt;/p>
+&lt;p>In the nginx access log example the rewrite_tag filter is used to tag messages originating from containers and which share the &lt;code>app_kubernetes_io/name: ingress-nginx&lt;/code> label.&lt;/p>
+&lt;pre tabindex="0">&lt;code>[FILTER]
+Name rewrite_tag
+Match kube.*
+Rule $kubernetes['labels']['app_kubernetes_io/name'] &amp;quot;^(ingress-nginx)$&amp;quot; nginx false
+[FILTER]
+Name parser
+Match nginx
+Key_Name log
+Parser k8s-nginx-ingress
+Reserve_Data True
+&lt;/code>&lt;/pre>&lt;p>The messages are tagged and re-emitted in the FluentBit data pipeline. Later matched by the nginx parser which uses regex to construct a json formatted structured message&lt;/p>
+&lt;pre tabindex="0">&lt;code>[PARSER]
+Name k8s-nginx-ingress
+Format regex
+Regex ^(?&amp;lt;host&amp;gt;[^ ]*) - (?&amp;lt;user&amp;gt;[^ ]*) \[(?&amp;lt;time&amp;gt;[^\]]*)\] &amp;quot;(?&amp;lt;method&amp;gt;\S+)(?: +(?&amp;lt;path&amp;gt;[^\&amp;quot;]*?)(?: +\S*)?)?&amp;quot; (?&amp;lt;code&amp;gt;[^ ]*) (?&amp;lt;size&amp;gt;[^ ]*) &amp;quot;(?&amp;lt;referrer&amp;gt;[^\&amp;quot;]*)&amp;quot; &amp;quot;(?&amp;lt;agent&amp;gt;[^\&amp;quot;]*)&amp;quot; (?&amp;lt;request_length&amp;gt;[^ ]*) (?&amp;lt;request_time&amp;gt;[^ ]*) \[(?&amp;lt;proxy_upstream_name&amp;gt;[^ ]*)\] (\[(?&amp;lt;proxy_alternative_upstream_name&amp;gt;[^ ]*)\] )?(?&amp;lt;upstream_addr&amp;gt;[^ ]*) (?&amp;lt;upstream_response_length&amp;gt;[^ ]*) (?&amp;lt;upstream_response_time&amp;gt;[^ ]*) (?&amp;lt;upstream_status&amp;gt;[^ ]*) (?&amp;lt;reg_id&amp;gt;[^ ]*).*$
+Time_Key time
+Time_Format %d/%b/%Y:%H:%M:%S %z
+&lt;/code>&lt;/pre>&lt;p>Additional parsers are supported such as multiline parses allowing to reconstruct java stacktraces into a single message.
+Here is an example of such configuration.&lt;br>&lt;br>
+&lt;code>filter-zookeeper.conf&lt;/code>:&lt;/p>
+&lt;pre tabindex="0">&lt;code> [FILTER]
+Name rewrite_tag
+Match kube.*.logging.*.*
+Rule $kubernetes['labels']['type'] &amp;quot;^(zk)$&amp;quot; zookeeper false
+Emitter_Storage.type filesystem
+[FILTER]
+Name multiline
+Match zookeeper
+multiline.parser zookeeper_multiline
+&lt;/code>&lt;/pre>&lt;p>&lt;code>parser-zookeeper.conf&lt;/code>&lt;/p>
+&lt;pre tabindex="0">&lt;code> [MULTILINE_PARSER]
+name zookeeper_multiline
+type regex
+flush_timeout 1000
+key_content log
+# Regex rules for multiline parsing
+# ---------------------------------
+# - first state always has the name: start_state
+# - every field in the rule must be inside double quotes
+#
+# rules | state name | regex pattern | next state name
+# ------|--------------|--------------------------------------|----------------
+rule &amp;quot;start_state&amp;quot; &amp;quot;/^(?&amp;lt;exception&amp;gt;[^ ]+:)(?&amp;lt;rest&amp;gt;.*)$/&amp;quot; &amp;quot;cont&amp;quot;
+rule &amp;quot;cont&amp;quot; &amp;quot;/\s+at\s.*/&amp;quot; &amp;quot;cont&amp;quot;
+&lt;/code>&lt;/pre>&lt;blockquote>
+&lt;p>&lt;strong>Hint:&lt;/strong> For high volume logs producers consider adding: &lt;code>Emmiter_Storage.type filesystem&lt;/code> property. It allows additional buffering during re-emitting of the events, details see &lt;a href="https://docs.fluentbit.io/manual/pipeline/filters/rewrite-tag">FluentBit rewrite-tag&lt;/a>.&lt;/p>
+&lt;/blockquote></description></item><item><title>Docs: OpenSearch</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch/</guid><description>
+&lt;p>Kuberenetes logging helm chart supports multiple deployment layouts of OpenSearch, which both satisfy local development needs where minimum use of resources is required or production layout with additional Kafka brokers and HA setup of the various components.&lt;/p>
+&lt;p>By default the helm chart configures two indices with corresponding index templates. One index is &lt;code>containers-{YYYY.MM.dd}&lt;/code> indexing by default all workloads logs and &lt;code>systemd-{YYYY.MM.dd}&lt;/code> for storing journal system logs for &amp;ldquo;kubelet&amp;rdquo; or &amp;ldquo;containerd&amp;rdquo; services running on the respective cluster nodes.
+Both indices are created according &lt;a href="https://opensearch.org/docs/latest/opensearch/index-templates/">index templates&lt;/a> allowing later on dedicated visualizations in OpenSearch Dahboards UI.&lt;/p>
+&lt;p>&amp;ldquo;Containers&amp;rdquo; index template uses &lt;a href="https://opensearch.org/docs/latest/opensearch/index-templates/#composable-index-templates">composable pattern&lt;/a> and leverages a predefined component template named &amp;ldquo;kubernetes-metadata&amp;rdquo;.&lt;/p>
+&lt;pre tabindex="0">&lt;code>containers [containers-*] 0 [kubernetes-metadata]
+systemd [systemd-*] 0 []
+&lt;/code>&lt;/pre>&lt;p>The latter uses kubernetes metadata attached by the FluentBit log shippers to unify its structure among workloads. It shall be also used by any container specific index with the purpose of sharing the same kubernetes fields mappings.&lt;/p>
+&lt;p>The helm chart deploys all templates extensions found in &lt;a href="https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/index-templates">index-templates&lt;/a> folder.
+An example of such index template is nginx, which inherits the mappings in the &amp;ldquo;kubernetes-metadata&amp;rdquo; component templates and adds access logs fields mappings.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#ff79c6">&amp;#34;index_patterns&amp;#34;&lt;/span>:[
+&lt;span style="color:#f1fa8c">&amp;#34;nginx-*&amp;#34;&lt;/span>
+],
+&lt;span style="color:#ff79c6">&amp;#34;composed_of&amp;#34;&lt;/span>:[
+&lt;span style="color:#f1fa8c">&amp;#34;kubernetes-metadata&amp;#34;&lt;/span>
+],
+&lt;span style="color:#ff79c6">&amp;#34;template&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;settings&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;index&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;codec&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;best_compression&amp;#34;&lt;/span>,
+&lt;span style="color:#ff79c6">&amp;#34;mapping&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;total_fields&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;limit&amp;#34;&lt;/span>:&lt;span style="color:#bd93f9">1000&lt;/span>
+}
+},
+&lt;span style="color:#ff79c6">&amp;#34;number_of_shards&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;{{ (.Values.data.replicas | int) }}&amp;#34;&lt;/span>,
+&lt;span style="color:#ff79c6">&amp;#34;number_of_replicas&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;{{ (sub (.Values.data.replicas | int) 1) }}&amp;#34;&lt;/span>,
+&lt;span style="color:#ff79c6">&amp;#34;refresh_interval&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;5s&amp;#34;&lt;/span>
+}
+},
+&lt;span style="color:#ff79c6">&amp;#34;mappings&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;_source&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;enabled&amp;#34;&lt;/span>:&lt;span style="color:#ff79c6">true&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;properties&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;log&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;text&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;agent&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;code&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;host&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;method&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;path&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;proxy_upstream_name&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;referrer&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;reg_id&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;request_length&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;long&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;request_time&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;double&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;size&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;long&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;upstream_addr&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;upstream_response_length&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;long&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;upstream_response_time&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;double&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;upstream_status&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+},
+&lt;span style="color:#ff79c6">&amp;#34;user&amp;#34;&lt;/span>:{
+&lt;span style="color:#ff79c6">&amp;#34;type&amp;#34;&lt;/span>:&lt;span style="color:#f1fa8c">&amp;#34;keyword&amp;#34;&lt;/span>
+}
+}
+}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs: OpenSearch-Dashboards</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch-dashboards/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://nickytd.github.io/kubernetes-logging-helm/docs/components/opensearch-dashboards/</guid><description>
+&lt;p>Kubernetes logging helm chart deploys an single instance of &lt;a href="https://opensearch.org/docs/latest/dashboards/quickstart-dashboards/">OpenSearch Dashboards&lt;/a> (or just Dashboards) presenting the UI interface to OpenSearch indices.&lt;/p>
+&lt;p>The helm chart enables authentication configurations based on SAML, ODIC or standalone and leverages dashboards tenant concept.
+The latter allows teams to innovate UIs such as searches, visualizations and dashboards in shared tenant space leaving a predefined readonly UIs at a global space. Once the UIs are ready to be promoted those can become part of the helm chart &lt;a href="https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/saved-objects">saved-objects&lt;/a> folder and become standard set of the chart deployment.&lt;/p>
+&lt;p>&lt;img src="./dashboards-tenants.jpg" alt="dashboards">&lt;/p>
+&lt;p>In addition the helm chart provisions an OpenSearch &lt;a href="https://opensearch.org/docs/latest/data-prepper/index/">DataPrepper&lt;/a> component which allows OpenTelemetry traces to be indexed and later visualized at Dashboards observability UI.&lt;/p></description></item><item><title>Docs: Kafka</title><link>https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/</guid><description>
+&lt;p>Kubernetes logging helm chart deploys &lt;a href="https://kafka.apache.org/">Apache Kafka&lt;/a> as a message broker between FluentBit and Logstash for improving stability and loadbalance in big deployments.&lt;/p>
+&lt;p>From helm chart version &lt;strong>4.6.0&lt;/strong> we omited &lt;a href="https://zookeeper.apache.org/">Apache ZooKeeper&lt;/a> as Kafka dependency. Kafka from version &lt;a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum">&lt;strong>2.8.0&lt;/strong>&lt;/a> introduced &lt;a href="https://developer.confluent.io/learn/kraft/">&lt;em>KRaft&lt;/em>&lt;/a> aka ZooKeeper-less mode. From Kafka version &lt;a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-833%3A+Mark+KRaft+as+Production+Ready">&lt;strong>3.3.0&lt;/strong>&lt;/a> is KRaft marked as production ready, so, we decide to adopt it in the logging helm chart to save some resources and deploying time. Kafka in Raft mode need to have generated cluster ID. Please check &lt;a href="https://pages.github.tools.sap/cs-devops/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/">how to generating cluster ID&lt;/a>.&lt;/p></description></item></channel></rss>

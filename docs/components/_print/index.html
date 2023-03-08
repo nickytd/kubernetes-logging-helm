@@ -1,0 +1,440 @@
+<!doctype html><html lang=en class=no-js>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+<meta name=generator content="Hugo 0.91.2">
+<link rel=canonical type=text/html href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/>
+<link rel=alternate type=application/rss+xml href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/index.xml>
+<meta name=robots content="noindex, nofollow">
+<link rel="shortcut icon" href=/kubernetes-logging-helm/favicons/favicon.ico>
+<link rel=apple-touch-icon href=/kubernetes-logging-helm/favicons/apple-touch-icon-180x180.png sizes=180x180>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-16x16.png sizes=16x16>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/favicon-32x32.png sizes=32x32>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-36x36.png sizes=36x36>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-48x48.png sizes=48x48>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-72x72.png sizes=72x72>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-96x96.png sizes=96x96>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-144x144.png sizes=144x144>
+<link rel=icon type=image/png href=/kubernetes-logging-helm/favicons/android-192x192.png sizes=192x192>
+<title>Logging Stack Components | OFD Logging helm chart</title>
+<meta name=description content>
+<meta property="og:title" content="Logging Stack Components">
+<meta property="og:description" content="Helm chart for logging stack based on OFD for Kubernetes">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nickytd.github.io/kubernetes-logging-helm/docs/components/"><meta property="og:site_name" content="OFD Logging helm chart">
+<meta itemprop=name content="Logging Stack Components">
+<meta itemprop=description content="Helm chart for logging stack based on OFD for Kubernetes"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="Logging Stack Components">
+<meta name=twitter:description content="Helm chart for logging stack based on OFD for Kubernetes">
+<link rel=preload href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css as=style>
+<link href=/kubernetes-logging-helm/scss/main.min.209ee91954d0f2f182770e6c71011a5580360636bcf2a9bcf7f1c3da478784ff.css rel=stylesheet integrity>
+<script src=https://code.jquery.com/jquery-3.6.0.min.js integrity=sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK crossorigin=anonymous></script>
+<script src=https://unpkg.com/lunr@2.3.9/lunr.min.js integrity=sha384-203J0SNzyqHby3iU6hzvzltrWi/M41wOP5Gu+BiJMz5nwKykbkUx8Kp7iti0Lpli crossorigin=anonymous></script>
+</head>
+<body class=td-section>
+<header>
+<nav class="js-navbar-scroll navbar navbar-expand navbar-dark flex-column flex-md-row td-navbar">
+<a class=navbar-brand href=/kubernetes-logging-helm/>
+<span class=navbar-logo></span><span class=font-weight-bold>OFD Logging helm chart</span>
+</a>
+<div class="td-navbar-nav-scroll ml-md-auto" id=main_navbar>
+<ul class="navbar-nav mt-2 mt-lg-0">
+<li class="nav-item mr-4 mb-2 mb-lg-0">
+<a class=nav-link href=/kubernetes-logging-helm/><span></span></a>
+</li>
+</ul>
+</div>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+</div>
+</nav>
+</header>
+<div class="container-fluid td-outer">
+<div class=td-main>
+<div class="row flex-xl-nowrap">
+<main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main>
+<div class=td-content>
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This is the multi-page printable view of this section.
+<a href=# onclick="return print(),!1">Click here to print</a>.
+</p><p>
+<a href=/kubernetes-logging-helm/docs/components/>Return to the regular view of this page</a>.
+</p>
+</div>
+<h1 class=title>Logging Stack Components</h1>
+<ul>
+<li>1: <a href=#pg-8302c08d11419415527fa4a32b16a09b>FluentBit</a></li>
+<ul>
+</ul>
+<li>2: <a href=#pg-c8be4e2232f77cef77deb84e15e22eda>OpenSearch</a></li>
+<ul>
+<li>2.1: <a href=#pg-63db1ee76d05f13a8e7f9edb2a3df1f3>Index Management</a></li>
+<ul>
+</ul>
+<li>2.2: <a href=#pg-2fc083bd0278a17dc1d35efc939c811e>Possible problems</a></li>
+<ul>
+<li>2.2.1: <a href=#pg-e4eb219fa55e4ace518681faad903db2>Missing data node</a></li>
+<ul>
+</ul>
+</ul>
+</ul>
+<li>3: <a href=#pg-64c562ddfdf1515623da37aa02133a86>OpenSearch-Dashboards</a></li>
+<ul>
+<li>3.1: <a href=#pg-1c9f0942d4ab7bc96d6a676e1e85e588>Opensearch-Dashboards Authentication & Authorization</a></li>
+<ul>
+</ul>
+<li>3.2: <a href=#pg-b96842a864c9bbea35a261097c779f33>OpenSearch-Dashboards-Observability</a></li>
+<ul>
+</ul>
+<li>3.3: <a href=#pg-7fcc1ea9f1032bbae82f10dfb538a0cf>Opensearch-Dashboards Visualizations</a></li>
+<ul>
+</ul>
+</ul>
+<li>4: <a href=#pg-3a8656ebec6b78171def1a3542380037>Kafka</a></li>
+<ul>
+<li>4.1: <a href=#pg-febfba28b8eb6627e21e996fb64a46f8>Howtos</a></li>
+<ul>
+<li>4.1.1: <a href=#pg-d2aa4f1d32e931ed2096133d7d8c74c8>How to generating cluster ID</a></li>
+<ul>
+</ul>
+</ul>
+</ul>
+</ul>
+<div class=content>
+</div>
+</div>
+<div class=td-content>
+<h1 id=pg-8302c08d11419415527fa4a32b16a09b>1 - FluentBit</h1>
+<div class=lead>Configuration settings for FluentBit log shipper</div>
+<p><a href=https://fluentbit.io/>FluentBit</a> is installed as daemon set on each of the k8s nodes by the helm chart. It follows FluentBit <a href=https://docs.fluentbit.io/manual/concepts/data-pipeline>data pipeline</a> setup designed for kubernetes environments.</p>
+<p>The helm chart itself supports different deployment layouts depending on whether a simple or standard model is required. The standard model is recommended in production where various components runs in HA mode. In this case the FluentBit instances send the collected logs to kafka brokers. The kafka brokers are used for buffering and greatly increase the overall reliability and stability of the entire stack.</p>
+<p><img src=./fbt_standard_deployment_layout.png alt="standard layout"></p>
+<p>In the simple case the FluentBit instances communicate directly with OpenSearch nodes.
+<img src=./fbt_simple_deployment_layout.png alt="simple layout"></p>
+<p>In both cases there is a set of FluentBit configurations which is responsible for proper logs collection from the containers and enriching those with the respective kubernetes metadata such as namespace of the origin workload, its labels and so on. The metadata is later used in indexing, searchers and visualisations scenarios. This shared configuration is shown on the diagrams here as &ldquo;kubernetes data pipeline&rdquo;.</p>
+<p>The &ldquo;kubernetes data pipeline&rdquo; uses standard &ldquo;Tail&rdquo; input plugin to read the logs from the mounted node filesystem, &ldquo;Kube-Tag&rdquo; parser plugin to generate FluentBit tag of the events.
+Followed by &ldquo;Kubernetes&rdquo; filter used to add the kubernetes metadata to the events followed by the end by a &ldquo;de_dot&rdquo; filter used to replace dots &ldquo;.&rdquo; with undescores &ldquo;_&rdquo; in event names.</p>
+<p>The &ldquo;kubernetes data pipeline&rdquo; is the foundation of any application specific configurations. For example nginx ingress controller produces unstructured access logs. To parse those logs and transform the lines into structured json formatted messages we shall enrich the pipeline with corresponding filters and parsers.</p>
+<p><img src=./fbt_nginx_layout.png alt=nginx_access_logs></p>
+<p>The nginx access logs parsing example is located at <a href=https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/fluent-bit-configs>fluentbit-configs</a> folder. Any additional application specific configs needs to be saved in the same location following filenames the naming conventions. Aka filters needs to have &ldquo;filter&rdquo; predix, &ldquo;parsers&rdquo; for parsers and so on.</p>
+<p>In the nginx access log example the rewrite_tag filter is used to tag messages originating from containers and which share the <code>app_kubernetes_io/name: ingress-nginx</code> label.</p>
+<pre tabindex=0><code>[FILTER]
+    Name          rewrite_tag
+    Match         kube.*
+    Rule          $kubernetes['labels']['app_kubernetes_io/name'] &quot;^(ingress-nginx)$&quot; nginx false
+[FILTER]
+    Name          parser
+    Match         nginx
+    Key_Name      log
+    Parser        k8s-nginx-ingress
+    Reserve_Data  True
+</code></pre><p>The messages are tagged and re-emitted in the FluentBit data pipeline. Later matched by the nginx parser which uses regex to construct a json formatted structured message</p>
+<pre tabindex=0><code>[PARSER]
+    Name         k8s-nginx-ingress
+    Format       regex
+    Regex        ^(?&lt;host&gt;[^ ]*) - (?&lt;user&gt;[^ ]*) \[(?&lt;time&gt;[^\]]*)\] &quot;(?&lt;method&gt;\S+)(?: +(?&lt;path&gt;[^\&quot;]*?)(?: +\S*)?)?&quot; (?&lt;code&gt;[^ ]*) (?&lt;size&gt;[^ ]*) &quot;(?&lt;referrer&gt;[^\&quot;]*)&quot; &quot;(?&lt;agent&gt;[^\&quot;]*)&quot; (?&lt;request_length&gt;[^ ]*) (?&lt;request_time&gt;[^ ]*) \[(?&lt;proxy_upstream_name&gt;[^ ]*)\] (\[(?&lt;proxy_alternative_upstream_name&gt;[^ ]*)\] )?(?&lt;upstream_addr&gt;[^ ]*) (?&lt;upstream_response_length&gt;[^ ]*) (?&lt;upstream_response_time&gt;[^ ]*) (?&lt;upstream_status&gt;[^ ]*) (?&lt;reg_id&gt;[^ ]*).*$
+    Time_Key     time
+    Time_Format  %d/%b/%Y:%H:%M:%S %z
+</code></pre><p>Additional parsers are supported such as multiline parses allowing to reconstruct java stacktraces into a single message.
+Here is an example of such configuration.<br><br>
+<code>filter-zookeeper.conf</code>:</p>
+<pre tabindex=0><code>    [FILTER]
+        Name                  rewrite_tag
+        Match                 kube.*.logging.*.*
+        Rule                  $kubernetes['labels']['type'] &quot;^(zk)$&quot; zookeeper false
+        Emitter_Storage.type  filesystem
+    [FILTER]
+        Name                  multiline
+        Match                 zookeeper
+        multiline.parser      zookeeper_multiline
+</code></pre><p><code>parser-zookeeper.conf</code></p>
+<pre tabindex=0><code>   [MULTILINE_PARSER]
+       name            zookeeper_multiline
+       type            regex
+       flush_timeout   1000
+       key_content     log
+       # Regex rules for multiline parsing
+       # ---------------------------------
+       #  - first state always has the name: start_state
+       #  - every field in the rule must be inside double quotes
+       #
+       # rules |  state name  | regex pattern                        | next state name
+       # ------|--------------|--------------------------------------|----------------
+       rule     &quot;start_state&quot;  &quot;/^(?&lt;exception&gt;[^ ]+:)(?&lt;rest&gt;.*)$/&quot;  &quot;cont&quot;
+       rule     &quot;cont&quot;         &quot;/\s+at\s.*/&quot;                          &quot;cont&quot;
+</code></pre><blockquote>
+<p><strong>Hint:</strong> For high volume logs producers consider adding: <code>Emmiter_Storage.type filesystem</code> property. It allows additional buffering during re-emitting of the events, details see <a href=https://docs.fluentbit.io/manual/pipeline/filters/rewrite-tag>FluentBit rewrite-tag</a>.</p>
+</blockquote>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-c8be4e2232f77cef77deb84e15e22eda>2 - OpenSearch</h1>
+<div class=lead>Configuration settings for OpenSearch</div>
+<p>Kuberenetes logging helm chart supports multiple deployment layouts of OpenSearch, which both satisfy local development needs where minimum use of resources is required or production layout with additional Kafka brokers and HA setup of the various components.</p>
+<p>By default the helm chart configures two indices with corresponding index templates. One index is <code>containers-{YYYY.MM.dd}</code> indexing by default all workloads logs and <code>systemd-{YYYY.MM.dd}</code> for storing journal system logs for &ldquo;kubelet&rdquo; or &ldquo;containerd&rdquo; services running on the respective cluster nodes.
+Both indices are created according <a href=https://opensearch.org/docs/latest/opensearch/index-templates/>index templates</a> allowing later on dedicated visualizations in OpenSearch Dahboards UI.</p>
+<p>&ldquo;Containers&rdquo; index template uses <a href=https://opensearch.org/docs/latest/opensearch/index-templates/#composable-index-templates>composable pattern</a> and leverages a predefined component template named &ldquo;kubernetes-metadata&rdquo;.</p>
+<pre tabindex=0><code>containers  [containers-*]  0  [kubernetes-metadata]
+systemd     [systemd-*]     0  []
+</code></pre><p>The latter uses kubernetes metadata attached by the FluentBit log shippers to unify its structure among workloads. It shall be also used by any container specific index with the purpose of sharing the same kubernetes fields mappings.</p>
+<p>The helm chart deploys all templates extensions found in <a href=https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/index-templates>index-templates</a> folder.
+An example of such index template is nginx, which inherits the mappings in the &ldquo;kubernetes-metadata&rdquo; component templates and adds access logs fields mappings.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+   <span style=color:#ff79c6>&#34;index_patterns&#34;</span>:[
+      <span style=color:#f1fa8c>&#34;nginx-*&#34;</span>
+   ],
+   <span style=color:#ff79c6>&#34;composed_of&#34;</span>:[
+      <span style=color:#f1fa8c>&#34;kubernetes-metadata&#34;</span>
+   ],
+   <span style=color:#ff79c6>&#34;template&#34;</span>:{
+      <span style=color:#ff79c6>&#34;settings&#34;</span>:{
+         <span style=color:#ff79c6>&#34;index&#34;</span>:{
+            <span style=color:#ff79c6>&#34;codec&#34;</span>:<span style=color:#f1fa8c>&#34;best_compression&#34;</span>,
+            <span style=color:#ff79c6>&#34;mapping&#34;</span>:{
+               <span style=color:#ff79c6>&#34;total_fields&#34;</span>:{
+                  <span style=color:#ff79c6>&#34;limit&#34;</span>:<span style=color:#bd93f9>1000</span>
+               }
+            },
+            <span style=color:#ff79c6>&#34;number_of_shards&#34;</span>:<span style=color:#f1fa8c>&#34;{{ (.Values.data.replicas | int) }}&#34;</span>,
+            <span style=color:#ff79c6>&#34;number_of_replicas&#34;</span>:<span style=color:#f1fa8c>&#34;{{ (sub (.Values.data.replicas | int) 1) }}&#34;</span>,
+            <span style=color:#ff79c6>&#34;refresh_interval&#34;</span>:<span style=color:#f1fa8c>&#34;5s&#34;</span>
+         }
+      },
+      <span style=color:#ff79c6>&#34;mappings&#34;</span>:{
+         <span style=color:#ff79c6>&#34;_source&#34;</span>:{
+            <span style=color:#ff79c6>&#34;enabled&#34;</span>:<span style=color:#ff79c6>true</span>
+         },
+         <span style=color:#ff79c6>&#34;properties&#34;</span>:{
+            <span style=color:#ff79c6>&#34;log&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;text&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;agent&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;code&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;host&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;method&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;path&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;proxy_upstream_name&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;referrer&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;reg_id&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;request_length&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;long&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;request_time&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;double&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;size&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;long&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;upstream_addr&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;upstream_response_length&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;long&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;upstream_response_time&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;double&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;upstream_status&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            },
+            <span style=color:#ff79c6>&#34;user&#34;</span>:{
+               <span style=color:#ff79c6>&#34;type&#34;</span>:<span style=color:#f1fa8c>&#34;keyword&#34;</span>
+            }
+         }
+      }
+   }
+}
+</code></pre></div>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-63db1ee76d05f13a8e7f9edb2a3df1f3>2.1 - Index Management</h1>
+<div class=lead>Overview on supported OpenSearch index management scenarios</div>
+<p>The helm chart maintains retention days for indices in OpenSearch using a <a href=https://opensearch.org/docs/latest/im-plugin/ism/index/>ISM policy</a> defined in file <a href=https://github.com/nickytd/kubernetes-logging-helm/blob/main/chart/index-templates/index-retention_policy.json><code>index-retention_policy.json</code></a>. Value is taken from <code>opensearch.retentionDays</code> key.</p>
+<blockquote>
+<p><strong>Note:</strong> Retention period configured in the helm chart (7 days by default) shall reflect the size of the persistence volumes mounted by the OpenSearch data nodes. If the logs volume in the cluster is high, the data nodes PVs sizes shall correspond.</p>
+<p>It is a good practice to have a resizable storage class in the cluster supporting updates on the persistence volumes. When the persistence volumes fill up, the OpenSearch data node switch to read-only mode and new logs are prevented from indexing.</p>
+</blockquote>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-2fc083bd0278a17dc1d35efc939c811e>2.2 - Possible problems</h1>
+<p>OpenSearch / ElasticSearch is pretty nice piece of technology with many self-healing procedure, but sometimes manual interventions is required. In this chapter you can find solutions for some problems.</p>
+</div>
+<div class=td-content>
+<h1 id=pg-e4eb219fa55e4ace518681faad903db2>2.2.1 - Missing data node</h1>
+<h1 id=prerequisites>Prerequisites</h1>
+<p>In this guide I expect, that you have access to Kubernetes cluster and have portfoward to some <em>OpenSearch node</em> (= pod from Kubernetes perspective). I recommend chose one node <em>client</em> type.<br>
+All API call to OpenSearch cluster beginning: <code>curl -ks https://&lt;Name>:&lt;Password>@localhost:9200/&lt;Source></code>, where:</p>
+<ul>
+<li><code>&lt;Name></code> = user name in OpenSearch cluster with admin privileges</li>
+<li><code>&lt;Password></code> = corespondig password for admin account</li>
+<li><code>&lt;Source></code> = datapoint from OpenSearch cluster</li>
+</ul>
+<ol>
+<li>Check current status:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/health
+
+<span style=color:#bd93f9>1654179496</span> 14:18:16 logging yellow <span style=color:#bd93f9>5</span> <span style=color:#bd93f9>1</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>27</span> <span style=color:#bd93f9>0</span> - 52.6%
+</code></pre></div><blockquote>
+<p>our cluster is in <strong>yellow</strong> state</p>
+</blockquote>
+<ol start=2>
+<li>List all available nodes from OpenSearch perspective:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/nodes
+100.96.7.5  <span style=color:#bd93f9>72</span>  <span style=color:#bd93f9>97</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 mr  - ofd-manager-0
+100.96.7.11 <span style=color:#bd93f9>51</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 r   - ofd-client-56dd9c66fb-bs7hp
+100.96.7.7  <span style=color:#bd93f9>53</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>4</span> 0.30 0.36 0.35 dir - ofd-data-1
+100.96.1.8  <span style=color:#bd93f9>21</span> <span style=color:#bd93f9>100</span> <span style=color:#bd93f9>1</span> 1.73 0.82 0.41 mr  * ofd-manager-1
+100.96.7.12 <span style=color:#bd93f9>19</span>  <span style=color:#bd93f9>76</span> <span style=color:#bd93f9>1</span> 0.30 0.36 0.35 r   - ofd-client-56dd9c66fb-q9tv5
+</code></pre></div><blockquote>
+<p>here you can see multinode setup, where must exist two nodes from type <em>client</em>, <em>data</em> and <em>manager</em> (6 OpenSearch nodes total)<br></p>
+<p>one datanode &ldquo;ofd-data-0&rdquo; is missing</p>
+</blockquote>
+<ol start=3>
+<li>Check suspicious pods:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging get pods | grep data
+ofd-data-0    1/1    Running    <span style=color:#bd93f9>0</span>    130m
+ofd-data-1    1/1    Running    <span style=color:#bd93f9>0</span>    129m
+</code></pre></div><blockquote>
+<p>from Kubernetes perspective this pods (OpenSearch node) working fine</p>
+</blockquote>
+<ol start=4>
+<li>Check logs from suspicious pod:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging logs ofd-data-0
+...
+<span style=color:#f1fa8c>&#34;message&#34;</span>: <span style=color:#f1fa8c>&#34;failed to join ...
+</span><span style=color:#f1fa8c>...
+</span><span style=color:#f1fa8c>Caused by: org.opensearch.cluster.coordination.CoordinationStateRejectedException: join validation on cluster state with a different cluster uuid 2UlST0WBQIKEV05cDpuWwQ than local cluster uuid v1vi49Q_RRaaC83iMthBnQ, rejecting
+</span><span style=color:#f1fa8c>...
+</span></code></pre></div><blockquote>
+<p>it seems, that this node hold old previously used OpenSearch cluster ID and attempt to connect to this old OpenSearch cluster instance</p>
+<p><strong>this is reason, why this node is missing</strong></p>
+</blockquote>
+<ol start=5>
+<li>Reset failed data node:
+<div class="alert alert-warning" role=alert>
+<h4 class=alert-heading>Warning</h4>
+<strong>Double check, that you have at last half data nodes healthy!</strong> In our case, we must have 2 data nodes total and 1 is missing. <strong>Double check, that OpenSearch cluster is in yellow state. Proceeding with smaller amount of datanodes come to datalost!</strong>
+</div>
+</li>
+</ol>
+<ul>
+<li>login to this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ kubectl -n logging <span style=color:#8be9fd;font-style:italic>exec</span> -i -t ofd-data-0 -- /bin/bash
+</code></pre></div></li>
+<li>delete datadir in this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ rm -rf /data/nodes
+</code></pre></div></li>
+<li>logout from this pod:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ <span style=color:#8be9fd;font-style:italic>exit</span>
+</code></pre></div></li>
+<li>delete this pod for restarting:
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ k -n logging delete pod ofd-data-0
+pod <span style=color:#f1fa8c>&#34;ofd-data-0&#34;</span> deleted
+</code></pre></div></li>
+</ul>
+<ol start=6>
+<li>Check OpenSearch cluster health again:</li>
+</ol>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ curl -ks https://&lt;Name&gt;:&lt;Password&gt;@localhost:9200/_cat/health
+<span style=color:#bd93f9>1654180648</span> 14:37:28 logging yellow <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>45</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>4</span> <span style=color:#bd93f9>11</span> <span style=color:#bd93f9>0</span> - 75.0%
+...
+<span style=color:#bd93f9>1654180664</span> 14:37:44 logging yellow <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>53</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>2</span> <span style=color:#bd93f9>5</span> <span style=color:#bd93f9>0</span> - 88.3%
+...
+<span style=color:#bd93f9>1654180852</span> 14:40:52 logging green <span style=color:#bd93f9>6</span> <span style=color:#bd93f9>2</span> <span style=color:#8be9fd;font-style:italic>true</span> <span style=color:#bd93f9>60</span> <span style=color:#bd93f9>30</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> <span style=color:#bd93f9>0</span> - 100.0%
+</code></pre></div><blockquote>
+<p>our cluster is still in yellow state</p>
+<p>running <code>curl</code> command over time give information, that cluster regenerating</p>
+<p>wait some time and if this problem was solved, you can see cluster again healthy in <em>green</em> state</p>
+</blockquote>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-64c562ddfdf1515623da37aa02133a86>3 - OpenSearch-Dashboards</h1>
+<div class=lead>OpenSearch Dashboards configurations</div>
+<p>Kubernetes logging helm chart deploys an single instance of <a href=https://opensearch.org/docs/latest/dashboards/quickstart-dashboards/>OpenSearch Dashboards</a> (or just Dashboards) presenting the UI interface to OpenSearch indices.</p>
+<p>The helm chart enables authentication configurations based on SAML, ODIC or standalone and leverages dashboards tenant concept.
+The latter allows teams to innovate UIs such as searches, visualizations and dashboards in shared tenant space leaving a predefined readonly UIs at a global space. Once the UIs are ready to be promoted those can become part of the helm chart <a href=https://github.com/nickytd/kubernetes-logging-helm/tree/main/chart/saved-objects>saved-objects</a> folder and become standard set of the chart deployment.</p>
+<p><img src=./dashboards-tenants.jpg alt=dashboards></p>
+<p>In addition the helm chart provisions an OpenSearch <a href=https://opensearch.org/docs/latest/data-prepper/index/>DataPrepper</a> component which allows OpenTelemetry traces to be indexed and later visualized at Dashboards observability UI.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-1c9f0942d4ab7bc96d6a676e1e85e588>3.1 - Opensearch-Dashboards Authentication & Authorization</h1>
+<div class=lead>Opensearch Dashboards authentication & authorization configurations</div>
+<p>tbd</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-b96842a864c9bbea35a261097c779f33>3.2 - OpenSearch-Dashboards-Observability</h1>
+<div class=lead>OpenSearch Dashboards observability pluging</div>
+<p>The <a href=https://opensearch.org/docs/latest/observing-your-data/trace/index/>Observability plugin</a> allow you to visualize tracing data.</p>
+<p>Example:
+<img src=./kubernetes-logging-opentelemetry.jpg alt=opentelemetry></p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-7fcc1ea9f1032bbae82f10dfb538a0cf>3.3 - Opensearch-Dashboards Visualizations</h1>
+<div class=lead>Opensearch Dashboards visualizations configurations</div>
+<p>tbd</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-3a8656ebec6b78171def1a3542380037>4 - Kafka</h1>
+<div class=lead>Configuration settings for Kafka</div>
+<p>Kubernetes logging helm chart deploys <a href=https://kafka.apache.org/>Apache Kafka</a> as a message broker between FluentBit and Logstash for improving stability and loadbalance in big deployments.</p>
+<p>From helm chart version <strong>4.6.0</strong> we omited <a href=https://zookeeper.apache.org/>Apache ZooKeeper</a> as Kafka dependency. Kafka from version <a href=https://cwiki.apache.org/confluence/display/KAFKA/KIP-500%3A+Replace+ZooKeeper+with+a+Self-Managed+Metadata+Quorum><strong>2.8.0</strong></a> introduced <a href=https://developer.confluent.io/learn/kraft/><em>KRaft</em></a> aka ZooKeeper-less mode. From Kafka version <a href=https://cwiki.apache.org/confluence/display/KAFKA/KIP-833%3A+Mark+KRaft+as+Production+Ready><strong>3.3.0</strong></a> is KRaft marked as production ready, so, we decide to adopt it in the logging helm chart to save some resources and deploying time. Kafka in Raft mode need to have generated cluster ID. Please check <a href=https://pages.github.tools.sap/cs-devops/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>how to generating cluster ID</a>.</p>
+</div>
+<div class=td-content style=page-break-before:always>
+<h1 id=pg-febfba28b8eb6627e21e996fb64a46f8>4.1 - Howtos</h1>
+<div class=lead>How to achieve &mldr;</div>
+<p>Here you can find guidelines, how to manipulate with Kafka in context of logging helm chart.</p>
+</div>
+<div class=td-content>
+<h1 id=pg-d2aa4f1d32e931ed2096133d7d8c74c8>4.1.1 - How to generating cluster ID</h1>
+<div class=lead>How to generating cluster ID</div>
+<p>Cluster ID is required for each Kafka instance to know, to which instance it must to connect and make cluster. It is also used to <a href=https://kafka.apache.org/documentation/#kraft_storage>preparing storage space</a>. We need to set all Kafka instance same cluster ID. If you omit this settings, all Kafka instance generate their own ID and reject make cluster.</p>
+<p>There is many ways, how to generate the ID, but I recommend use this chain of Bash command:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ cat /proc/sys/kernel/random/uuid | tr -d <span style=color:#f1fa8c>&#39;-&#39;</span> | base64 | cut -b 1-22
+</code></pre></div><p>You can also use <a href=https://kafka.apache.org/33/documentation.html#quickstart_startserver>built-in script</a>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>$ bin/kafka-storage.sh random-uuid
+</code></pre></div><p>Or just start one Kafka instance without the cluster ID settings and it will be generated to the logs.</p>
+<p><em>Sources</em>:</p>
+<p><a href=https://sleeplessbeastie.eu/2021/10/22/how-to-generate-kafka-cluster-id/>Blog sleeplessbeastie.eu</a><br>
+<a href=https://kafka.apache.org/33/documentation.html>Apache Kafka Documentation</a></p>
+</div>
+</main>
+</div>
+</div>
+<footer class="bg-dark py-5 row d-print-none">
+<div class="container-fluid mx-sm-5">
+<div class=row>
+<div class="col-6 col-sm-4 text-xs-center order-sm-2">
+</div>
+<div class="col-6 col-sm-4 text-right text-xs-center order-sm-3">
+</div>
+<div class="col-12 col-sm-4 text-center py-2 order-sm-2">
+</div>
+</div>
+</div>
+</footer>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js integrity=sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js integrity="sha512-UR25UO94eTnCVwjbXozyeVd6ZqpaAE9naiEUBK/A+QDbfSTQFhPGj5lOR6d8tsgbBk84Ggb5A3EkjsOgPRPcKA==" crossorigin=anonymous></script>
+<script src=/kubernetes-logging-helm/js/tabpane-persist.js></script>
+<script src=/kubernetes-logging-helm/js/main.min.8ab8f81ff7e1454d30024cd6f956d4d341c3a97e2a673f988065f2ee4e147922.js integrity="sha256-irj4H/fhRU0wAkzW+VbU00HDqX4qZz+YgGXy7k4UeSI=" crossorigin=anonymous></script>
+</body>
+</html>
