@@ -19,7 +19,7 @@ spec:
       annotations: {{- toYaml . | nindent 8 }}
       {{- end }}
       labels: {{ include "logging.selectorLabels" . | indent 8 }}
-        type: os-dashboars-index-patterns
+        type: os-dashboards-index-patterns
         {{- with .Values.additionalJobPodLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
