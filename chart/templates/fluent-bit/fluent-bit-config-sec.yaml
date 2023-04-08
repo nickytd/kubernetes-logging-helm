@@ -1,4 +1,4 @@
-{{- if .Values.fluentbit.enabled }}
+{{- if eq .Values.fluentbit.enabled true }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -57,7 +57,7 @@ stringData:
     {{- end }}
 
     # kafka output plugin configuration in case kafka is enabled in the helm chart
-    {{- if .Values.kafka.enabled }}
+    {{- if eq .Values.kafka.enabled true }}
     @INCLUDE _output-kafka.conf
     {{- else }}
     # the default opensearch output plugin configuration in case kafka is not enabled in the helm chart
