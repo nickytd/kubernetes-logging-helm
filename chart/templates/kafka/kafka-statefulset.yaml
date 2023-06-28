@@ -35,13 +35,25 @@ spec:
       - name: init
         image: {{ include "init_container.image" . }}
         imagePullPolicy: {{ .Values.init_container.imagePullPolicy }}
-        command:
-        - /bin/sh
-        - -c
-        - "mkdir /kafka/data -p; chown 1001:0 -R /kafka/data"
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INT_CON_EXP
+          value: "{{ .Values.kafka.SSLInterConnectExp }}"
+        command: ["sh", "-c", "/init/init_kafka_node.sh"]
         volumeMounts:
+        - name: init
+          mountPath: init
         - name: kafka-data
           mountPath: /kafka
+        - name: cacert
+          mountPath: /cacert/cacert.pem
+          subPath: tls.crt
+        - name: cacert
+          mountPath: /cacert/cacert.key
+          subPath: tls.key
         securityContext:
           runAsUser: 0
           privileged: true
@@ -54,34 +66,56 @@ spec:
           name: kafka
         - containerPort: 9093
           name: broker
+        - containerPort: 9094
+          name: internal
         - containerPort: 12345
           name: jmx
         resources: {{ toYaml .Values.kafka.resources | nindent 10 }}
+        ### Workaround for missing but required variable
+        ### Details: https://github.com/bitnami/containers/issues/33271
+        command:
+        - /bin/bash
+        args:
+        - -ec
+        - |
+          export KAFKA_CFG_NODE_ID="$(echo "$MY_POD_NAME" | grep -o -E '[0-9]*$')"
+          /opt/bitnami/scripts/kafka/entrypoint.sh /opt/bitnami/scripts/kafka/run.sh
+        ### --- ###
         env:
         # - name: BITNAMI_DEBUG # get more information from Kafka pod logs
         #   value: "true" # default "false"
-        - name: BROKER_ID_COMMAND
-          value: "hostname | awk -F'-' '{print $NF}'"
-        - name: KAFKA_ENABLE_KRAFT # enable "KRaft mode" aka "ZooKeeper-less mode"
-          value: "yes"
         - name: KAFKA_KRAFT_CLUSTER_ID
           value: {{ .Values.kafka.kraftId }}
         - name: KAFKA_CFG_PROCESS_ROLES
           value: "broker,controller"
         - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
           value: {{ include "kafkaQuorum" (dict "replicas" .Values.kafka.replicas "releaseName" $.Release.Name) }}
-        - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
-          value: CONTROLLER
         - name: KAFKA_CFG_LISTENERS
-          value: PLAINTEXT://:9092,CONTROLLER://:9093
+          value: "PLAINTEXT://:9092,CONTROLLER://:9093,INTERNAL://:9094"
         - name: KAFKA_CFG_INITIAL_BROKER_REGISTRATION_TIMEOUT_MS
-          value: "240000"
+          value: "270000" # default 60000 (1 minute)
         - name: KAFKA_CFG_LOG_DIRS
           value: "/kafka/data"
+        # - name: NODE_ID_COMMAND # need for get broker ID, broken, see workaround above
+        #   value: 'hostname | cut -d "-" -f 3'
         - name: KAFKA_HEAP_OPTS
           value: "-Xmx{{ .Values.kafka.heapSize }} -Xms{{ .Values.kafka.heapSize }}"
         - name: ALLOW_PLAINTEXT_LISTENER
           value: "yes"
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: KAFKA_CFG_ADVERTISED_LISTENERS
+          value: "INTERNAL://$(MY_POD_NAME).logging.svc.cluster.local:9094,PLAINTEXT://$(MY_POD_NAME).logging.svc.cluster.local:9092"
+        - name: KAFKA_INTER_BROKER_LISTENER_NAME
+          value: "INTERNAL"
+        - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+          value: "INTERNAL:SSL,CONTROLLER:SSL,PLAINTEXT:PLAINTEXT"
+        - name: KAFKA_TLS_TYPE
+          value: "PEM"
+        - name: KAFKA_CFG_DEFAULT_REPLICATION_FACTOR
+          value: {{ .Values.kafka.replicas | quote }}
         lifecycle:
           preStop:
             exec:
@@ -105,7 +139,25 @@ spec:
         volumeMounts:
         - name: kafka-data
           mountPath: /kafka
+        - name: cacert
+          mountPath: /opt/bitnami/kafka/config/certs/kafka.truststore.pem
+          subPath: tls.crt
+        - name: kafka-data
+          mountPath: /opt/bitnami/kafka/config/certs/kafka.keystore.pem
+          subPath: certs/kafka.keystore.pem
+        - name: kafka-data
+          mountPath: /opt/bitnami/kafka/config/certs/kafka.keystore.key
+          subPath: certs/kafka.keystore.key
       terminationGracePeriodSeconds: 10
+      volumes:
+      - name: init
+        configMap:
+          name: {{ .Release.Name }}-kafka-cm
+          defaultMode: 0550
+      - name: cacert
+        secret:
+          secretName: {{ include "kafka.cacertname" . }}
+          defaultMode: 0644
   volumeClaimTemplates:
   - metadata:
       name: kafka-data

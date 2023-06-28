@@ -105,6 +105,9 @@ https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templ
 {{- range $k, $v := . -}}{{- if not $local.first -}},{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
 {{- end -}}
 
+{{/*
+Assemble Kafka brokers list
+*/}}
 {{- define "kafkaBrokers" -}}
 {{- $rn := .releaseName -}}
 {{- $kafka := dict "servers" (list) -}}
@@ -114,6 +117,9 @@ https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templ
 {{- join "," $kafka.servers -}}
 {{- end -}}
 
+{{/*
+Assemble Kafka controllers list
+*/}}
 {{- define "kafkaQuorum" -}}
 {{- $rn := .releaseName -}}
 {{- $kafka := dict "servers" (list) -}}
@@ -121,6 +127,13 @@ https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templ
 {{- $noop := printf "%d@%s-kafka-%d:9093" . $rn . | append $kafka.servers | set $kafka "servers" -}}
 {{- end -}}
 {{- join "," $kafka.servers -}}
+{{- end -}}
+
+{{/*
+Set Kafka CA cert secret name
+*/}}
+{{- define "kafka.cacertname" -}}
+{{ printf "%s-kafka-brokers-cert" .Release.Name }}
 {{- end -}}
 
 {{/*

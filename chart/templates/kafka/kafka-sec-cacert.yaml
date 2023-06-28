@@ -1,0 +1,55 @@
+{{ $crtnm := include "kafka.cacertname" . }}
+{{- if .Values.kafka.certManager.enabled }}
+---
+### Use ClusterManager to manage CA certificate
+{{- if not .Values.kafka.certManager.issuerRef }}
+# If issuer isnt set, create one
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ .Release.Name }}-kafka-brokers-cacert-selfissuer
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  selfSigned: {}
+{{- end }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-kafka-brokers-cacertreq
+  labels: {{ include "logging.labels" . | indent 4 }}
+spec:
+  secretName: {{ $crtnm }}
+  isCA: true
+  issuerRef:
+    {{- if .Values.kafka.certManager.issuerRef }}
+    {{- toYaml .Values.kafka.certManager.issuerRef | nindent 4 }}
+    {{- else }}
+    name: {{ .Release.Name }}-kafka-brokers-cacert-selfissuer
+    kind: Issuer
+    {{- end }}
+  commonName: "*.{{ .Release.Namespace }}.svc.cluster.local"
+  dnsNames:
+  - "*.{{ .Release.Namespace }}.svc.cluster.local"
+{{- else }}
+---
+### Generate random self-signed CA certificate
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $crtnm }}
+  labels: {{ include "logging.labels" . | indent 4 }}
+type: kubernetes.io/tls
+data:
+  {{- $secret := lookup "v1" "Secret" .Release.Namespace $crtnm -}}
+  {{- if or (not $secret) (not $secret.data) }}
+  # generate certificates if secret does not exists
+  {{- $server := genCA "SelfSigned-CAcert-Kafka" 365 }}
+  tls.crt: {{ b64enc $server.Cert }}
+  tls.key: {{ b64enc $server.Key }}
+  {{- else }}
+  # reset existing secret values
+  tls.crt: {{ index $secret.data "tls.crt" }}
+  tls.key: {{ index $secret.data "tls.key" }}
+  {{- end }}
+{{- end }}

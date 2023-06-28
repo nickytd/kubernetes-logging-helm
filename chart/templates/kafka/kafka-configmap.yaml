@@ -1,0 +1,73 @@
+{{- if .Values.kafka.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-kafka-cm
+  labels: {{ include "logging.labels" . | indent 4 }}
+data:
+  init_kafka_node.sh: |-
+    #!/bin/bash
+    echo -e "INFO: == Initializing Kafka =="
+
+    certloc="/kafka/certs/"
+
+    echo "INFO: -- Prefly checking ..."
+
+    # Check input parameters
+    if [ -z ${NAMESPACE+x} ]; then
+      echo "ERROR: NameSpace env variable (NAMESPACE) is expected but not found!"
+      exit -1
+    elif [ -z ${INT_CON_EXP+x} ]; then
+      echo "WARN: Time to expire broker interconnect SSL certificate env variable (INT_CON_EXP) is expected but not found!"
+      echo "INFO: Setting to 90 days."
+      INT_CON_EXP="90"
+    fi
+    echo "INFO: -- Prefly checking done."
+
+    echo -en "INFO: Preparing Kafka storage for node \"$HOSTNAME\" ... "
+      mkdir /kafka/data -p
+      chown 1001:0 -R /kafka/data
+    echo -e "done"
+
+    echo -e "INFO: Preparing node certificate ... "
+    mkdir ${certloc} -p
+
+      nodeid="$(echo "$HOSTNAME" | grep -o -E '[0-9]*$')"
+
+      openssl req -newkey rsa:2048 -keyout ${certloc}node.key \
+        -out ${certloc}node.csr -nodes \
+        -subj "/CN=$HOSTNAME.$NAMESPACE.svc.cluster.local/OU=OFD-LoggingHelmChart"
+      echo -e "INFO: ... CSR generated"
+
+      openssl pkcs8 -topk8 -in ${certloc}node.key -inform pem -nocrypt \
+        -v1 PBE-SHA1-RC4-128 -out ${certloc}kafka.keystore.key -outform pem
+      echo -e "INFO: ... key to pkcs8 converted"
+
+      openssl x509 -req -CA /cacert/cacert.pem -CAkey /cacert/cacert.key \
+        -in ${certloc}node.csr -out ${certloc}kafka.keystore.pem -sha256 \
+        -days $(($INT_CON_EXP + $nodeid)) -CAcreateserial -extensions v3_req -extfile <(echo "
+      [req]
+      distinguished_name = req_distinguished_name
+      x509_extensions = v3_req
+      prompt = no
+      [req_distinguished_name]
+      CN = $HOSTNAME.$NAMESPACE.svc.cluster.local
+      [v3_req]
+      subjectAltName = @alt_names
+      [alt_names]
+      DNS.1 = $HOSTNAME.$NAMESPACE.svc.cluster.local
+      DNS.2 = $HOSTNAME
+      ")
+      echo -e "INFO: ... node certificate signed"
+
+      echo -e "INFO: Cleaning up working dir"
+      rm ${certloc}node.*
+
+      echo -e "INFO: Changing ownership for node certificates"
+      chown 1001:0 -R ${certloc}
+
+    echo -e "INFO: Node certificate prepared."
+
+    echo -e "\nINFO: == Kafka initialized =="
+
+{{- end }}
