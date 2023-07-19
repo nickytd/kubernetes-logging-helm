@@ -20,10 +20,12 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: 2.6.0
+  imageTag: "2.7.0"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
+  # -- Set [deployment layout](https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/) for OpenSearch
   singleNode: false
+  # -- TODO
   timeNanoSeconds: false
   # externalOpensearch.disabled designates an external managed opensearch stack.
   externalOpensearch:
@@ -33,15 +35,21 @@ opensearch:
     enabled: false
     storageClass: {}
     size: "5Gi"
+  # -- Define, how long be held indices in OpenSearch cluster.
   retentionDays: 7
+  # -- Fine tune JVM parameters passed to component.
   additionalJvmParams: "-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"
   # -- User name with admin rights
   user: "osadmin"
   # -- Password for account with admin rights
   password: "osadmin"
+  # -- Settings for [CertManager](https://cert-manager.io/).
   certManager:
+    # -- Enable / disable using CertManager instance in cluster.
     enabled: false
+    # -- TODO
     namespace: ""
+    # -- Define CertManager Issuer object
     issuerRef: {}
     # kind:
     # name:
@@ -78,20 +86,29 @@ opensearch:
 
 #Init container configuration. Used for multiple application startup checks
 init_container:
+  # -- Used image name.
   image: "nickytd/init-container"
+  # -- Used component version.
   imageTag: "1.0.5"
+  # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
 
 # Configuration of OS cluster manager node
 clusterManager:
+  # -- Replicas count for OpenSearch `master` [node role](https://opensearch.org/docs/latest/opensearch/cluster/). Minimal is *2*.
   replicas: 1
+  # -- Persistent volume size.
   storage: "1Gi"
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "256M"
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "700Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "700Mi"
+  # -- Additional labels for the workload pods
   podLabels: {}
   storageClass: {}
   priorityClass: {}
@@ -100,20 +117,34 @@ clusterManager:
 
 # Configuration of OS coordination node if "inCluster" is true
 client:
+  # -- Replicas count for OpenSearch `client` [node role](https://opensearch.org/docs/latest/opensearch/cluster/).
   replicas: 1
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "512M"
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "1000Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "2000Mi"
   ingress:
+    # -- Switch to enable / disable ingress for OpenSearch cluster.
+    enabled: false
+    # -- Opensearch ingress class name
     className: ""
+    # -- Array of Opensearch ingress host names
     host: []
     path: "/"
-    enabled: false
+    # -- Annotations for ingress object.
     annotations: {}
+    # -- Certificate setting for hostname.
     tls: []
+      # e.g.
+      # - hosts:
+      #   - FQDNS
+      # secretName: os-tls-secret
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []
@@ -128,15 +159,21 @@ client:
 
 # Configuration of OS data node if "inCluster" is true
 data:
+  # -- Replicas count for OpenSearch `data` [node role](https://opensearch.org/docs/latest/opensearch/cluster/).
   replicas: 1
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "512M"
+  # -- Persistent volume size.
   storage: "1Gi"
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "1000Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "2000Mi"
   storageClass: {}
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []
@@ -146,8 +183,10 @@ opensearch_dashboards:
   # dashboards custom branding configuration
   # https://opensearch.org/docs/latest/dashboards/branding/
   branding: {}
+  # -- Used image name.
   image: "opensearchproject/opensearch-dashboards"
-  imageTag: 2.6.0
+  # -- Used component version.
+  imageTag: "2.7.0"
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -156,60 +195,87 @@ opensearch_dashboards:
     runJob: false
     caCertificateSecret: ""
     url: ""
+  # -- Replicas count for OpenSearch Dashboard pods.
   replicas: 1
   extraEnvs: {}
+  # -- Set user name with *admin* privileges.
   user: "opensearch"
+  # -- Set password for user with *admin* privileges.
   password: "opensearch"
   readonly:
+    # -- Set user name with *read only* privileges.
     user: "viewer"
+    # -- Set password for user with *read only* privileges.
     password: "view"
   developer:
     user: "developer"
     password: "develop"
   ingress:
+    # -- Switch to enable / disable ingress for OpenSearch Dashboards.
+    enabled: false
     className: ""
     host: []
     hosts: {}
     path: "/"
-    enabled: false
+    # -- Annotations for ingress object.
     annotations: {}
+    # -- Certificate setting for hostname.
     tls: []
+      # e.g.
+      # - hosts:
+      #   - FQDNS
+      # secretName: os-dash-tls-secret
+  # -- Set indices name for inject patterns to OpenSearchDashboards
   indexPatterns:
     - containers
     - systemd
     - nginx
+  # -- Set tenants name for importing objects via helm chart
   tenants:
     - Global
     - Developer
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "500Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "500Mi"
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []
   affinity: {}
 
 data_prepper:
+  # -- Switch to enable / disable DataPrepper on cluster.
   enabled: false
+  # -- Used image name.
   image: opensearchproject/data-prepper
-  imageTag: 2.0.1
+  # -- Used component version.
+  imageTag: "2.0.1"
+  # -- Replicas count for DataPrepper pods.
   replicas: 1
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "256M"
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "600Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "600Mi"
   retention:
-    slotSize: 10 # Slot size in GB
-    purge: 3 # Days to hold oldest slot
+    # -- Slot size in GB
+    slotSize: 10
+    # -- Days to hold oldest slot
+    purge: 3
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: {}
+  topologySpreadConstraints: []
   #- maxSkew: 1
   #  topologyKey: kubernetes.io/hostname
   #  whenUnsatisfiable: ScheduleAnyway
@@ -219,12 +285,15 @@ data_prepper:
 
 fluentbit:
   enabled: true
+  # -- Used image name.
   image: "fluent/fluent-bit"
+  # -- Used component version.
   imageTag: "2.0.9"
+  # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
   journalsLogsHostPath: /var/log
-  #define container runtime: docker or containerd
+  # -- Define container runtime engine: `docker` or `containerd`.
   containersRuntime: containerd
   indexPrefix: ""
   disableTailInput: false
@@ -233,15 +302,19 @@ fluentbit:
   readFromHead: false
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "50Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "100Mi"
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: ""
   tolerations:
     - operator: Exists
   affinity: {}
   metrics:
+    # -- Switch to enable / disable FluentBit metrics for Prometheus.
     enabled: false
     interval: "30s"
     namespace: ""
@@ -251,24 +324,36 @@ fluentbit:
 ## kafka -> logstash -> opensearch
 ## Note: kafka needs to be enabled as well
 logstash:
+  # -- Switch to enable / disable Logstash instance on cluster.
   enabled: true
+  # -- Used image name.
   image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
+  # -- Used component version.
   imageTag: "8.6.1"
+  # -- Replicas count for Logstash's pods.
   replicas: 1
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "256M"
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "700Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "700Mi"
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []
   affinity: {}
   monitoring:
+    # -- Set `true` here, if you want to expose metrics.
     enabled: false
+    # -- Used image name.
     image: "nickytd/logstash-exporter"
+    # -- Used component version.
     imageTag: "0.3.0"
+    # -- TCP port to expose Exporter processing metrics.
     metricsPort: 9198
     serviceMonitor:
       enabled: false
@@ -284,13 +369,33 @@ logstash:
 # In scaled out setup kafka queues are used as ingestion points to accommodate
 # spiked in the logging stream volumes.
 kafka:
+  # -- Switch to enable / disable Kafka instance on cluster.
   enabled: true
+  # -- Replicas count for Kafka's pods. Minimal setup with redundancy is *3* pods.
   replicas: 1
+  # -- Used image name.
   image: "bitnami/kafka"
-  imageTag: "3.4.0"
+  # -- Used component version.
+  imageTag: "3.4.1"
+  # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
+  imagePullPolicy: IfNotPresent
+  # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
   heapSize: "256M"
-  storage: "10Gi"
-  kraftId: "M2M5NGQ3ZDA5NWI1NDkxYz" # see HowTos for more information about generating process
+  # -- Persistent volume size.
+  storage: "1Gi"
+  # -- Set Kafka cluster ID in Raft mode. If not set, default is used. Details see [here](https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/).
+  kraftId: "M2M5NGQ3ZDA5NWI1NDkxYz"
+  # -- Settings for [CertManager](https://cert-manager.io/).
+  certManager:
+    # -- Enable / disable using CertManager instance in cluster.
+    enabled: false
+    # -- Define CertManager Issuer object
+    issuerRef: {}
+      # kind:
+      # name:
+  # -- Set days for SSL broker interconnect communication certificate expiration
+  SSLInterConnectExp: 60
+  # -- Kafka topics definition
   topics:
     - name: "containers"
       config: "max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"
@@ -298,10 +403,13 @@ kafka:
       # partitions: 1
   resources:
     requests:
+      # -- Define [**minimum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "600Mi"
     limits:
+      # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "600Mi"
   storageClass: {}
+  # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
   tolerations: []

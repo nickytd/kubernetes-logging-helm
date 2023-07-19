@@ -20,3 +20,6 @@ If you dont want lost any of your log data in upgrading, here is a safe procedur
 - delete ZooKeeper StatefulSet
 - delete PersistantVolumeClaim for Kafka's and for ZooKeeper's instances as well
 - do `helm upgrade ...`
+
+# 4.6.3 -> 4.6.4
+In the version **4.6.4** we securing communication between Kafka instances. If CertManager isnt avaible, helm chart will generate CA certificate for that purpose with 1 year lifeness. Self signed certificate must be managed by user! The setup is good for development purpose, for production environment consider using CertManager.

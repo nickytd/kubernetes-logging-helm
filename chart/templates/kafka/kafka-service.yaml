@@ -24,6 +24,8 @@ spec:
       name: kafka
     - port: 9093
       name: broker
+    - port: 9094
+      name: internal
     - port: 12345
       name: jmx
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}

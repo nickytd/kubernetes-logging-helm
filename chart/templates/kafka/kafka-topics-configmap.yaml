@@ -14,12 +14,6 @@ data:
 
     input="$(dirname $0)/topics.conf"
 
-    repfactor=$((replicas-1))
-    if [[ $repfactor -lt 1 ]]; then
-      # The replication factor must be between 1 and 32767 inclusive
-      repfactor=1
-    fi
-
     if [[ -f "$input" ]]; then
       while IFS= read -r line; do
       IFS=';' read -ra topic <<< "$line"
@@ -55,7 +49,6 @@ data:
         /opt/bitnami/kafka/bin/kafka-topics.sh \
           --bootstrap-server $kafka --create --topic $topicname \
           --partitions $topicparitions \
-          --replication-factor $repfactor \
           --if-not-exists
 
         echo -en "INFO: "
@@ -89,56 +82,6 @@ data:
           echo "WARN: Reducing topic partitions is not allowed, current partitions count is $partitions (desired:$topicparitions) and stay as is."
         else
           echo "INFO: Topic partitions are in desired state (current:$partitions, desired:$topicparitions)."
-        fi
-
-        # Check current topic replication factor
-        replicationfactor=$(echo "$topicdescription" | head -n 1 | awk '{print $8}')
-
-        # Change topic replication factor if needed
-        if [[ $repfactor -ne $replicationfactor ]]; then
-          echo "INFO: Changing replication factor from $replicationfactor to $repfactor"
-
-          if [[ $repfactor == 1 ]]; then
-            brokers=1
-
-            for (( i=0; i<${topicparitions}; i++ )); do
-              set="$set{\"topic\":\"$topicname\",\"partition\":$i,\"replicas\":[$brokers]}"
-              if (( $i != $topicparitions-1 )); then
-                set="$set,"
-              fi
-              if [[ $brokers == 0 ]]; then
-                brokers=2
-              fi
-              ((--brokers))
-            done
-
-          else
-
-            # Determine brokers string for replication factor change, if needed
-            for (( r=0; r<=$repfactor; r++ )); do
-              brokers="$brokers,$r"
-            done
-            brokers=${brokers#","}
-
-            for (( i=0; i<${topicparitions}; i++ )); do
-              b="$(echo $brokers | tr "," "\n" | shuf | tr  "\n" ",")"; b=${b%","}
-              set="$set{\"topic\":\"$topicname\",\"partition\":$i,\"replicas\":[$b]}"
-              if (( $i != $topicparitions-1 )); then
-                set="$set,"
-              fi
-            done
-
-          fi
-
-          echo "{\"version\":1,\"partitions\":[$set]}" > /tmp/reassign.json
-          /opt/bitnami/kafka/bin/kafka-reassign-partitions.sh \
-            --bootstrap-server $kafka --reassignment-json-file /tmp/reassign.json \
-            --execute
-
-        else
-
-          echo "INFO: Topic replication factor is in desired state (current:$replicationfactor, desired:$repfactor)."
-
         fi
 
         # Refresh topic configuration, change if needed, handled by Kafka itself
