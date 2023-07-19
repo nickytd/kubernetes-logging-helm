@@ -48,7 +48,7 @@
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.4e6edaa3535c2bb3f66801dc8f75c23e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -59,7 +59,7 @@
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <div id=content-mobile>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.4e6edaa3535c2bb3f66801dc8f75c23e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -196,31 +196,31 @@
 <td>client.heapSize</td>
 <td>string</td>
 <td><code>"512M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>client.ingress.annotations</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Annotations for ingress object.</td>
 </tr>
 <tr>
 <td>client.ingress.className</td>
 <td>string</td>
 <td><code>""</code></td>
-<td></td>
+<td>Opensearch ingress class name</td>
 </tr>
 <tr>
 <td>client.ingress.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Switch to enable / disable ingress for OpenSearch cluster.</td>
 </tr>
 <tr>
 <td>client.ingress.host</td>
 <td>list</td>
 <td><code>[]</code></td>
-<td></td>
+<td>Array of Opensearch ingress host names</td>
 </tr>
 <tr>
 <td>client.ingress.path</td>
@@ -232,13 +232,13 @@
 <td>client.ingress.tls</td>
 <td>list</td>
 <td><code>[]</code></td>
-<td></td>
+<td>Certificate setting for hostname.</td>
 </tr>
 <tr>
 <td>client.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>client.priorityClass</td>
@@ -250,19 +250,19 @@
 <td>client.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for OpenSearch <code>client</code> <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node role</a>.</td>
 </tr>
 <tr>
 <td>client.resources.limits.memory</td>
 <td>string</td>
 <td><code>"2000Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>client.resources.requests.memory</td>
 <td>string</td>
 <td><code>"1000Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>client.tolerations</td>
@@ -286,13 +286,13 @@
 <td>clusterManager.heapSize</td>
 <td>string</td>
 <td><code>"256M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>clusterManager.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>clusterManager.priorityClass</td>
@@ -304,25 +304,25 @@
 <td>clusterManager.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for OpenSearch <code>master</code> <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node role</a>. Minimal is <em>2</em>.</td>
 </tr>
 <tr>
 <td>clusterManager.resources.limits.memory</td>
 <td>string</td>
 <td><code>"700Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>clusterManager.resources.requests.memory</td>
 <td>string</td>
 <td><code>"700Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>clusterManager.storage</td>
 <td>string</td>
 <td><code>"1Gi"</code></td>
-<td></td>
+<td>Persistent volume size.</td>
 </tr>
 <tr>
 <td>clusterManager.storageClass</td>
@@ -352,13 +352,13 @@
 <td>data.heapSize</td>
 <td>string</td>
 <td><code>"512M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>data.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>data.priorityClass</td>
@@ -370,25 +370,25 @@
 <td>data.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for OpenSearch <code>data</code> <a href=https://opensearch.org/docs/latest/opensearch/cluster/>node role</a>.</td>
 </tr>
 <tr>
 <td>data.resources.limits.memory</td>
 <td>string</td>
 <td><code>"2000Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>data.resources.requests.memory</td>
 <td>string</td>
 <td><code>"1000Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>data.storage</td>
 <td>string</td>
 <td><code>"1Gi"</code></td>
-<td></td>
+<td>Persistent volume size.</td>
 </tr>
 <tr>
 <td>data.storageClass</td>
@@ -412,31 +412,31 @@
 <td>data_prepper.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Switch to enable / disable DataPrepper on cluster.</td>
 </tr>
 <tr>
 <td>data_prepper.heapSize</td>
 <td>string</td>
 <td><code>"256M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>data_prepper.image</td>
 <td>string</td>
 <td><code>"opensearchproject/data-prepper"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>data_prepper.imageTag</td>
 <td>string</td>
 <td><code>"2.0.1"</code></td>
-<td></td>
+<td>Used component version.</td>
 </tr>
 <tr>
 <td>data_prepper.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>data_prepper.priorityClass</td>
@@ -448,31 +448,31 @@
 <td>data_prepper.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for DataPrepper pods.</td>
 </tr>
 <tr>
 <td>data_prepper.resources.limits.memory</td>
 <td>string</td>
 <td><code>"600Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>data_prepper.resources.requests.memory</td>
 <td>string</td>
 <td><code>"600Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>data_prepper.retention.purge</td>
 <td>int</td>
 <td><code>3</code></td>
-<td></td>
+<td>Days to hold oldest slot</td>
 </tr>
 <tr>
 <td>data_prepper.retention.slotSize</td>
 <td>int</td>
 <td><code>10</code></td>
-<td></td>
+<td>Slot size in GB</td>
 </tr>
 <tr>
 <td>data_prepper.tolerations</td>
@@ -482,8 +482,8 @@
 </tr>
 <tr>
 <td>data_prepper.topologySpreadConstraints</td>
-<td>object</td>
-<td><code>{}</code></td>
+<td>list</td>
+<td><code>[]</code></td>
 <td></td>
 </tr>
 <tr>
@@ -508,7 +508,7 @@
 <td>fluentbit.containersRuntime</td>
 <td>string</td>
 <td><code>"containerd"</code></td>
-<td></td>
+<td>Define container runtime engine: <code>docker</code> or <code>containerd</code>.</td>
 </tr>
 <tr>
 <td>fluentbit.disableTailInput</td>
@@ -532,19 +532,19 @@
 <td>fluentbit.image</td>
 <td>string</td>
 <td><code>"fluent/fluent-bit"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>fluentbit.imagePullPolicy</td>
 <td>string</td>
 <td><code>"IfNotPresent"</code></td>
-<td></td>
+<td>Image pull <a href=https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy>policy</a>.</td>
 </tr>
 <tr>
 <td>fluentbit.imageTag</td>
 <td>string</td>
 <td><code>"2.0.9"</code></td>
-<td></td>
+<td>Used component version.</td>
 </tr>
 <tr>
 <td>fluentbit.indexPrefix</td>
@@ -568,7 +568,7 @@
 <td>fluentbit.metrics.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Switch to enable / disable FluentBit metrics for Prometheus.</td>
 </tr>
 <tr>
 <td>fluentbit.metrics.interval</td>
@@ -586,7 +586,7 @@
 <td>fluentbit.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>fluentbit.priorityClass</td>
@@ -604,13 +604,13 @@
 <td>fluentbit.resources.limits.memory</td>
 <td>string</td>
 <td><code>"100Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>fluentbit.resources.requests.memory</td>
 <td>string</td>
 <td><code>"50Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>fluentbit.tolerations[0].operator</td>
@@ -628,19 +628,25 @@
 <td>init_container.image</td>
 <td>string</td>
 <td><code>"nickytd/init-container"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>init_container.imagePullPolicy</td>
 <td>string</td>
 <td><code>"IfNotPresent"</code></td>
-<td></td>
+<td>Image pull <a href=https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy>policy</a>.</td>
 </tr>
 <tr>
 <td>init_container.imageTag</td>
 <td>string</td>
 <td><code>"1.0.5"</code></td>
-<td></td>
+<td>Used component version.</td>
+</tr>
+<tr>
+<td>kafka.SSLInterConnectExp</td>
+<td>int</td>
+<td><code>60</code></td>
+<td>Set days for SSL broker interconnect communication certificate expiration</td>
 </tr>
 <tr>
 <td>kafka.affinity</td>
@@ -649,40 +655,64 @@
 <td></td>
 </tr>
 <tr>
+<td>kafka.certManager</td>
+<td>object</td>
+<td><code>{"enabled":false,"issuerRef":{}}</code></td>
+<td>Settings for <a href=https://cert-manager.io/>CertManager</a>.</td>
+</tr>
+<tr>
+<td>kafka.certManager.enabled</td>
+<td>bool</td>
+<td><code>false</code></td>
+<td>Enable / disable using CertManager instance in cluster.</td>
+</tr>
+<tr>
+<td>kafka.certManager.issuerRef</td>
+<td>object</td>
+<td><code>{}</code></td>
+<td>Define CertManager Issuer object</td>
+</tr>
+<tr>
 <td>kafka.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td></td>
+<td>Switch to enable / disable Kafka instance on cluster.</td>
 </tr>
 <tr>
 <td>kafka.heapSize</td>
 <td>string</td>
 <td><code>"256M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>kafka.image</td>
 <td>string</td>
 <td><code>"bitnami/kafka"</code></td>
-<td></td>
+<td>Used image name.</td>
+</tr>
+<tr>
+<td>kafka.imagePullPolicy</td>
+<td>string</td>
+<td><code>"IfNotPresent"</code></td>
+<td>Image pull <a href=https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy>policy</a>.</td>
 </tr>
 <tr>
 <td>kafka.imageTag</td>
 <td>string</td>
-<td><code>"3.4.0"</code></td>
-<td></td>
+<td><code>"3.4.1"</code></td>
+<td>Used component version.</td>
 </tr>
 <tr>
 <td>kafka.kraftId</td>
 <td>string</td>
 <td><code>"M2M5NGQ3ZDA5NWI1NDkxYz"</code></td>
-<td></td>
+<td>Set Kafka cluster ID in Raft mode. If not set, default is used. Details see <a href=https://nickytd.github.io/kubernetes-logging-helm/docs/components/kafka/howtos/clusterid/>here</a>.</td>
 </tr>
 <tr>
 <td>kafka.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>kafka.priorityClass</td>
@@ -694,25 +724,25 @@
 <td>kafka.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for Kafka&rsquo;s pods. Minimal setup with redundancy is <em>3</em> pods.</td>
 </tr>
 <tr>
 <td>kafka.resources.limits.memory</td>
 <td>string</td>
 <td><code>"600Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>kafka.resources.requests.memory</td>
 <td>string</td>
 <td><code>"600Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>kafka.storage</td>
 <td>string</td>
-<td><code>"10Gi"</code></td>
-<td></td>
+<td><code>"1Gi"</code></td>
+<td>Persistent volume size.</td>
 </tr>
 <tr>
 <td>kafka.storageClass</td>
@@ -727,16 +757,10 @@
 <td></td>
 </tr>
 <tr>
-<td>kafka.topics[0].config</td>
-<td>string</td>
-<td><code>"max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>kafka.topics[0].name</td>
-<td>string</td>
-<td><code>"containers"</code></td>
-<td></td>
+<td>kafka.topics</td>
+<td>list</td>
+<td><code>[{"config":"max.message.bytes=10000000,retention.bytes=-1,retention.ms=3600000","name":"containers"}]</code></td>
+<td>Kafka topics definition</td>
 </tr>
 <tr>
 <td>logstash.affinity</td>
@@ -748,49 +772,49 @@
 <td>logstash.enabled</td>
 <td>bool</td>
 <td><code>true</code></td>
-<td></td>
+<td>Switch to enable / disable Logstash instance on cluster.</td>
 </tr>
 <tr>
 <td>logstash.heapSize</td>
 <td>string</td>
 <td><code>"256M"</code></td>
-<td></td>
+<td>Set JVM parameters <code>-Xms</code> and <code>-Xmx</code>, basicaly set JVM memory size. Consider this value as a half of total pod memory.</td>
 </tr>
 <tr>
 <td>logstash.image</td>
 <td>string</td>
 <td><code>"opensearchproject/logstash-oss-with-opensearch-output-plugin"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>logstash.imageTag</td>
 <td>string</td>
 <td><code>"8.6.1"</code></td>
-<td></td>
+<td>Used component version.</td>
 </tr>
 <tr>
 <td>logstash.monitoring.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Set <code>true</code> here, if you want to expose metrics.</td>
 </tr>
 <tr>
 <td>logstash.monitoring.image</td>
 <td>string</td>
 <td><code>"nickytd/logstash-exporter"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>logstash.monitoring.imageTag</td>
 <td>string</td>
 <td><code>"0.3.0"</code></td>
-<td></td>
+<td>Used component version.</td>
 </tr>
 <tr>
 <td>logstash.monitoring.metricsPort</td>
 <td>int</td>
 <td><code>9198</code></td>
-<td></td>
+<td>TCP port to expose Exporter processing metrics.</td>
 </tr>
 <tr>
 <td>logstash.monitoring.serviceMonitor.enabled</td>
@@ -808,7 +832,7 @@
 <td>logstash.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>logstash.priorityClass</td>
@@ -820,19 +844,19 @@
 <td>logstash.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for Logstash&rsquo;s pods.</td>
 </tr>
 <tr>
 <td>logstash.resources.limits.memory</td>
 <td>string</td>
 <td><code>"700Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>logstash.resources.requests.memory</td>
 <td>string</td>
 <td><code>"700Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>logstash.tolerations</td>
@@ -850,25 +874,31 @@
 <td>opensearch.additionalJvmParams</td>
 <td>string</td>
 <td><code>"-Djava.net.preferIPv4Stack=true -XshowSettings:properties -XshowSettings:vm -XshowSettings:system"</code></td>
-<td></td>
+<td>Fine tune JVM parameters passed to component.</td>
+</tr>
+<tr>
+<td>opensearch.certManager</td>
+<td>object</td>
+<td><code>{"enabled":false,"issuerRef":{},"namespace":""}</code></td>
+<td>Settings for <a href=https://cert-manager.io/>CertManager</a>.</td>
 </tr>
 <tr>
 <td>opensearch.certManager.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Enable / disable using CertManager instance in cluster.</td>
 </tr>
 <tr>
 <td>opensearch.certManager.issuerRef</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Define CertManager Issuer object</td>
 </tr>
 <tr>
 <td>opensearch.certManager.namespace</td>
 <td>string</td>
 <td><code>""</code></td>
-<td></td>
+<td>TODO</td>
 </tr>
 <tr>
 <td>opensearch.externalOpensearch.disabled</td>
@@ -897,7 +927,7 @@
 <tr>
 <td>opensearch.imageTag</td>
 <td>string</td>
-<td><code>"2.6.0"</code></td>
+<td><code>"2.7.0"</code></td>
 <td>Used component version.</td>
 </tr>
 <tr>
@@ -916,7 +946,7 @@
 <td>opensearch.retentionDays</td>
 <td>int</td>
 <td><code>7</code></td>
-<td></td>
+<td>Define, how long be held indices in OpenSearch cluster.</td>
 </tr>
 <tr>
 <td>opensearch.saml</td>
@@ -928,7 +958,7 @@
 <td>opensearch.singleNode</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Set <a href=https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/>deployment layout</a> for OpenSearch</td>
 </tr>
 <tr>
 <td>opensearch.snapshot.enabled</td>
@@ -952,7 +982,7 @@
 <td>opensearch.timeNanoSeconds</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>TODO</td>
 </tr>
 <tr>
 <td>opensearch.user</td>
@@ -1018,37 +1048,25 @@
 <td>opensearch_dashboards.image</td>
 <td>string</td>
 <td><code>"opensearchproject/opensearch-dashboards"</code></td>
-<td></td>
+<td>Used image name.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.imageTag</td>
 <td>string</td>
-<td><code>"2.6.0"</code></td>
-<td></td>
+<td><code>"2.7.0"</code></td>
+<td>Used component version.</td>
 </tr>
 <tr>
-<td>opensearch_dashboards.indexPatterns[0]</td>
-<td>string</td>
-<td><code>"containers"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>opensearch_dashboards.indexPatterns[1]</td>
-<td>string</td>
-<td><code>"systemd"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>opensearch_dashboards.indexPatterns[2]</td>
-<td>string</td>
-<td><code>"nginx"</code></td>
-<td></td>
+<td>opensearch_dashboards.indexPatterns</td>
+<td>list</td>
+<td><code>["containers","systemd","nginx"]</code></td>
+<td>Set indices name for inject patterns to OpenSearchDashboards</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.ingress.annotations</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Annotations for ingress object.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.ingress.className</td>
@@ -1060,7 +1078,7 @@
 <td>opensearch_dashboards.ingress.enabled</td>
 <td>bool</td>
 <td><code>false</code></td>
-<td></td>
+<td>Switch to enable / disable ingress for OpenSearch Dashboards.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.ingress.host</td>
@@ -1084,19 +1102,19 @@
 <td>opensearch_dashboards.ingress.tls</td>
 <td>list</td>
 <td><code>[]</code></td>
-<td></td>
+<td>Certificate setting for hostname.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.password</td>
 <td>string</td>
 <td><code>"opensearch"</code></td>
-<td></td>
+<td>Set password for user with <em>admin</em> privileges.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.podLabels</td>
 <td>object</td>
 <td><code>{}</code></td>
-<td></td>
+<td>Additional labels for the workload pods</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.priorityClass</td>
@@ -1108,43 +1126,37 @@
 <td>opensearch_dashboards.readonly.password</td>
 <td>string</td>
 <td><code>"view"</code></td>
-<td></td>
+<td>Set password for user with <em>read only</em> privileges.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.readonly.user</td>
 <td>string</td>
 <td><code>"viewer"</code></td>
-<td></td>
+<td>Set user name with <em>read only</em> privileges.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.replicas</td>
 <td>int</td>
 <td><code>1</code></td>
-<td></td>
+<td>Replicas count for OpenSearch Dashboard pods.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.resources.limits.memory</td>
 <td>string</td>
 <td><code>"500Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>maximum</strong></a> memory allocation.</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.resources.requests.memory</td>
 <td>string</td>
 <td><code>"500Mi"</code></td>
-<td></td>
+<td>Define <a href=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/><strong>minimum</strong></a> memory allocation.</td>
 </tr>
 <tr>
-<td>opensearch_dashboards.tenants[0]</td>
-<td>string</td>
-<td><code>"Global"</code></td>
-<td></td>
-</tr>
-<tr>
-<td>opensearch_dashboards.tenants[1]</td>
-<td>string</td>
-<td><code>"Developer"</code></td>
-<td></td>
+<td>opensearch_dashboards.tenants</td>
+<td>list</td>
+<td><code>["Global","Developer"]</code></td>
+<td>Set tenants name for importing objects via helm chart</td>
 </tr>
 <tr>
 <td>opensearch_dashboards.tolerations</td>
@@ -1156,7 +1168,7 @@
 <td>opensearch_dashboards.user</td>
 <td>string</td>
 <td><code>"opensearch"</code></td>
-<td></td>
+<td>Set user name with <em>admin</em> privileges.</td>
 </tr>
 <tr>
 <td>priorityClass</td>

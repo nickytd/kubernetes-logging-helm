@@ -45,7 +45,7 @@ Since version 3.0.0, the chart values are renamed and follow camel case recommen
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.4e6edaa3535c2bb3f66801dc8f75c23e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -56,7 +56,7 @@ Since version 3.0.0, the chart values are renamed and follow camel case recommen
 <div id=td-sidebar-menu class=td-sidebar__inner>
 <div id=content-mobile>
 <form class="td-sidebar__search d-flex align-items-center">
-<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.4e6edaa3535c2bb3f66801dc8f75c23e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 <button class="btn btn-link td-sidebar__toggle d-md-none p-0 ml-3 fas fa-bars" type=button data-toggle=collapse data-target=#td-section-nav aria-controls=td-docs-nav aria-expanded=false aria-label="Toggle section navigation">
 </button>
 </form>
@@ -166,10 +166,12 @@ Since version 3.0.0, the chart values are renamed and follow camel case recommen
 <li>delete PersistantVolumeClaim for Kafka&rsquo;s and for ZooKeeper&rsquo;s instances as well</li>
 <li>do <code>helm upgrade ...</code></li>
 </ul>
+<h1 id=463---464>4.6.3 -> 4.6.4</h1>
+<p>In the version <strong>4.6.4</strong> we securing communication between Kafka instances. If CertManager isnt avaible, helm chart will generate CA certificate for that purpose with 1 year lifeness. Self signed certificate must be managed by user! The setup is good for development purpose, for production environment consider using CertManager.</p>
 <div class=section-index>
 </div>
 <div class="text-muted mt-5 pt-3 border-top">
-Last modified March 1, 2023: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/aa536e1b41bba3d9be8844a3004d2e46a737679b>Upgrade Kafka to KRaft mode (#24) (aa536e1)</a>
+Last modified July 19, 2023: <a href=https://github.com/nickytd/kubernetes-logging-helm/commit/4a4f6e11ac355147b99b2c0f223dc65517f54677>Secure Kafka interbrokers communication (#29) (4a4f6e1)</a>
 </div>
 </div>
 </main>

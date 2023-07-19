@@ -45,7 +45,7 @@ Since version 3.0.0, the chart values are renamed and follow camel case recommen
 </li>
 </ul>
 </div>
-<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.c9dcebfe19f8f06c6fb0c3ede8089746.json data-offline-search-base-href=/ data-offline-search-max-results=10>
+<div class="navbar-nav d-none d-lg-block"><input type=search class="form-control td-search-input" placeholder="&#xf002; Search this site…" aria-label="Search this site…" autocomplete=off data-offline-search-index-json-src=/kubernetes-logging-helm/offline-search-index.4e6edaa3535c2bb3f66801dc8f75c23e.json data-offline-search-base-href=/ data-offline-search-max-results=10>
 </div>
 </nav>
 </header>
@@ -81,6 +81,8 @@ This is the multi-page printable view of this section.
 <li>delete PersistantVolumeClaim for Kafka&rsquo;s and for ZooKeeper&rsquo;s instances as well</li>
 <li>do <code>helm upgrade ...</code></li>
 </ul>
+<h1 id=463---464>4.6.3 -> 4.6.4</h1>
+<p>In the version <strong>4.6.4</strong> we securing communication between Kafka instances. If CertManager isnt avaible, helm chart will generate CA certificate for that purpose with 1 year lifeness. Self signed certificate must be managed by user! The setup is good for development purpose, for production environment consider using CertManager.</p>
 </div>
 </div>
 </main>
