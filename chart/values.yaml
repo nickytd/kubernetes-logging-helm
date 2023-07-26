@@ -20,7 +20,7 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: "2.7.0"
+  imageTag: "2.9.0"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   # -- Set [deployment layout](https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/) for OpenSearch
@@ -89,7 +89,7 @@ init_container:
   # -- Used image name.
   image: "nickytd/init-container"
   # -- Used component version.
-  imageTag: "1.0.5"
+  imageTag: "1.1.0"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
 
@@ -139,7 +139,8 @@ client:
     # -- Annotations for ingress object.
     annotations: {}
     # -- Certificate setting for hostname.
-    tls: []
+    tls:
+      []
       # e.g.
       # - hosts:
       #   - FQDNS
@@ -186,7 +187,7 @@ opensearch_dashboards:
   # -- Used image name.
   image: "opensearchproject/opensearch-dashboards"
   # -- Used component version.
-  imageTag: "2.7.0"
+  imageTag: "2.9.0"
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -220,7 +221,8 @@ opensearch_dashboards:
     # -- Annotations for ingress object.
     annotations: {}
     # -- Certificate setting for hostname.
-    tls: []
+    tls:
+      []
       # e.g.
       # - hosts:
       #   - FQDNS
@@ -253,7 +255,7 @@ data_prepper:
   # -- Used image name.
   image: opensearchproject/data-prepper
   # -- Used component version.
-  imageTag: "2.3.1"
+  imageTag: "2.3.2"
   # -- Replicas count for DataPrepper pods.
   replicas: 1
   # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
@@ -288,7 +290,7 @@ fluentbit:
   # -- Used image name.
   image: "fluent/fluent-bit"
   # -- Used component version.
-  imageTag: "2.0.9"
+  imageTag: "2.1.8"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
@@ -390,7 +392,8 @@ kafka:
     # -- Enable / disable using CertManager instance in cluster.
     enabled: false
     # -- Define CertManager Issuer object
-    issuerRef: {}
+    issuerRef:
+      {}
       # kind:
       # name:
   # -- Set days for SSL broker interconnect communication certificate expiration
