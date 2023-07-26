@@ -253,7 +253,7 @@ data_prepper:
   # -- Used image name.
   image: opensearchproject/data-prepper
   # -- Used component version.
-  imageTag: "2.0.1"
+  imageTag: "2.3.1"
   # -- Replicas count for DataPrepper pods.
   replicas: 1
   # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
