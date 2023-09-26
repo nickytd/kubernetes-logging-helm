@@ -20,7 +20,7 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: "2.9.0"
+  imageTag: "2.10.0"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   # -- Set [deployment layout](https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/) for OpenSearch
@@ -187,7 +187,7 @@ opensearch_dashboards:
   # -- Used image name.
   image: "opensearchproject/opensearch-dashboards"
   # -- Used component version.
-  imageTag: "2.9.0"
+  imageTag: "2.10.0"
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -290,7 +290,7 @@ fluentbit:
   # -- Used image name.
   image: "fluent/fluent-bit"
   # -- Used component version.
-  imageTag: "2.1.8"
+  imageTag: "2.1.9"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
@@ -331,7 +331,7 @@ logstash:
   # -- Used image name.
   image: "opensearchproject/logstash-oss-with-opensearch-output-plugin"
   # -- Used component version.
-  imageTag: "8.6.1"
+  imageTag: "8.9.0"
   # -- Replicas count for Logstash's pods.
   replicas: 1
   # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
