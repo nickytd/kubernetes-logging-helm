@@ -290,7 +290,7 @@ fluentbit:
   # -- Used image name.
   image: "fluent/fluent-bit"
   # -- Used component version.
-  imageTag: "2.1.9"
+  imageTag: "2.1.10"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   containersLogsHostPath: /var/log/pods
