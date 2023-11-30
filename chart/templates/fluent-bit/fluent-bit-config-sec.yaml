@@ -142,6 +142,7 @@ stringData:
         Include_Tag_Key     Off
         Time_Key_Nanos      Off
         Generate_ID         On
+        write_operation     upsert
         tls                 On
         tls.Verify          On
         {{- if or .Values.fluentbit.caCertificateSecret .Values.opensearch.externalOpensearch.disabled }}
@@ -174,6 +175,7 @@ stringData:
         Time_Key_Nanos      On
         {{- end }}
         Generate_ID         On
+        write_operation     upsert
         tls                 On
         tls.Verify          On
         {{- if or .Values.fluentbit.caCertificateSecret .Values.opensearch.externalOpensearch.disabled }}
