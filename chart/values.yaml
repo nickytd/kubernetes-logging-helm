@@ -20,7 +20,7 @@ opensearch:
   # -- Used image name.
   image: "opensearchproject/opensearch"
   # -- Used component version.
-  imageTag: "2.11.0"
+  imageTag: "2.11.1"
   # -- Image pull [policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
   imagePullPolicy: IfNotPresent
   # -- Set [deployment layout](https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/) for OpenSearch
@@ -187,7 +187,7 @@ opensearch_dashboards:
   # -- Used image name.
   image: "opensearchproject/opensearch-dashboards"
   # -- Used component version.
-  imageTag: "2.11.0"
+  imageTag: "2.11.1"
   # When externalOpensearchDashboards.disabled designates an external
   # opensearch-dashboards instance. Only jobs for creating index
   # templates and opensearch-dashboards objects are executed.
@@ -254,7 +254,7 @@ data_prepper:
   # -- Used image name.
   image: opensearchproject/data-prepper
   # -- Used component version.
-  imageTag: "2.5.0" # There are no linux/arm64 container images available
+  imageTag: "2.6.1" # There are no linux/arm64 container images available
   # -- Replicas count for DataPrepper pods.
   replicas: 1
   # -- Set JVM parameters `-Xms` and `-Xmx`, basicaly set JVM memory size. Consider this value as a half of total pod memory.
