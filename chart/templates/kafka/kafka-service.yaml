@@ -8,22 +8,23 @@ spec:
   clusterIP: None
   ports:
   - port: 9092
-    name: kafka
+    name: listener
   selector: {{ include "logging.selectorLabels" . | indent 4 }}
     type: kafka
-{{ range $kafkaId := until (.Values.kafka.replicas | int) }}
 ---
+{{ range $kafkaId := until (.Values.kafka.replicas | int) }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $.Release.Name }}-kafka-{{ $kafkaId }}
   labels: {{ include "logging.labels" $ | indent 4 }}
+    type: kafka
 spec:
   ports:
     - port: 9092
-      name: kafka
+      name: listener
     - port: 9093
-      name: broker
+      name: controller
     - port: 9094
       name: internal
     - port: 12345
@@ -31,5 +32,6 @@ spec:
   selector: {{ include "logging.selectorLabels" $ | indent 4 }}
     statefulset.kubernetes.io/pod-name: {{ $.Release.Name }}-kafka-{{ $kafkaId }}
     type: kafka
+---
 {{ end }}
 {{- end }}
