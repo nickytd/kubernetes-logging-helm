@@ -25,7 +25,7 @@ opensearch:
   imagePullPolicy: IfNotPresent
   # -- Set [deployment layout](https://nickytd.github.io/kubernetes-logging-helm/docs/deployments/) for OpenSearch
   singleNode: false
-  # -- TODO
+  # -- If `true`, timestamp will be collected and showed with full precision.
   timeNanoSeconds: false
   # externalOpensearch.disabled designates an external managed opensearch stack.
   externalOpensearch:
@@ -198,7 +198,7 @@ opensearch_dashboards:
     url: ""
   # -- Replicas count for OpenSearch Dashboard pods.
   replicas: 1
-  extraEnvs: {}
+  extraEnvs: []
   # -- Set user name with *admin* privileges.
   user: "opensearch"
   # -- Set password for user with *admin* privileges.

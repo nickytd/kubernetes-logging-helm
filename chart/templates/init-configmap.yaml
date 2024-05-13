@@ -98,16 +98,31 @@ data:
   check_job.sh: |-
     #!/bin/bash
 
-    set -e
+    set -o pipefail
 
-    echo "waiting for $job_name job completion"
+    echo -n "INFO: Checking Kubernetes API availability ... "
     TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
+
+    response=$(curl -sS -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
+      --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      -w "%{http_code}" -o /dev/null)
+
+    if [[ $response != "200" ]]; then
+      echo -e "FAILED\nERROR: Response:"
+      curl -S -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
+      --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt
+      exit 1
+    else
+      echo -e "OK"
+    fi
 
     state="down"
     while [[ ! $state =~ "1" ]]; do
-      state=`curl -sS -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
-      --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt | jq '.status.succeeded'`
-      sleep 3
+      state=$(curl -sS -X GET https://$KUBERNETES_SERVICE_HOST/apis/batch/v1/namespaces/$job_namespace/jobs/$job_name/status \
+      --header "Authorization: Bearer $TOKEN" --cacert /run/secrets/kubernetes.io/serviceaccount/ca.crt | \
+      jq '.status.succeeded')
+      echo "INFO: Waiting for job $job_name (\"$state\") ..."
+      sleep 5
     done
 
-    echo "$job_name job status.succeeded $state"
+    echo "INFO: Initialized"

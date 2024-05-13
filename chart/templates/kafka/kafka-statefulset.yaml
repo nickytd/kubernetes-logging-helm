@@ -63,24 +63,14 @@ spec:
         imagePullPolicy: {{ .Values.kafka.imagePullPolicy }}
         ports:
         - containerPort: 9092
-          name: kafka
+          name: listener
         - containerPort: 9093
-          name: broker
+          name: controller
         - containerPort: 9094
           name: internal
         - containerPort: 12345
           name: jmx
         resources: {{ toYaml .Values.kafka.resources | nindent 10 }}
-        ### Workaround for missing but required variable
-        ### Details: https://github.com/bitnami/containers/issues/33271
-        command:
-        - /bin/bash
-        args:
-        - -ec
-        - |
-          export KAFKA_CFG_NODE_ID="$(echo "$MY_POD_NAME" | grep -o -E '[0-9]*$')"
-          /opt/bitnami/scripts/kafka/entrypoint.sh /opt/bitnami/scripts/kafka/run.sh
-        ### --- ###
         env:
         # - name: BITNAMI_DEBUG # get more information from Kafka pod logs
         #   value: "true" # default "false"
@@ -94,10 +84,12 @@ spec:
           value: "PLAINTEXT://:9092,CONTROLLER://:9093,INTERNAL://:9094"
         - name: KAFKA_CFG_INITIAL_BROKER_REGISTRATION_TIMEOUT_MS
           value: "270000" # default 60000 (1 minute)
+        - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+          value: "CONTROLLER"
         - name: KAFKA_CFG_LOG_DIRS
           value: "/kafka/data"
-        # - name: NODE_ID_COMMAND # need for get broker ID, broken, see workaround above
-        #   value: 'hostname | cut -d "-" -f 3'
+        - name: KAFKA_NODE_ID_COMMAND # need for get broker ID
+          value: "echo ${MY_POD_NAME} | grep -o -E '[0-9]*$'"
         - name: KAFKA_HEAP_OPTS
           value: "-Xmx{{ .Values.kafka.heapSize }} -Xms{{ .Values.kafka.heapSize }}"
         - name: ALLOW_PLAINTEXT_LISTENER
@@ -107,7 +99,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: KAFKA_CFG_ADVERTISED_LISTENERS
-          value: "INTERNAL://$(MY_POD_NAME).logging.svc.cluster.local:9094,PLAINTEXT://$(MY_POD_NAME).logging.svc.cluster.local:9092"
+          value: "INTERNAL://$(MY_POD_NAME).{{ .Release.Namespace }}.svc.cluster.local:9094,PLAINTEXT://$(MY_POD_NAME).{{ .Release.Namespace }}.svc.cluster.local:9092"
         - name: KAFKA_INTER_BROKER_LISTENER_NAME
           value: "INTERNAL"
         - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
@@ -122,7 +114,7 @@ spec:
               command: ["/opt/bitnami/kafka/bin/kafka-server-stop.sh"]
         readinessProbe:
           tcpSocket:
-            port: kafka
+            port: controller
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
@@ -130,7 +122,7 @@ spec:
           failureThreshold: 24
         livenessProbe:
           tcpSocket:
-            port: kafka
+            port: controller
           initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 5
