@@ -10,8 +10,8 @@ clusterName: "logging"
 imagePullSecrets: []
 # -- TODO
 priorityClass: ""
-# -- Defautl Storage Class for used by Persistence Volume Claims. Can be overwritten by workloads
-storageClass: {}
+# -- Default Storage Class name for PVC used for components with persistency ([details](https://kubernetes.io/docs/concepts/storage/storage-classes/)). Can be overwritten by workloads.
+storageClass: ""
 # -- Default networkpolicy for ingress and egress traffic
 withNetworkPolicy: false
 
@@ -33,7 +33,8 @@ opensearch:
     url: ""
   snapshot:
     enabled: false
-    storageClass: {}
+    # -- Storage Class name for PVC used for OpenSearch snapshots ([details](https://kubernetes.io/docs/concepts/storage/storage-classes/)).
+    storageClass: ""
     size: "5Gi"
   # -- Define, how long be held indices in OpenSearch cluster.
   retentionDays: 7
@@ -110,7 +111,8 @@ clusterManager:
       memory: "700Mi"
   # -- Additional labels for the workload pods
   podLabels: {}
-  storageClass: {}
+  # -- Storage Class name for PVC used for OpenSearch ClusterManager nodes ([details](https://kubernetes.io/docs/concepts/storage/storage-classes/)).
+  storageClass: ""
   priorityClass: {}
   tolerations: []
   affinity: {}
@@ -173,7 +175,8 @@ data:
     limits:
       # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "2000Mi"
-  storageClass: {}
+  # -- Storage Class name for PVC used for OpenSearch Data nodes ([details](https://kubernetes.io/docs/concepts/storage/storage-classes/)).
+  storageClass: ""
   # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
@@ -410,7 +413,8 @@ kafka:
     limits:
       # -- Define [**maximum**](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) memory allocation.
       memory: "600Mi"
-  storageClass: {}
+  # -- Storage Class name for PVC used for Kafka ([details](https://kubernetes.io/docs/concepts/storage/storage-classes/)).
+  storageClass: ""
   # -- Additional labels for the workload pods
   podLabels: {}
   priorityClass: {}
